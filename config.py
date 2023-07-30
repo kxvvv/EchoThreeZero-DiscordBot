@@ -3,7 +3,7 @@ GUILD = 1043833433316667442
 
 PREFIX = "!"
 
-PROFILE_DEFAULT = {"ban": 0, "warn": 0}
+PROFILE_DEFAULT = {"ban": 0, "warn": 0, "report": 0}
 
 ERROR_ROOM = 1134685181048004700
 

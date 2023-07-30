@@ -63,6 +63,17 @@ async def on_ready():
 
 
 
+# @client.command()
+# async def qwe(ctx, member: discord.Member = None):
+#     if member == None:
+#         member = ctx.author
+#     print(member)
+#     print(type(member))
+#     embed = discord.Embed(title = member).set_image(url=member.avatar.url)
+#     await ctx.send(embed=embed)
+
+
+
 async def get_user_profile(user_id):
     user_id = str(user_id)
 
@@ -71,6 +82,9 @@ async def get_user_profile(user_id):
 
     if user_id not in profile.keys():
         profile[user_id] = PROFILE_DEFAULT
+    
+        logs = client.get_channel(LOGS)
+        await logs.send(f'❗ <@{user_id}> создаёт себе БД.')
 
     with open("basa.json", "w") as file:
         json.dump(profile, file)
@@ -86,17 +100,44 @@ async def set_user_profile(user_id, parameter, new_value):
     if user_id not in profile.keys():
         profile[user_id] = PROFILE_DEFAULT
 
+        logs = client.get_channel(LOGS)
+        await logs.send(f'❗ <@{user_id}> создаёт себе БД, и записывает туда данные.')
+
     profile[user_id][parameter] = new_value
 
     with open("basa.json", "w") as file:
         json.dump(profile, file)
 
 
+@client.tree.command(name = "addreport", description= 'выдать жалобу, указывать нужно айди', guild=discord.Object(id=GUILD))
+async def report(ctx, user: str=None):
+
+
+    #вавден
+    echoRole = discord.utils.find(lambda r: r.name == 'вавден', ctx.guild.roles)
+    if echoRole not in ctx.user.roles:
+        await ctx.response.send_message('❌ У Вас нет доступа к данной команде.')
+        return
+
+    if user == None:
+        await ctx.response.send_message('❌ Не указан модератор.')
+        return
+
+    profile = await get_user_profile(user)
+    user_id = user
+    new_value = profile['report'] + 1
+    parameter = 'report'
+    await set_user_profile(user_id, parameter, new_value)
+
+    logs = client.get_channel(LOGS)
+    await logs.send(f'⏰ {ctx.user} записал <@{user}> новую жалобу')
+    await ctx.response.send_message('✅ Успешно выдано.')
+
 
 @client.tree.command(name = "profile", description = 'твой профиль', guild=discord.Object(id=GUILD))
 async def profile(ctx):
 
-
+    member = ctx.user
 
     def checkRole():
         echoRole = discord.utils.find(lambda r: r.name == '☄️', ctx.guild.roles)
@@ -113,7 +154,6 @@ async def profile(ctx):
             return f'{ctx.user.id}, ???'
 
     await ctx.response.defer()
-    print(ctx.user.id)
     profile = await get_user_profile(ctx.user.id)
 
 
@@ -127,7 +167,11 @@ async def profile(ctx):
 
     embed.add_field(name="⚠️ Варны", value=f'{profile["warn"]}')
     embed.add_field(name="⛔ Баны", value=f'{profile["ban"]}')
-
+    embed.add_field(name="⏰ Жалобы", value=f'{profile["report"]}')
+    
+    
+    #embed.set_image(url=member.avatar.url)
+    embed.set_thumbnail(url=member.avatar.url)
 
     embed.set_footer(text=checkFooter())
 
@@ -355,7 +399,7 @@ async def second_command(ctx, user: str=None, punish: app_commands.Choice[int]=0
 
 
         def addField(count):
-            worksheet.insert_row(['', '', count+1, '', '', count+1, ''], index=row+count)
+            worksheet.insert_row(['', '', '', '', '', '', ''], index=row+count) #count+1
             worksheet.merge_cells(f'B{row}:B{row+count}', 'MERGE_ALL')
 
         cell = worksheet.find(user)
@@ -380,7 +424,9 @@ async def second_command(ctx, user: str=None, punish: app_commands.Choice[int]=0
                 worksheet.insert_note(f'D{row+needToAdd}', f'{reason}')
 
             elif warnCount < needToAdd:
+                print('he4re')
                 addField(warnCount)
+                worksheet.update(f'C{row+warnCount}', str(f'{warnCount+1}')) # testt
                 worksheet.update(f'D{row+warnCount}', str(f'Правило {rule}'))
                 worksheet.insert_note(f'D{row+warnCount}', f'{reason}')
 
@@ -395,6 +441,8 @@ async def second_command(ctx, user: str=None, punish: app_commands.Choice[int]=0
                     worksheet.insert_note(f'D{row+needToAdd}', f'{reason}')
                 else:
                     addField(warnCount)
+                    print('he1re')
+                    worksheet.update(f'C{row+warnCount}', str(f'{warnCount+1}')) # testt
                     worksheet.update(f'D{row+needToAdd}', str(f'Правило {rule}'))
                     worksheet.insert_note(f'D{row+needToAdd}', f'{reason}')
             
@@ -418,6 +466,7 @@ async def second_command(ctx, user: str=None, punish: app_commands.Choice[int]=0
 
             elif banCount < needToAdd:
                 addField(banCount)
+                worksheet.update(f'F{row+banCount}', str(f'{banCount+1}')) # test
                 worksheet.update(f'G{row+banCount}', str(f'Правило {rule}'))
                 worksheet.insert_note(f'G{row+banCount}', f'{reason}')
 
@@ -432,6 +481,7 @@ async def second_command(ctx, user: str=None, punish: app_commands.Choice[int]=0
                     worksheet.insert_note(f'G{row+needToAdd}', f'{reason}')
                 else:
                     addField(banCount)
+                    worksheet.update(f'F{row+banCount}', str(f'{banCount+1}')) # test
                     worksheet.update(f'G{row+needToAdd}', str(f'Правило {rule}'))
                     worksheet.insert_note(f'G{row+needToAdd}', f'{reason}')
             
@@ -447,23 +497,26 @@ async def second_command(ctx, user: str=None, punish: app_commands.Choice[int]=0
 
 
 
-        msg = await infochat.send('секу..')
+        msg = await infochat.send('🔄 секу..')
         await msg.add_reaction('✅')
         await msg.add_reaction('❌')
-        await msg.edit(content=f'## Вы выбрали игрока `{user}`, с наказанием {punishEmoji}`{punish.name}`, по рулу `{rule}`, с причиной `{reason}`')
+        await msg.edit(content=f' \n\nНаказание:  {punishEmoji}\n\nПравило: **{rule}**\n\nПричина: ```{reason}```')
 
         def check(reaction, msgAuthor):
             if trueUser == msgAuthor:
-                return msgAuthor == ctx.user and str(reaction.emoji) == '✅' or '❌'
+                return msgAuthor == ctx.user and str(reaction.emoji) == '✅' or str(reaction.emoji) == '❌'
         try:
             reaction, msgAuthor = await client.wait_for('reaction_add', timeout=25.0, check=check)
         except asyncio.TimeoutError:
-            await msg.edit(content='# чета случилась ошибочка. ❌\n либо **реакция не правильная**, либо **время вышло.**\n хуй его знает чел.')
+            await msg.edit(content='❌ Чета случилась ошибочка. либо **реакция не правильная**, либо **время вышло.**')
         else:
             if reaction.emoji == '❌':
                 await msg.edit(content='❌ Отменил операцию.')
                 return
-            await msg.edit(content=f'**Обрабатываю запросик :middle_finger:**') #{reaction.emoji}
+            elif reaction.emoji == '✅':
+                await msg.edit(content=f'**🔄 Обрабатываю запросик :middle_finger:**') #{reaction.emoji}
+            else:
+                await msg.edit(content='❌ чета случилась ошибочка. либо **реакция не правильная**, либо **время вышло.**')
 
             logs = client.get_channel(LOGS)
 
@@ -475,7 +528,40 @@ async def second_command(ctx, user: str=None, punish: app_commands.Choice[int]=0
                 row = '-'
                 col = '-'
 
-            await logs.send(str(f'`{msgAuthor}` подвертил свой {punishEmoji} `{punish.name}` по рулу `{rule}` на игрока `{user}` с причиной `{reason}`\n\nстрока игрока - `{row}`, столбик `{col}`'))
+
+            member = msgAuthor
+
+            def checkRole():
+                echoRole = discord.utils.find(lambda r: r.name == '☄️', ctx.guild.roles)
+                if echoRole in ctx.user.roles:
+                    return discord.Colour.blue()
+                else:
+                    return discord.Colour.red()
+                
+            def checkFooter():
+                echoRole = discord.utils.find(lambda r: r.name == '☄️', ctx.guild.roles)
+                if echoRole in ctx.user.roles:
+                    return f'{ctx.user.id}, echo'
+                else:
+                    return f'{ctx.user.id}, ???'
+
+
+            embed = discord.Embed(
+                colour=checkRole(), 
+                description=reason, 
+                title=f'Выдал новый {punish.name} {punishEmoji}'
+            )
+            embed.set_author(name=ctx.user)
+
+            embed.add_field(name="Игрок", value=user)
+            embed.add_field(name="Правило", value=rule)
+
+            embed.set_thumbnail(url=member.avatar.url)
+
+            embed.set_footer(text=f'{checkFooter()}, {row}')
+
+
+            await logs.send(embed=embed)
             emoji = (reaction.emoji)
             emoji = str(emoji)
             if reaction.emoji == '✅':                
@@ -485,7 +571,7 @@ async def second_command(ctx, user: str=None, punish: app_commands.Choice[int]=0
                             newPlayer()
                         case 'old':
                             oldPlayer()
-                    await msg.edit(content='✅ Успешно записал игрока.')
+                    await msg.edit(content='✅ Успешно обновил данные игрока.')
                     if punish.value == 1:
                         profile = await get_user_profile(ctx.user.id)
                         user_id = ctx.user.id
