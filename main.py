@@ -1,0 +1,739 @@
+import discord
+import gspread
+import asyncio
+import json
+#import httplib2 
+#import apiclient.discovery
+
+#from apiclient import discovery
+
+#from oauth2client.service_account import ServiceAccountCredentials
+
+
+from discord.ext import commands
+from discord.utils import get
+from config import *
+
+from discord import app_commands
+
+
+intents = discord.Intents.all()
+intents.members = True
+intents.message_content = True
+
+client = commands.Bot(command_prefix=PREFIX, intents=intents, help_command=None)
+
+
+
+gc = gspread.service_account(filename='secretkey.json')
+sh = gc.open("копия 2.0")
+worksheet = sh.sheet1
+
+# gc = gspread.service_account(filename='secretkey.json')
+# sh = gc.open("копия 2.0")
+# worksheet = sh.sheet1
+# ВАЖНО БЛЯТЬ
+
+#list_of_lists = worksheet.get_all_values()
+
+
+########################
+
+
+
+# user = 'bbbaka'
+
+# cell = worksheet.find(user)
+# row = cell.row
+# col = cell.col
+
+
+# #######################
+
+# def warnCountSystem():
+#     if ruleNumbers[0] == ['']:
+#         return 0
+#     li = []
+#     warnCount = 0
+#     for x in ruleNumbers:
+#         if x not in li:
+#             li.append(x)
+#         else:
+#             break
+#     for x in li:
+#         if x != ['']:               
+#             warnCount += 1
+
+#     return warnCount
+
+
+# def banCountSystem():
+#     if ruleNumbersSecond[0] == ['']:
+#         return 0
+#     li2 = []
+#     banCount = 0
+#     for x in ruleNumbersSecond:
+#         if x not in li2:
+#             li2.append(x)
+#     for x in li2:
+#         if x != ['']:
+#             banCount += 1
+#     return banCount
+
+# ruleNumbers = worksheet.get_values(f'C{row}:C{row+20}')
+# ruleNumbersSecond = worksheet.get_values(f'F{row}:F{row+20}')
+
+# try:
+#     warnCount = warnCountSystem()
+# except:
+#     warnCount = 0
+# try:
+#     banCount = banCountSystem()
+# except:
+#     banCount = 0
+
+# warnCount = int(warnCount)
+# banCount = int(banCount)
+
+# mainCount = max(banCount, warnCount)
+# print(f"wc - {warnCount}")
+# print(f"bc - {banCount}")
+# print(f'mc - {mainCount}')
+
+
+
+
+# #worksheet.insert_note('D17', 'хуй жопа')
+
+
+
+
+async def get_user_profile(user_id):
+    user_id = str(user_id)
+
+    with open("basa.json", "r") as file:
+        profile = json.load(file)
+
+    if user_id not in profile.keys():
+        profile[user_id] = PROFILE_DEFAULT
+
+    with open("basa.json", "w") as file:
+        json.dump(profile, file)
+
+    return profile[user_id]
+
+async def set_user_profile(user_id, parameter, new_value):
+    user_id = str(user_id)
+
+    with open("basa.json", "r") as file:
+        profile = json.load(file)
+
+    if user_id not in profile.keys():
+        profile[user_id] = PROFILE_DEFAULT
+
+    profile[user_id][parameter] = new_value
+
+    with open("basa.json", "w") as file:
+        json.dump(profile, file)
+
+########################
+@client.event
+async def on_ready():
+    print(f"Я СНОВА ЖИВУ - {client.user}")
+    await client.tree.sync(guild=discord.Object(id=GUILD)) # синхорнизация
+
+
+@client.listen("on_command_error")
+async def cooldown_message(error):
+    errorlog = client.get_channel(ERROR_ROOM) # чат
+    await errorlog.send(f"```\n\n\n\n\n\n_error_\n\n{error}```")
+
+
+
+
+
+
+@client.tree.command(name = "profile", description = 'твой профиль', guild=discord.Object(id=GUILD))
+async def profile(ctx):
+
+
+
+    def checkRole():
+        echoRole = discord.utils.find(lambda r: r.name == '☄️', ctx.guild.roles)
+        if echoRole in ctx.user.roles:
+            return discord.Colour.blue()
+        else:
+            return discord.Colour.red()
+        
+    def checkFooter():
+        echoRole = discord.utils.find(lambda r: r.name == '☄️', ctx.guild.roles)
+        if echoRole in ctx.user.roles:
+            return f'{ctx.user.id}, echo'
+        else:
+            return f'{ctx.user.id}, ???'
+
+    await ctx.response.defer()
+    print(ctx.user.id)
+    profile = await get_user_profile(ctx.user.id)
+    #await ctx.response.send_message(f'Твой профиль: \n\n w- {profile["warn"]} \n b - {profile["ban"]}')
+
+    embed = discord.Embed(
+        colour=checkRole(), 
+        #description="Твой профиль.", 
+        title=ctx.user
+    )
+    #embed.set_author(name=user, url="https://docs.google.com/spreadsheets/d/1R9kxpwp9PopkUoiF2DXTVphvwLDepJ0gkwDV8a2_8tQ/edit?pli=1#gid=0")
+
+
+    embed.add_field(name="⚠️ Варны", value=f'{profile["warn"]}')
+    embed.add_field(name="⛔ Баны", value=f'{profile["ban"]}')
+
+
+    embed.set_footer(text=checkFooter())
+
+
+    #await asyncio.sleep(3)
+    await ctx.followup.send(embed=embed)
+
+
+@client.tree.command(name = "check", description = "поиск игрока в таблице", guild=discord.Object(id=GUILD))
+async def first_command(ctx, user: str = None):
+
+
+
+
+    if user == None:
+        await ctx.response.send_message(f"❌ Не введены аргументы.")
+        return
+
+    
+    values_list = worksheet.col_values(2)
+
+
+    user.strip()
+
+    if user in values_list:
+        user = f'{user}'
+    elif (f'{user} ' in values_list):
+        user = f'{user} '
+    elif (f'{user}  ' in values_list):
+        user = f'{user}  '
+    else:
+        await ctx.response.send_message(f"❌ Игрок `{user}` не найден, проверяйте регистр.")
+        return
+
+    
+    await ctx.response.defer()
+
+    
+    cell = worksheet.find(user)
+    
+    row = cell.row
+    col = cell.col
+
+        
+    def warnCheck():
+
+        ruleNumbers = worksheet.get_values(f'C{row}:C{row+20}')
+
+        if ruleNumbers[0] == ['']:
+            return 0
+        li = []
+        warnCount = 0
+        for x in ruleNumbers:
+            if x not in li:
+                li.append(x)
+            else:
+                break
+        for x in li:
+            if x != ['']:               
+                warnCount += 1
+
+        return warnCount
+    
+
+    def banCheck():
+        
+        ruleNumbersSecond = worksheet.get_values(f'F{row}:F{row+20}')
+
+        if ruleNumbersSecond[0] == ['']:
+            return 0
+        li2 = []
+        banCount = 0
+        for x in ruleNumbersSecond:
+            if x not in li2:
+                li2.append(x)
+            else:
+                break
+        for x in li2:
+            if x != ['']:               
+                banCount += 1
+
+        return banCount
+        
+
+    def testCheck(row):
+        fin = sh.sheet1.get(f'H{str(row)}')
+        if fin == []:
+            return '-'
+        
+        fin = fin[0]
+        fin = str(fin[0])
+        if fin == 'Да':
+            return 'Прошёл.'
+        elif fin == 'Нет':
+            return 'Не прошёл.'
+        else:
+            return fin
+
+    def colorStatus():
+        colour=discord.Colour.dark_gold()
+        return colour
+
+
+    embed = discord.Embed(
+        colour=colorStatus(),
+        #description="Информация с таблицы", 
+        title=u"Информация с таблицы"
+    )
+    embed.set_author(name=user)
+
+
+    embed.add_field(name="⚠️ Варны", value=warnCheck())
+    embed.insert_field_at(1,name="⛔ Баны", value=banCheck())
+    embed.add_field(name="📃 Тест", value=testCheck(row))
+
+
+    embed.set_footer(text=f'Строка {row}, столбик {col}')
+
+
+    await asyncio.sleep(3)
+    await ctx.followup.send(embed=embed)
+
+
+    
+@client.tree.command(name = "new", description = "запись наказания", guild=discord.Object(id=GUILD))
+@app_commands.choices(punish=[
+    discord.app_commands.Choice(name='warn', value=1),
+    discord.app_commands.Choice(name='ban', value=2),
+])
+async def second_command(ctx, user: str=None, punish: app_commands.Choice[int]=0, rule: str=None, reason: str='None'):
+
+
+    # 📝
+    access = discord.utils.find(lambda r: r.name == '📝', ctx.guild.roles)
+    if access not in ctx.user.roles:
+        await ctx.response.send_message('❌ У Вас нет доступа к данной команде.')
+        return
+
+    values_list = worksheet.col_values(2)
+
+
+
+    def newPlayer():
+        lastdude = values_list[-1]
+
+        cell = worksheet.find(lastdude)
+        row = cell.row
+        row += 1
+
+
+        worksheet.update(f'B{row}', user)
+        if punish.value == 1:
+            worksheet.update(f'C{row}', '1')
+            worksheet.update(f'D{row}', str(f'Правило {rule}'))
+            worksheet.insert_note(f'D{row}', f'{reason}')
+
+        if punish.value == 2:
+            worksheet.update(f'F{row}', '1')
+            worksheet.update(f'G{row}', str(f'Правило {rule}'))
+            worksheet.insert_note(f'G{row}', f'{reason}')
+
+        print('govno')
+
+
+    
+    def oldPlayer():
+
+        cell = worksheet.find(user)
+        row = cell.row
+        col = cell.col
+
+
+
+        def warnCountSystem():
+
+            if ruleNumbers[0] == ['']:
+                return 0
+            li = []
+            warnCount = 0
+            for x in ruleNumbers:
+                if x not in li:
+                    li.append(x)
+                else:
+                    break
+            for x in li:
+                if x != ['']:               
+                    warnCount += 1
+
+            return warnCount
+
+
+        def banCountSystem():
+            if ruleNumbersSecond[0] == ['']:
+                return 0
+            li2 = []
+            banCount = 0
+            for x in ruleNumbersSecond:
+                if x not in li2:
+                    li2.append(x)
+                else:
+                    break
+            for x in li2:
+                if x != ['']:               
+                    banCount += 1
+
+            return banCount
+
+        ruleNumbers = worksheet.get_values(f'C{row}:C{row+20}')
+        ruleNumbersSecond = worksheet.get_values(f'F{row}:F{row+20}')
+
+        try:
+            warnCount = warnCountSystem()
+        except:
+            warnCount = 0
+        try:
+            banCount = banCountSystem()
+        except:
+            banCount = 0
+
+        warnCount = int(warnCount)
+        banCount = int(banCount)
+
+        mainCount = max(banCount, warnCount)
+
+
+
+        def addField(count):
+            worksheet.insert_row(['', '', count+1, '', '', count+1, ''], index=row+count)
+            #worksheet.insert_row(['', user, numberForCycle, warnrule, '', numberForCycle, banrule], index=row+numberForCycle-1)
+            worksheet.merge_cells(f'B{row}:B{row+count}', 'MERGE_ALL')
+
+        cell = worksheet.find(user)
+        row = cell.row
+        if punish.value == 1:
+            warnNullOrNot = worksheet.get_values(f'D{row}:D{row+20}')
+            
+            #print(warnNullOrNot[0])
+            needToAdd = 0
+
+            try:
+                if warnNullOrNot[0] != ['']:
+                    for x in warnNullOrNot:
+                        if x == ['']:
+                            break
+                        needToAdd += 1
+            except:
+                warnNullOrNot = 0
+                needToAdd = 0
+            #print(f"warn count - {warnCount}")
+            #print(f"needtoadd - {needToAdd}")
+            if warnCount > needToAdd:
+                worksheet.update(f'D{row+needToAdd}', str(f'Правило {rule}'))
+                worksheet.insert_note(f'D{row+needToAdd}', f'{reason}')
+
+            elif warnCount < needToAdd:
+                addField(warnCount)
+                worksheet.update(f'D{row+warnCount}', str(f'Правило {rule}'))
+                worksheet.insert_note(f'D{row+warnCount}', f'{reason}')
+
+            elif warnCount == needToAdd:
+                if warnCount == 0 and needToAdd == 0:
+                    worksheet.update(f'C{row+needToAdd}', str(f'1'))
+                    worksheet.update(f'D{row+needToAdd}', str(f'Правило {rule}'))
+                    worksheet.insert_note(f'D{row+needToAdd}', f'{reason}')
+                elif warnCount < mainCount:
+                    worksheet.update(f'C{row+needToAdd}', str(f'{warnCount+1}'))
+                    worksheet.update(f'D{row+needToAdd}', str(f'Правило {rule}'))
+                    worksheet.insert_note(f'D{row+needToAdd}', f'{reason}')
+                else:
+                    addField(warnCount)
+                    worksheet.update(f'D{row+needToAdd}', str(f'Правило {rule}'))
+                    worksheet.insert_note(f'D{row+needToAdd}', f'{reason}')
+            
+            else:
+                print('это ПИЗДец')
+
+
+            
+        if punish.value == 2:
+            banNullOrNot = worksheet.get_values(f'G{row}:G{row+20}')
+            
+            #print(banNullOrNot[0])
+            needToAdd = 0
+            if banNullOrNot[0] != ['']:
+                for x in banNullOrNot:
+                    if x == ['']:
+                        break
+                    needToAdd += 1
+            #print(f"ban count - {banCount}")
+            #print(f"needtoadd - {needToAdd}")
+            if banCount > needToAdd:
+                worksheet.update(f'G{row+needToAdd}', str(f'Правило {rule}'))
+                worksheet.insert_note(f'G{row+needToAdd}', f'{reason}')
+
+            elif banCount < needToAdd:
+                addField(banCount)
+                worksheet.update(f'G{row+banCount}', str(f'Правило {rule}'))
+                worksheet.insert_note(f'G{row+banCount}', f'{reason}')
+
+            elif banCount == needToAdd:
+                if banCount == 0 and needToAdd == 0:
+                    worksheet.update(f'F{row+needToAdd}', str(f'1'))
+                    worksheet.update(f'G{row+needToAdd}', str(f'Правило {rule}'))
+                    worksheet.insert_note(f'G{row+needToAdd}', f'{reason}')
+                elif banCount < mainCount:
+                    worksheet.update(f'F{row+needToAdd}', str(f'{banCount+1}'))
+                    worksheet.update(f'G{row+needToAdd}', str(f'Правило {rule}'))
+                    worksheet.insert_note(f'G{row+needToAdd}', f'{reason}')
+                else:
+                    addField(banCount)
+                    worksheet.update(f'G{row+needToAdd}', str(f'Правило {rule}'))
+                    worksheet.insert_note(f'G{row+needToAdd}', f'{reason}')
+            
+            else:
+                print('это ПИЗДец')
+
+
+
+        #worksheet.insert_note('D17', 'хуй жопа')
+
+
+    async def nextStep(choose):
+        infochat = ctx.channel_id # чат
+        infochat = client.get_channel(infochat)
+        trueUser = ctx.user
+        #await infochat.send('qq')
+
+
+        msg = await infochat.send('секу..')
+        await msg.add_reaction('✅')
+        await msg.add_reaction('❌')
+        await msg.edit(content=f'## Вы выбрали игрока `{user}`, с наказанием {punishEmoji}`{punish.name}`, по рулу `{rule}`, с причиной `{reason}`')
+
+        def check(reaction, msgAuthor):
+            if trueUser == msgAuthor:
+                return msgAuthor == ctx.user and str(reaction.emoji) == '✅' or '❌'
+        try:
+            reaction, msgAuthor = await client.wait_for('reaction_add', timeout=25.0, check=check)
+        except asyncio.TimeoutError:
+            await msg.edit(content='# чета случилась ошибочка. ❌\n либо **реакция не правильная**, либо **время вышло.**\n хуй его знает чел.')
+        else:
+            if reaction.emoji == '❌':
+                await msg.edit(content='❌ Отменил операцию.')
+                return
+            await msg.edit(content=f'**Обрабатываю запросик :middle_finger:**') #{reaction.emoji}
+
+            logs = client.get_channel(LOGS)
+
+            try:
+                cell = worksheet.find(user)
+                row = cell.row
+                col = cell.col
+            except AttributeError:
+                row = '-'
+                col = '-'
+
+            await logs.send(str(f'`{msgAuthor}` подвертил свой {punishEmoji} `{punish.name}` по рулу `{rule}` на игрока `{user}` с причиной `{reason}`\n\nстрока игрока - `{row}`, столбик `{col}`'))
+            emoji = (reaction.emoji)
+            emoji = str(emoji)
+            if reaction.emoji == '✅':
+                # user_wallet = await get_user_wallet(ctx.author.id)
+                # user_id = ctx.author.id
+                # new_value = user_wallet['bans'] + 1
+                # parameter = 'bans'
+                # await set_user_wallet(user_id, parameter, new_value)
+                
+                try:
+                    match choose:
+                        case 'new':
+                            newPlayer()
+                        case 'old':
+                            oldPlayer()
+                    await msg.edit(content='✅ Успешно записал игрока.')
+                    if punish.value == 1:
+                        profile = await get_user_profile(ctx.user.id)
+                        user_id = ctx.user.id
+                        new_value = profile['warn'] + 1
+                        parameter = 'warn'
+                        await set_user_profile(user_id, parameter, new_value)
+                        
+                        logs = client.get_channel(LOGS)
+                        await logs.send(f'⚠️ {ctx.user} записал себе варнчик')
+                    elif punish.value == 2:
+                        profile = await get_user_profile(ctx.user.id)
+                        user_id = ctx.user.id
+                        new_value = profile['ban'] + 1
+                        parameter = 'ban'
+                        await set_user_profile(user_id, parameter, new_value)
+
+                        logs = client.get_channel(LOGS)
+                        await logs.send(f'⛔ {ctx.user} записал себе банчик')
+                    else:
+                        logs = client.get_channel(LOGS)
+                        await logs.send(f'❓ {ctx.user} что то сделал, и я должен был чёта записать... похуй)')
+                except:
+                    await msg.edit(content='❌ Произошла техническая ошибка, пингуй идиота ксова.')
+            if reaction.emoji == '❌':
+                return
+        
+
+
+
+
+
+
+
+
+    if user == None:
+        await ctx.response.send_message('❌ Не выбран игрок.')
+        return
+    
+    try:
+        if punish.value == 0:
+            await ctx.response.send_message('❌ Не выбрано наказание.')
+            return
+    except AttributeError:
+        await ctx.response.send_message('❌ Не выбрано наказание.')
+        return
+    
+
+    if punish.name == 'warn':
+        punishEmoji = '⚠️'
+    elif punish.name == 'ban':
+        punishEmoji = '⛔'
+    else:
+        punishEmoji = '❓'
+
+    try:
+        if int(rule) not in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]:
+            await ctx.response.send_message('❌ Не корекктно выбрано правило, используй **только одну цифру.**')
+            return
+    except:
+        await ctx.response.send_message('❌ Не корекктно выбрано правило, **используй цифры.**')
+        return
+
+
+
+    values_list = worksheet.col_values(2)
+
+    if user in values_list:
+        user = f'{user}'
+        await ctx.response.send_message(f"✅ Игрок `{user}` уже есть в табличке.")
+        await nextStep('old')
+    elif (f'{user} ' in values_list):
+        user = f'{user} '
+        await ctx.response.send_message(f"✅ Игрок `{user}` уже есть в табличке.")
+        await nextStep('old')
+    elif (f'{user}  ' in values_list):
+        user = f'{user}  '
+        await ctx.response.send_message(f"✅ Игрок `{user}` уже есть в табличке.")
+        await nextStep('old')
+    else:
+        await ctx.response.send_message(f"⚠️ Игрок `{user}` не найден.")
+        await nextStep('new')
+
+        
+        
+        
+
+    
+
+
+
+
+
+
+
+
+    
+
+
+
+
+    #await ctx.response.defer()
+
+
+
+
+
+
+    #await ctx.response.send_message(f'✅ юзер - {user} пуниш - {punish.name}, причина - {reason}')
+
+    
+
+
+
+        # infochat = ctx.channel_id # чат
+        # infochat = client.get_channel(infochat)
+        # trueUser = ctx.user
+        # #await infochat.send('qq')
+
+
+        # msg = await infochat.send('секу..')
+        # await msg.add_reaction('✅')
+        # await msg.add_reaction('❌')
+        # await msg.edit(content=f'Вы выбрали игрока `{user}`, с наказанием `{punish.name}`, по рулу `Правило {rule}`')
+
+        # def check(reaction, msgAuthor):
+        #     if trueUser == msgAuthor:
+        #         return msgAuthor == ctx.user and str(reaction.emoji) == '✅' or '❌'
+        # try:
+        #     reaction, msgAuthor = await client.wait_for('reaction_add', timeout=25.0, check=check)
+        # except asyncio.TimeoutError:
+        #     await msg.edit(content='# чета случилась ошибочка. ❌\n либо **реакция не правильная**, либо **время вышло.**\n хуй его знает чел.')
+        # else:
+        #     if reaction.emoji == '❌':
+        #         await msg.edit(content='❌ Отменил операцию.')
+        #         return
+        #     await msg.edit(content=f'**Принял эту - **{reaction.emoji}.')
+
+        #     logs = client.get_channel(LOGS)
+        #     await logs.send(str(f'{user} выбрал {reaction.emoji}'))
+        #     emoji = (reaction.emoji)
+        #     emoji = str(emoji)
+        #     if reaction.emoji == '✅':
+        #         # user_wallet = await get_user_wallet(ctx.author.id)
+        #         # user_id = ctx.author.id
+        #         # new_value = user_wallet['bans'] + 1
+        #         # parameter = 'bans'
+        #         # await set_user_wallet(user_id, parameter, new_value)
+        #         newPlayer()
+        #         await msg.edit(content='✅ Успешно записал игрока.')
+        #     if reaction.emoji == '❌':
+        #         return
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+client.run(token=TOKEN)
