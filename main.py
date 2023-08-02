@@ -27,36 +27,10 @@ client = commands.Bot(command_prefix=PREFIX, intents=intents, help_command=None)
 ########################
 
 
-# user = 'bbbaka'
-
-# cell = worksheet.find(user)
-# row = cell.row
-# col = cell.col
-
 
 ########################
 
 
-# gc = gspread.service_account(filename='secretkey.json')
-# sh = gc.open("копия 2.0")
-# worksheet = sh.sheet1
-
-# metadata = sh.fetch_sheet_metadata()
-
-# #print(metadata)
-
-# print('\n\n\n\n')
-# test = metadata.get('sheets')
-# test = test[0]
-
-# print(test.get('properties'))
-
-# print('\n\n\n\n')
-# print(test.keys())
-# #print(metadata.keys())
-
-# while True:
-#     zxc = 1
 
 ########################
 
@@ -152,7 +126,6 @@ def getProfileFromSheet(user, warnCheck, banCheck, testCheck, row, col, workshee
         if warnCount == 0:
             break
         if x == ['']:
-            print('break')
             break
         listWarn += f"{x[0]}\n"
         warnCount -= 1
@@ -162,7 +135,6 @@ def getProfileFromSheet(user, warnCheck, banCheck, testCheck, row, col, workshee
         if banCount == 0:
             break
         if x == ['']:
-            print('break')
             break
         listBan += f"{x[0]}\n"
         banCount -= 1
@@ -338,14 +310,6 @@ async def msgToLOGG(ctx, worksheet, user, msgAuthor, clrColor, clrColum, clrNumb
 
 
     await logs.send(embed=embed)
-    
-
-# @client.tree.command(name = "testcommands", description= 'testcommands', guild=discord.Object(id=GUILD))
-# async def testcommands(ctx):
-
-#     gc, sh, worksheet = joinToSheet()
-
-#     metadata = sh.fetch_sheet_metadata()
 
 
 @client.tree.command(name = "выдать-заметку", description= 'записывает заметку игроку в таблице', guild=discord.Object(id=GUILD))
@@ -373,64 +337,6 @@ async def note(ctx, игрок: str=None, причина: str=None):
         await ctx.response.send_message(f"❌ Игрока `{user}` нет в таблице.")
         return
 
-
-    # def warnCheck():
-
-    #     ruleNumbers = worksheet.get_values(f'C{row}:C{row+20}')
-
-    #     try:
-    #         if ruleNumbers[0] == ['']:
-    #             return 0
-    #     except:
-    #         return 0
-        
-    #     li = []
-    #     warnCount = 0
-    #     for x in ruleNumbers:
-    #         if x not in li:
-    #             li.append(x)
-    #         else:
-    #             break
-    #     for x in li:
-    #         if x != ['']:               
-    #             warnCount += 1
-
-    #     return warnCount
-    
-
-    # def banCheck():
-        
-    #     ruleNumbersSecond = worksheet.get_values(f'F{row}:F{row+20}')
-
-    #     if ruleNumbersSecond[0] == ['']:
-    #         return 0
-    #     li2 = []
-    #     banCount = 0
-    #     for x in ruleNumbersSecond:
-    #         if x not in li2:
-    #             li2.append(x)
-    #         else:
-    #             break
-    #     for x in li2:
-    #         if x != ['']:               
-    #             banCount += 1
-
-    #     return banCount
-        
-
-    # def testCheck(row):
-    #     fin = sh.sheet1.get(f'H{str(row)}')
-    #     if fin == []:
-    #         return '-'
-        
-    #     fin = fin[0]
-    #     fin = str(fin[0])
-    #     if fin == 'Да':
-    #         return 'Прошёл.'
-    #     elif fin == 'Нет':
-    #         return 'Не прошёл.'
-    #     else:
-    #         return fin
 
     infochat = ctx.channel_id # чат
     infochat = client.get_channel(infochat)
@@ -566,63 +472,6 @@ async def perma(ctx, игрок: str=None, правило: str=None, причи�
 
     def oldPlayer(embedOrWrite):
 
-        # def warnCheck():
-
-        #     ruleNumbers = worksheet.get_values(f'C{row}:C{row+20}')
-
-        #     try:
-        #         if ruleNumbers[0] == ['']:
-        #             return 0
-        #     except:
-        #         return 0
-            
-        #     li = []
-        #     warnCount = 0
-        #     for x in ruleNumbers:
-        #         if x not in li:
-        #             li.append(x)
-        #         else:
-        #             break
-        #     for x in li:
-        #         if x != ['']:               
-        #             warnCount += 1
-
-        #     return warnCount
-        
-
-        # def banCheck():
-            
-        #     ruleNumbersSecond = worksheet.get_values(f'F{row}:F{row+20}')
-
-        #     if ruleNumbersSecond[0] == ['']:
-        #         return 0
-        #     li2 = []
-        #     banCount = 0
-        #     for x in ruleNumbersSecond:
-        #         if x not in li2:
-        #             li2.append(x)
-        #         else:
-        #             break
-        #     for x in li2:
-        #         if x != ['']:               
-        #             banCount += 1
-
-        #     return banCount
-            
-
-        # def testCheck(row):
-        #     fin = sh.sheet1.get(f'H{str(row)}')
-        #     if fin == []:
-        #         return '-'
-            
-        #     fin = fin[0]
-        #     fin = str(fin[0])
-        #     if fin == 'Да':
-        #         return 'Прошёл.'
-        #     elif fin == 'Нет':
-        #         return 'Не прошёл.'
-        #     else:
-        #         return fin
             
 
 
@@ -887,60 +736,6 @@ async def giveTest(ctx, игрок: str=None, выбор: app_commands.Choice[in
     col = cell.col
 
         
-    # def warnCheck():
-
-    #     ruleNumbers = worksheet.get_values(f'C{row}:C{row+20}')
-
-    #     if ruleNumbers[0] == ['']:
-    #         return 0
-    #     li = []
-    #     warnCount = 0
-    #     for x in ruleNumbers:
-    #         if x not in li:
-    #             li.append(x)
-    #         else:
-    #             break
-    #     for x in li:
-    #         if x != ['']:               
-    #             warnCount += 1
-
-    #     return warnCount
-    
-
-    # def banCheck():
-        
-    #     ruleNumbersSecond = worksheet.get_values(f'F{row}:F{row+20}')
-
-    #     if ruleNumbersSecond[0] == ['']:
-    #         return 0
-    #     li2 = []
-    #     banCount = 0
-    #     for x in ruleNumbersSecond:
-    #         if x not in li2:
-    #             li2.append(x)
-    #         else:
-    #             break
-    #     for x in li2:
-    #         if x != ['']:               
-    #             banCount += 1
-
-    #     return banCount
-        
-
-    # def testCheck(row):
-    #     fin = sh.sheet1.get(f'H{str(row)}')
-    #     if fin == []:
-    #         return '-'
-        
-    #     fin = fin[0]
-    #     fin = str(fin[0])
-    #     if fin == 'Да':
-    #         return 'Прошёл.'
-    #     elif fin == 'Нет':
-    #         return 'Не прошёл.'
-    #     else:
-    #         return fin
-        
     banCount = checkForBan(row, worksheet)
     warnCount = checkForWarn(row, worksheet)
     embed = getProfileFromSheet(user, warnCount, banCount, checkForTest(row, sh), row, col, worksheet)
@@ -986,38 +781,6 @@ async def giveTest(ctx, игрок: str=None, выбор: app_commands.Choice[in
 
 
         member = msgAuthor
-
-        # def checkRole():
-        #     echoRole = discord.utils.find(lambda r: r.name == '☄️', ctx.guild.roles)
-        #     if echoRole in ctx.user.roles:
-        #         return discord.Colour.blue()
-        #     else:
-        #         return discord.Colour.red()
-            
-        # def checkFooter():
-        #     echoRole = discord.utils.find(lambda r: r.name == '☄️', ctx.guild.roles)
-        #     if echoRole in ctx.user.roles:
-        #         return f'{ctx.user.id}, echo'
-        #     else:
-        #         return f'{ctx.user.id}, ???'
-
-
-        # embed = discord.Embed(
-        #     colour=checkRole(), 
-        #     #description=reason, 
-        #     title=f'Обновил тест игроку {user}'
-        # )
-        # embed.set_author(name=ctx.user)
-
-        # embed.add_field(name="Игрок", value=user)
-        # embed.add_field(name="Тест", value=choose.name)
-
-        # embed.set_thumbnail(url=member.avatar.url)
-
-        # embed.set_footer(text=f'{checkFooter()}, {row}')
-
-
-        # await logs.send(embed=embed)
 
         await msgToLOGG(ctx, worksheet, user, msgAuthor, choose=choose)
 
@@ -1201,45 +964,6 @@ async def change_color(ctx, ник: str=None, столбик: app_commands.Choic
             colorUserArg += 'Ban'
             punishWord = 'бан'
 
-
-    # def warnCheck():
-
-    #     ruleNumbers = worksheet.get_values(f'C{row}:C{row+20}')
-
-    #     if ruleNumbers[0] == ['']:
-    #         return 0
-    #     li = []
-    #     warnCount = 0
-    #     for x in ruleNumbers:
-    #         if x not in li:
-    #             li.append(x)
-    #         else:
-    #             break
-    #     for x in li:
-    #         if x != ['']:               
-    #             warnCount += 1
-
-    #     return warnCount
-    
-    # def banCheck():
-        
-    #     ruleNumbersSecond = worksheet.get_values(f'F{row}:F{row+20}')
-
-    #     if ruleNumbersSecond[0] == ['']:
-    #         return 0
-    #     li2 = []
-    #     banCount = 0
-    #     for x in ruleNumbersSecond:
-    #         if x not in li2:
-    #             li2.append(x)
-    #         else:
-    #             break
-    #     for x in li2:
-    #         if x != ['']:               
-    #             banCount += 1
-
-    #     return banCount
-    
 
     async def checkLenRule():
         if punish.value == 2:
@@ -1710,7 +1434,6 @@ async def second_command(ctx, ник: str=None, наказание: app_commands
         if punish.value == 1:
             warnNullOrNot = worksheet.get_values(f'D{row}:D{row+20}')
             
-            #print(warnNullOrNot[0])
             needToAdd = 0
 
             try:
@@ -1727,7 +1450,6 @@ async def second_command(ctx, ник: str=None, наказание: app_commands
                 worksheet.insert_note(f'D{row+needToAdd}', f'{reason}')
 
             elif warnCount < needToAdd:
-                print('he4re')
                 addField(warnCount)
                 worksheet.update(f'C{row+warnCount}', str(f'{warnCount+1}')) # testt
                 worksheet.update(f'D{row+warnCount}', str(f'Правило {rule}'))
@@ -1744,7 +1466,6 @@ async def second_command(ctx, ник: str=None, наказание: app_commands
                     worksheet.insert_note(f'D{row+needToAdd}', f'{reason}')
                 else:
                     addField(warnCount)
-                    print('he1re')
                     worksheet.update(f'C{row+warnCount}', str(f'{warnCount+1}')) # testt
                     worksheet.update(f'D{row+needToAdd}', str(f'Правило {rule}'))
                     worksheet.insert_note(f'D{row+needToAdd}', f'{reason}')
@@ -1800,72 +1521,6 @@ async def second_command(ctx, ник: str=None, наказание: app_commands
                 row = cell.row
                 col = cell.col
 
-
-                # def warnCheck():
-
-                #     ruleNumbers = worksheet.get_values(f'C{row}:C{row+20}')
-
-                #     try:
-                #         if ruleNumbers[0] == ['']:
-                #             return 0
-                #     except:
-                #         return 0
-                    
-                #     li = []
-                #     warnCount = 0
-                #     for x in ruleNumbers:
-                #         if x not in li:
-                #             li.append(x)
-                #         else:
-                #             break
-                #     for x in li:
-                #         if x != ['']:               
-                #             warnCount += 1
-
-                #     return warnCount
-                
-                
-
-                # def banCheck():
-                    
-                #     ruleNumbersSecond = worksheet.get_values(f'F{row}:F{row+20}')
-
-                #     try:
-                #         if ruleNumbersSecond[0] == ['']:
-                #             return 0
-                #     except:
-                #         return 0
-
-                #     if ruleNumbersSecond[0] == ['']:
-                #         return 0
-                #     li2 = []
-                #     banCount = 0
-                #     for x in ruleNumbersSecond:
-                #         if x not in li2:
-                #             li2.append(x)
-                #         else:
-                #             break
-                #     for x in li2:
-                #         if x != ['']:               
-                #             banCount += 1
-
-                #     return banCount
-                    
-
-                # def testCheck(row):
-                #     fin = sh.sheet1.get(f'H{str(row)}')
-                #     if fin == []:
-                #         return '-'
-                    
-                #     fin = fin[0]
-                #     fin = str(fin[0])
-                #     if fin == 'Да':
-                #         return 'Прошёл.'
-                #     elif fin == 'Нет':
-                #         return 'Не прошёл.'
-                #     else:
-                #         return fin
-
                 infochat = ctx.channel_id # чат
                 infochat = client.get_channel(infochat)
                 msg = await infochat.send(f'🔄 загружаю данные о {user}..')
@@ -1876,8 +1531,6 @@ async def second_command(ctx, ник: str=None, наказание: app_commands
                 infochat = ctx.channel_id # чат
                 infochat = client.get_channel(infochat)
                 msg = await infochat.send(f'🔄 ожидай..')
-        # infochat = ctx.channel_id # чат
-        # infochat = client.get_channel(infochat)
         trueUser = ctx.user
 
 
@@ -1905,48 +1558,6 @@ async def second_command(ctx, ник: str=None, наказание: app_commands
 
             logs = client.get_channel(LOGS)
 
-            # try:
-            #     cell = worksheet.find(user)
-            #     row = cell.row
-            #     col = cell.col
-            # except AttributeError:
-            #     row = '-'
-            #     col = '-'
-
-
-            # member = msgAuthor
-
-            # def checkRole():
-            #     echoRole = discord.utils.find(lambda r: r.name == '☄️', ctx.guild.roles)
-            #     if echoRole in ctx.user.roles:
-            #         return discord.Colour.blue()
-            #     else:
-            #         return discord.Colour.red()
-                
-            # def checkFooter():
-            #     echoRole = discord.utils.find(lambda r: r.name == '☄️', ctx.guild.roles)
-            #     if echoRole in ctx.user.roles:
-            #         return f'{ctx.user.id}, echo'
-            #     else:
-            #         return f'{ctx.user.id}, ???'
-
-
-            # embed = discord.Embed(
-            #     colour=checkRole(), 
-            #     description=reason, 
-            #     title=f'Выдал новый {punish.name} {punishEmoji}'
-            # )
-            # embed.set_author(name=ctx.user)
-
-            # embed.add_field(name="Игрок", value=user)
-            # embed.add_field(name="Правило", value=rule)
-
-            # embed.set_thumbnail(url=member.avatar.url)
-
-            # embed.set_footer(text=f'{checkFooter()}, {row}')
-
-
-            # await logs.send(embed=embed)
             await msgToLOGG(ctx, worksheet, user, msgAuthor, rule=rule, reason=reason)
             emoji = (reaction.emoji)
             emoji = str(emoji)
@@ -2007,15 +1618,10 @@ async def second_command(ctx, ник: str=None, наказание: app_commands
 
     if punish.value == 1:
         punishEmoji = '⚠️'
-    elif punish.value == 2: # punish.name == 'ban':
+    elif punish.value == 2:
         punishEmoji = '⛔'
     else:
         punishEmoji = '❓'
-
-
-    #if float(rule) not in [3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7, 3.8, 3.9]:
-
-
     
 
     try:
@@ -2037,17 +1643,14 @@ async def second_command(ctx, ник: str=None, наказание: app_commands
     if user in values_list:
         user = f'{user}'
         await ctx.response.defer()
-        #await ctx.response.send_message(f"✅ Игрок `{user}` уже есть в табличке.")
         await nextStep('old')
     elif (f'{user} ' in values_list):
         await ctx.response.defer()
         user = f'{user} '
-        #await ctx.response.send_message(f"✅ Игрок `{user}` уже есть в табличке.")
         await nextStep('old')
     elif (f'{user}  ' in values_list):
         await ctx.response.defer()
         user = f'{user}  '
-        #await ctx.response.send_message(f"✅ Игрок `{user}` уже есть в табличке.")
         await nextStep('old')
     else:
         await ctx.response.send_message(f"⚠️ Игрок `{user}` не найден.")
