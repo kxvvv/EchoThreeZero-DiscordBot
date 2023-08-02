@@ -24,8 +24,30 @@ client = commands.Bot(command_prefix=PREFIX, intents=intents, help_command=None)
 # worksheet = sh.sheet1
 
 
+
 ########################
 
+# listRules = []
+# for x in rule:
+#     if x != ',' and x != ' ':
+#         if x not in listRules:
+#             listRules.append(x)
+#             print(x)
+
+
+# for x in listRules:
+#     try:
+#         if int(x) not in [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]:
+#             print('break int')
+#             zxc = 1
+#     except:
+#         try:
+#             if float(x) not in [3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7, 3.8, 3.9]:
+#                 print('break float')
+#                 zxc = 1
+#         except:
+#             print('break float 2')
+#             zxc = 1
 
 
 ########################
@@ -416,14 +438,50 @@ async def perma(ctx, игрок: str=None, правило: str=None, причи�
         await ctx.response.send_message(f"⚠️ Игрока `{user}` нет в таблице.")
         playerIsNew = True
         
+    # try:
+    #     if int(rule) not in [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]:
+    #         await ctx.response.send_message('❌ Не корректно выбрано правило, используй только **одно число.**')
+    #         return
+    # except:
+    #     try:
+    #         if float(rule) not in [3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7, 3.8, 3.9]:
+    #             await ctx.response.send_message('❌ Не корректно выбрано правило, используй правильное **дробное число.**')
+    #     except:
+    #         await ctx.response.send_message('❌ Не корректно выбрано правило, **используй числа.**')
+    #         return
+
+
+    # listRules = []
+    # for x in rule:
+    #     if x != ',' and x != ' ':
+    #         if x not in listRules:
+    #             listRules.append(x)
+    #             print(x)
+
+
+    # for x in listRules:
+    #     try:
+    #         if int(x) not in [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]:
+    #             await ctx.response.send_message('❌ Не корректно выбрано правило, используй только **одно число.**')
+    #             return
+    #     except:
+    #         try:
+    #             if float(x) not in [3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7, 3.8, 3.9]:
+    #                 await ctx.response.send_message('❌ Не корректно выбрано правило, используй правильное **дробное число.**')
+    #                 return
+    #         except:
+    #             await ctx.response.send_message('❌ Не корректно выбрано правило, **используй числа.**')
+    #             return
+
     try:
-        if int(rule) not in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]:
-            await ctx.response.send_message('❌ Не корректно выбрано правило, используй только **одно число.**')
+        if 'Правило' in rule or 'правило' in rule:
+            await ctx.response.send_message('❌ Не корректно выбрано правило, **используй только числа.**')
             return
     except:
-        await ctx.response.send_message('❌ Не корректно выбрано правило, **используй числа.**')
+        await ctx.response.send_message('❌ Не корректно выбрано правило, **используй только числа.**')
         return
-        
+
+
     if reason == None:
         await ctx.response.send_message('❌ Не выбрана причина.')
         return
@@ -1184,6 +1242,8 @@ async def report(ctx, user: str=None):
 async def profile(ctx, модератор: discord.Member = None):
 
     user = модератор
+    if user == None:
+        user = ctx.user
     
 
     def checkRole():
@@ -1641,17 +1701,35 @@ async def second_command(ctx, ник: str=None, наказание: app_commands
         punishEmoji = '❓'
     
 
+    # listRules = []
+    # for x in rule:
+    #     if x != ',' and x != ' ':
+    #         if x not in listRules:
+    #             listRules.append(x)
+
+
+    # for x in listRules:
+    #     try:
+    #         if int(x) not in [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]:
+    #             await ctx.response.send_message('❌ Не корректно выбрано правило, используй только **одно число.**')
+    #             return
+    #     except:
+    #         try:
+    #             if float(x) not in [3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7, 3.8, 3.9]:
+    #                 await ctx.response.send_message('❌ Не корректно выбрано правило, используй правильное **дробное число.**')
+    #                 return
+    #         except:
+    #             await ctx.response.send_message('❌ Не корректно выбрано правило, **используй числа.**')
+    #             return
+
+
     try:
-        if int(rule) not in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]:
-            await ctx.response.send_message('❌ Не корректно выбрано правило, используй только **одно число.**')
+        if 'Правило' in rule or 'правило' in rule:
+            await ctx.response.send_message('❌ Не корректно выбрано правило, **используй только числа.**')
             return
     except:
-        try:
-            if float(rule) not in [3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7, 3.8, 3.9]:
-                await ctx.response.send_message('❌ Не корректно выбрано правило, используй правильное **дробное число.**')
-        except:
-            await ctx.response.send_message('❌ Не корректно выбрано правило, **используй числа.**')
-            return
+        await ctx.response.send_message('❌ Не корректно выбрано правило, **используй только числа.**')
+        return
 
 
 
