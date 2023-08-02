@@ -622,6 +622,14 @@ async def perma(ctx, игрок: str=None, правило: str=None, причи�
                     oldPlayer('write')
                     await msg.edit(content=f'**✅ Успешно вписал ПЕРМУ старому игроку!**')
                 await msgToLOGG(ctx, worksheet, user, msgAuthor, rule=rule, reason=reason, isPerma=True)
+                profile = await get_user_profile(ctx.user.id)
+                user_id = ctx.user.id
+                new_value = profile['ban'] + 1
+                parameter = 'ban'
+                await set_user_profile(user_id, parameter, new_value)
+
+                logs = client.get_channel(LOGS)
+                await logs.send(f'⛔ {ctx.user} записал себе банчик')
             except:
                 await msg.edit(content='❌ Произошла техническая ошибка, пингуй идиота ксова.')
         else:
