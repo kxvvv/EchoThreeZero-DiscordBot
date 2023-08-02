@@ -42,10 +42,10 @@ async def on_ready():
     await client.change_presence(status=discord.Status.online, activity = discord.Activity(name = f'на всех свысока.', type = discord.ActivityType.watching))
 
 
-# @client.listen("on_command_error")
-# async def cooldown_message(error):
-#     errorlog = client.get_channel(ERROR_ROOM) # чат
-#     await errorlog.send(f"```\n\n\n\n\n\n_error_\n\n{error}```")
+@client.listen("on_command_error")
+async def cooldown_message(ctx, error):
+    errorlog = client.get_channel(ERROR_ROOM) # чат
+    await errorlog.send(f"```\n\n\n\n\n\n_error_\n\n{error}```")
 
 
 # @client.command()
@@ -93,8 +93,8 @@ async def set_user_profile(user_id, parameter, new_value):
 
 
 def joinToSheet():
-    gc = gspread.service_account(filename='secretkey.json')
-    sh = gc.open("копия 2.0")
+    gc = gspread.service_account(filename='secretkey.json') #test
+    sh = gc.open("копия 2.0") #test
     worksheet = sh.sheet1
     return gc, sh, worksheet
 
@@ -102,7 +102,16 @@ def joinToSheet():
 def getProfileFromSheet(user, warnCheck, banCheck, testCheck, row, col, worksheet):
 
     def colorStatus():
-        colour=discord.Colour.dark_gold()
+        mainCount = banCheck + warnCheck
+        colour = None
+        if mainCount >= 6:
+            colour=discord.Colour.green()
+        if mainCount >= 12:
+            colour=discord.Colour.yellow()
+        if mainCount >= 18:
+            colour=discord.Colour.red()
+        if colour == None:
+            colour=discord.Colour(0xffffff)
         return colour
 
 
@@ -226,7 +235,7 @@ def checkForTest(row, sh):
         return fin
     
 #await msgToLOGG(ctx, worksheet, user, msgAuthor, reason)
-async def msgToLOGG(ctx, worksheet, user, msgAuthor, clrColor, clrColum, clrNumber, choose=None, rule=None, reason=None, isPerma=False, isColor=False):
+async def msgToLOGG(ctx, worksheet, user, msgAuthor, clrColor=None, clrColum=None, clrNumber=None, choose=None, rule=None, reason=None, isPerma=False, isColor=False):
 
     logs = client.get_channel(LOGS)
 
@@ -256,7 +265,7 @@ async def msgToLOGG(ctx, worksheet, user, msgAuthor, clrColor, clrColum, clrNumb
             return f'{ctx.user.id}, ???'
         
     def checkForAction():
-        if perma == True:
+        if isPerma == True:
             return f'Записал ПЕРМУ игроку.'
         elif isColor == True:
             return f'Поменял цвет игроку'
