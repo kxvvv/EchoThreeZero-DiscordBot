@@ -1907,6 +1907,10 @@ async def on_message(message):
             await message.channel.send("фу как некультурно")
 
 
+            
+        await client.process_commands(message)
+
+
         
         
                    ##### ######   
