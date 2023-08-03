@@ -147,8 +147,8 @@ async def getProfileFromSheet(user, warnCheck, banCheck, testCheck, row, col, wo
 
 
 
-    warnNullOrNot = worksheet.get_values(f'D{row}:D{row+20}')
-    banNullOrNot = worksheet.get_values(f'G{row}:G{row+20}')
+    warnNullOrNot = worksheet.get_values(f'D{row}:D{row+50}')
+    banNullOrNot = worksheet.get_values(f'G{row}:G{row+50}')
     listWarn = ''
     listBan = ''
 
@@ -191,7 +191,7 @@ async def getProfileFromSheet(user, warnCheck, banCheck, testCheck, row, col, wo
 
 def checkForWarn(row, worksheet):
 
-    ruleNumbers = worksheet.get_values(f'C{row}:C{row+20}')
+    ruleNumbers = worksheet.get_values(f'C{row}:C{row+50}')
 
     try:
         if ruleNumbers[0] == ['']:
@@ -216,7 +216,7 @@ def checkForWarn(row, worksheet):
 
 def checkForBan(row, worksheet):
     
-    ruleNumbersSecond = worksheet.get_values(f'F{row}:F{row+20}')
+    ruleNumbersSecond = worksheet.get_values(f'F{row}:F{row+50}')
 
     try:
         if ruleNumbersSecond[0] == ['']:
@@ -588,7 +588,7 @@ async def perma(ctx, игрок: str=None, правило: str=None, причи�
             worksheet.update(f'B{row}', user)
             playerFormat()
 
-            banNullOrNot = worksheet.get_values(f'G{row}:G{row+20}')
+            banNullOrNot = worksheet.get_values(f'G{row}:G{row+50}')
             
             needToAdd = 0
             if banNullOrNot[0] != ['']:
@@ -1318,61 +1318,6 @@ async def first_command(ctx, игрок: str = None):
     row = cell.row
     col = cell.col
 
-        
-    # def warnCheck():
-
-    #     ruleNumbers = worksheet.get_values(f'C{row}:C{row+20}')
-
-    #     if ruleNumbers[0] == ['']:
-    #         return 0
-    #     li = []
-    #     warnCount = 0
-    #     for x in ruleNumbers:
-    #         if x not in li:
-    #             li.append(x)
-    #         else:
-    #             break
-    #     for x in li:
-    #         if x != ['']:               
-    #             warnCount += 1
-
-    #     return warnCount
-    
-
-    # def banCheck():
-        
-    #     ruleNumbersSecond = worksheet.get_values(f'F{row}:F{row+20}')
-
-    #     if ruleNumbersSecond[0] == ['']:
-    #         return 0
-    #     li2 = []
-    #     banCount = 0
-    #     for x in ruleNumbersSecond:
-    #         if x not in li2:
-    #             li2.append(x)
-    #         else:
-    #             break
-    #     for x in li2:
-    #         if x != ['']:               
-    #             banCount += 1
-
-    #     return banCount
-        
-
-    # def testCheck(row):
-    #     fin = sh.sheet1.get(f'H{str(row)}')
-    #     if fin == []:
-    #         return '-'
-        
-    #     fin = fin[0]
-    #     fin = str(fin[0])
-    #     if fin == 'Да':
-    #         return 'Прошёл.'
-    #     elif fin == 'Нет':
-    #         return 'Не прошёл.'
-    #     else:
-    #         return fin
-
 
     embed = await getProfileFromSheet(user, checkForWarn(row, worksheet), checkForBan(row, worksheet), checkForTest(row, sh), row, col, worksheet, UserWarnBan='User')
 
@@ -1477,8 +1422,8 @@ async def second_command(ctx, ник: str=None, наказание: app_commands
 
             return banCount
 
-        ruleNumbers = worksheet.get_values(f'C{row}:C{row+20}')
-        ruleNumbersSecond = worksheet.get_values(f'F{row}:F{row+20}')
+        ruleNumbers = worksheet.get_values(f'C{row}:C{row+50}')
+        ruleNumbersSecond = worksheet.get_values(f'F{row}:F{row+50}')
 
         try:
             warnCount = warnCountSystem()
@@ -1503,7 +1448,7 @@ async def second_command(ctx, ник: str=None, наказание: app_commands
         cell = worksheet.find(user)
         row = cell.row
         if punish.value == 1:
-            warnNullOrNot = worksheet.get_values(f'D{row}:D{row+20}')
+            warnNullOrNot = worksheet.get_values(f'D{row}:D{row+50}')
             
             needToAdd = 0
 
@@ -1552,7 +1497,7 @@ async def second_command(ctx, ник: str=None, наказание: app_commands
 
             
         if punish.value == 2:
-            banNullOrNot = worksheet.get_values(f'G{row}:G{row+20}')
+            banNullOrNot = worksheet.get_values(f'G{row}:G{row+50}')
             
             needToAdd = 0
             try:
@@ -1705,27 +1650,6 @@ async def second_command(ctx, ник: str=None, наказание: app_commands
         punishEmoji = '❓'
     
 
-    # listRules = []
-    # for x in rule:
-    #     if x != ',' and x != ' ':
-    #         if x not in listRules:
-    #             listRules.append(x)
-
-
-    # for x in listRules:
-    #     try:
-    #         if int(x) not in [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]:
-    #             await ctx.response.send_message('❌ Не корректно выбрано правило, используй только **одно число.**')
-    #             return
-    #     except:
-    #         try:
-    #             if float(x) not in [3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7, 3.8, 3.9]:
-    #                 await ctx.response.send_message('❌ Не корректно выбрано правило, используй правильное **дробное число.**')
-    #                 return
-    #         except:
-    #             await ctx.response.send_message('❌ Не корректно выбрано правило, **используй числа.**')
-    #             return
-
 
     try:
         if 'Правило' in rule or 'правило' in rule:
@@ -1758,139 +1682,6 @@ async def second_command(ctx, ник: str=None, наказание: app_commands
 
 
 
-
-
-
-
-
-# def laughtornot(xd, noxd):
-#     xdsym = noxd * 70 / 100
-
-
-#     if 6 > noxd:
-#         return
-#     if xdsym < xd:
-#         laughchance = random.randint(1, 100)
-#         if laughchance >= 25: # шанс
-#             return
-#         else:
-#             symbols = ['Х', 'А', 'П', 'х', 'а', 'ъ', ]
-#             lenn = random.randint(12, 44)
-#             result = ' '
-#             result_set = set() # инициализация множества
-#             for i in range(lenn):
-#                 n = random.randint(0, len(symbols) - 1)
-#                 element = str(symbols[n])
-#                 result += element
-#             return result
-        
-
-# @client.event
-# async def on_message(message):
-#     if message.author is not message.content.startswith("!"):
-#         message.content = message.content.lower()
-#         if message.content == client.user:
-#             return
-#         if message.author == client.user:
-#             return
-
-#         if message.content.startswith('ха') or message.content.startswith('ах') or message.content.startswith('хп') or message.content.startswith('пх') or message.content.startswith('па') or message.content.startswith('ап'):
-
-#             # with open("blacklist.json", "r") as file:
-#             #     blacklist = json.load(file)
-#             # if message.content in blacklist:
-#             #     return
-
-#             score = 0
-#             alltext = 0
-#             for x in message.content:
-#                 alltext+=1
-#                 if x == 'х':
-#                     score+=1
-#                 if x == 'а':
-#                     score+=1
-#                 if x == 'п':
-#                     score+=1
-
-#             xd = score
-#             noxd = alltext
-
-
-#             result = laughtornot(xd, noxd)
-
-#             if result is not None:
-#                 await message.channel.send(result)
-#             else:
-#                 return
-
-
-
-#         if message.content.startswith("пост сдал"):
-#             await message.channel.send("пост принял")
-#         if message.content.startswith("пост принял"):
-#             await message.channel.send("пост сдал")
-#         if message.content.startswith("опа"):
-#             await message.channel.send("хуёпа")
-#         if message.content.startswith("я не хочу"):
-#             await message.channel.send("а придется")
-
-
-#         if message.content.startswith("аша"):
-#             await message.channel.send("хуяша")
-#         if message.content.startswith("ксов"):
-#             await message.channel.send("хуесов")
-#         if message.content.startswith("нитро"):
-#             await message.channel.send("хуитро")
-#         if message.content.startswith("эвони"):
-#             await message.channel.send("хуэвони")
-#         if message.content.startswith("евони"):
-#             await message.channel.send("хуевони")
-#         if message.content.startswith("ксено"):
-#             await message.channel.send("хуено")
-#         if message.content.startswith("алекс"):
-#             await message.channel.send("хуялекс")
-#         if message.content.startswith("карп"):
-#             await message.channel.send("хуярп")
-#         if message.content.startswith("олу"):
-#             await message.channel.send("хуйолу")
-#         if message.content.startswith("резоми"):
-#             await message.channel.send("хуеоми")
-#         if message.content.startswith("разбойник"):
-#             await message.channel.send("хуйейник")
-#         if message.content.startswith("грокс"):
-#             await message.channel.send("хуёкс")
-#         if message.content.startswith("катюха"):
-#             await message.channel.send("хуй те в ухо")
-#         if message.content.startswith("катя"):
-#             await message.channel.send("хуятя")
-#         if message.content.startswith("эхо"):
-#             await message.channel.send("лучший сервак")
-#         if message.content.startswith("некиш"):
-#             await message.channel.send("хуетиш")
-#         if message.content.startswith("елена"):
-#             await message.channel.send("не хуй а пена")
-#         if message.content.startswith("слава"):
-#             await message.channel.send("хуява")
-#         if message.content.startswith("славик"):
-#             await message.channel.send("хуявик")
-#         if 'бот' in message.content:
-#             await message.channel.send('чё')
-#         if "не хочу" in message.content:
-#             await message.channel.send("а придется")
-#         if "представь" in message.content:
-#             await message.channel.send("представил")
-#         if 'пошел нахуй' in message.content:
-#             await message.channel.send("фу как некультурно")
-#         if 'пошёл нахуй' in message.content:
-#             await message.channel.send("фу как некультурно")
-#         if 'нахуй пошел' in message.content:
-#             await message.channel.send("фу как некультурно")
-#         if 'нахуй пошёл' in message.content:
-#             await message.channel.send("фу как некультурно")
-
-
-
-#         await client.process_commands(message)
 
 
         
