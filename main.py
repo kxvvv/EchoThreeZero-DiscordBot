@@ -37,7 +37,7 @@ client = commands.Bot(command_prefix=PREFIX, intents=intents, help_command=None)
 
 @client.event
 async def on_ready():
-    print(f"Я СНОВА ЖИВУ - {client.user}")
+    print(f"Здарова ёпт✌️, это я - {client.user}")
     await client.tree.sync(guild=discord.Object(id=GUILD)) # синхорнизация
     await client.change_presence(status=discord.Status.online, activity = discord.Activity(name = f'на всех свысока.', type = discord.ActivityType.watching))
 
@@ -1224,10 +1224,11 @@ async def report(ctx, user: str=None):
 
 
     #вавден
-    echoRole = discord.utils.find(lambda r: r.name == 'вавден', ctx.guild.roles)
+    echoRole = discord.utils.find(lambda r: r.name == '✌️', ctx.guild.roles)
     if echoRole not in ctx.user.roles:
         await ctx.response.send_message('❌ У Вас нет доступа к данной команде.')
         return
+    
 
     if user == None:
         await ctx.response.send_message('❌ Не указан модератор.')
