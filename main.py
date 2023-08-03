@@ -24,30 +24,8 @@ client = commands.Bot(command_prefix=PREFIX, intents=intents, help_command=None)
 # worksheet = sh.sheet1
 
 
-
 ########################
 
-# listRules = []
-# for x in rule:
-#     if x != ',' and x != ' ':
-#         if x not in listRules:
-#             listRules.append(x)
-#             print(x)
-
-
-# for x in listRules:
-#     try:
-#         if int(x) not in [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]:
-#             print('break int')
-#             zxc = 1
-#     except:
-#         try:
-#             if float(x) not in [3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7, 3.8, 3.9]:
-#                 print('break float')
-#                 zxc = 1
-#         except:
-#             print('break float 2')
-#             zxc = 1
 
 
 ########################
@@ -121,24 +99,45 @@ def joinToSheet():
     return gc, sh, worksheet
 
 
-def getProfileFromSheet(user, warnCheck, banCheck, testCheck, row, col, worksheet):
+async def whatColorYouNeed(row, UserWarnBan='None'):
 
-    def colorStatus():
-        mainCount = banCheck + warnCheck
-        colour = None
-        if mainCount >= 6:
-            colour=discord.Colour.green()
-        if mainCount >= 12:
-            colour=discord.Colour.yellow()
-        if mainCount >= 18:
-            colour=discord.Colour.red()
-        if colour == None:
-            colour=discord.Colour(0xffffff)
+    if UserWarnBan == 'None':
+        return 'None'
+
+    whatColor = 'whatColor'
+    whatColor += UserWarnBan
+
+    gc, sh, worksheet = joinToSheet()
+
+    worksheet.format(f'A{row}', {'textFormat': {'foregroundColor': {'red': 255/255, 'green': 255/255, 'blue': 255/255}}})
+    worksheet.update(f'A{row}', whatColor)
+
+    await asyncio.sleep(3)
+
+    thisColor = worksheet.get(f'A{row}')
+    worksheet.update(f'A{row}', '')
+
+    return thisColor
+
+async def getProfileFromSheet(user, warnCheck, banCheck, testCheck, row, col, worksheet, UserWarnBan):
+
+    async def colorStatus():
+        thisColor = await whatColorYouNeed(row=row, UserWarnBan='User')
+        thisColor = thisColor[0]
+        thisColor = thisColor[0]
+        color = thisColor
+
+        h = color.lstrip('#')
+
+        rgb = tuple(int(h[i:i+2], 16) for i in (0, 2, 4))
+
+        colour=discord.Colour.from_rgb(rgb[0], rgb[1], rgb[2])
+
         return colour
 
 
     embed = discord.Embed(
-        colour=colorStatus(),
+        colour=await colorStatus(),
         #description="Информация с таблицы", 
         title=u"Информация с таблицы"
     )
@@ -256,6 +255,9 @@ def checkForTest(row, sh):
     else:
         return fin
     
+
+
+    
 #await msgToLOGG(ctx, worksheet, user, msgAuthor, reason)
 async def msgToLOGG(ctx, worksheet, user, msgAuthor, clrColor=None, clrColum=None, clrNumber=None, choose=None, rule=None, reason=None, isPerma=False, isColor=False):
 
@@ -343,6 +345,7 @@ async def msgToLOGG(ctx, worksheet, user, msgAuthor, clrColor=None, clrColum=Non
     await logs.send(embed=embed)
 
 
+
 @client.tree.command(name = "выдать-заметку", description= 'записывает заметку игроку в таблице', guild=discord.Object(id=GUILD))
 async def note(ctx, игрок: str=None, причина: str=None):
 
@@ -379,7 +382,7 @@ async def note(ctx, игрок: str=None, причина: str=None):
     col = cell.col
 
 
-    embed = getProfileFromSheet(user, checkForWarn(row, worksheet), checkForBan(row, worksheet), checkForTest(row, sh), row, col, worksheet)
+    embed = await getProfileFromSheet(user, checkForWarn(row, worksheet), checkForBan(row, worksheet), checkForTest(row, sh), row, col, worksheet, UserWarnBan='User')
     await asyncio.sleep(3)
     await ctx.followup.send(embed=embed)
 
@@ -537,7 +540,7 @@ async def perma(ctx, игрок: str=None, правило: str=None, причи�
 
 
 
-    def oldPlayer(embedOrWrite):
+    async def oldPlayer(embedOrWrite):
 
             
 
@@ -552,7 +555,7 @@ async def perma(ctx, игрок: str=None, правило: str=None, причи�
 
         if embedOrWrite == 'embed':
             warnCount = checkForWarn(row, worksheet)
-            embed = getProfileFromSheet(user, warnCount, banCount, checkForTest(row, sh), row, col, worksheet)
+            embed = await getProfileFromSheet(user, warnCount, banCount, checkForTest(row, sh), row, col, worksheet)
             return embed
 
         if embedOrWrite == 'write':
@@ -599,6 +602,7 @@ async def perma(ctx, игрок: str=None, правило: str=None, причи�
             if banCount > needToAdd:
                 worksheet.update(f'G{row+needToAdd}', str(f'PERMA: Правило {rule}'))
                 worksheet.insert_note(f'G{row+needToAdd}', f'{reason}')
+                worksheet.format(f'G{row+needToAdd}', {'textFormat': {'strikethrough': False}})
                 ruleFormat(needToAdd)
 
             elif banCount < needToAdd:
@@ -606,6 +610,7 @@ async def perma(ctx, игрок: str=None, правило: str=None, причи�
                 worksheet.update(f'F{row+banCount}', str(f'{banCount+1}')) # test
                 worksheet.update(f'G{row+banCount}', str(f'PERMA: Правило {rule}'))
                 worksheet.insert_note(f'G{row+banCount}', f'{reason}')
+                worksheet.format(f'G{row+banCount}', {'textFormat': {'strikethrough': False}})
                 ruleFormat(banCount)
 
             elif banCount == needToAdd:
@@ -613,17 +618,20 @@ async def perma(ctx, игрок: str=None, правило: str=None, причи�
                     worksheet.update(f'F{row+needToAdd}', str(f'1'))
                     worksheet.update(f'G{row+needToAdd}', str(f'PERMA: Правило {rule}'))
                     worksheet.insert_note(f'G{row+needToAdd}', f'{reason}')
+                    worksheet.format(f'G{row+needToAdd}', {'textFormat': {'strikethrough': False}})
                     ruleFormat(needToAdd)
                 elif banCount < mainCount:
                     worksheet.update(f'F{row+needToAdd}', str(f'{banCount+1}'))
                     worksheet.update(f'G{row+needToAdd}', str(f'PERMA: Правило {rule}'))
                     worksheet.insert_note(f'G{row+needToAdd}', f'{reason}')
+                    worksheet.format(f'G{row+needToAdd}', {'textFormat': {'strikethrough': False}})
                     ruleFormat(needToAdd)
                 else:
                     addField(banCount)
                     worksheet.update(f'F{row+banCount}', str(f'{banCount+1}')) # test
                     worksheet.update(f'G{row+needToAdd}', str(f'PERMA: Правило {rule}'))
                     worksheet.insert_note(f'G{row+needToAdd}', f'{reason}')
+                    worksheet.format(f'G{row+needToAdd}', {'textFormat': {'strikethrough': False}})
                     ruleFormat(needToAdd)
             return
 
@@ -813,7 +821,7 @@ async def giveTest(ctx, игрок: str=None, выбор: app_commands.Choice[in
         
     banCount = checkForBan(row, worksheet)
     warnCount = checkForWarn(row, worksheet)
-    embed = getProfileFromSheet(user, warnCount, banCount, checkForTest(row, sh), row, col, worksheet)
+    embed = await getProfileFromSheet(user, warnCount, banCount, checkForTest(row, sh), row, col, worksheet)
 
     await asyncio.sleep(3)
     await ctx.followup.send(embed=embed)
@@ -1382,7 +1390,7 @@ async def first_command(ctx, игрок: str = None):
     #         return fin
 
 
-    embed = getProfileFromSheet(user, checkForWarn(row, worksheet), checkForBan(row, worksheet), checkForTest(row, sh), row, col, worksheet)
+    embed = await getProfileFromSheet(user, checkForWarn(row, worksheet), checkForBan(row, worksheet), checkForTest(row, sh), row, col, worksheet, UserWarnBan='User')
 
     await asyncio.sleep(3)
     await ctx.followup.send(embed=embed)
@@ -1433,11 +1441,13 @@ async def second_command(ctx, ник: str=None, наказание: app_commands
             worksheet.update(f'C{row}', '1')
             worksheet.update(f'D{row}', str(f'Правило {rule}'))
             worksheet.insert_note(f'D{row}', f'{reason}')
+            worksheet.format(f'D{row}', {'textFormat': {'strikethrough': False}})
 
         if punish.value == 2:
             worksheet.update(f'F{row}', '1')
             worksheet.update(f'G{row}', str(f'Правило {rule}'))
             worksheet.insert_note(f'G{row}', f'{reason}')
+            worksheet.format(f'G{row}', {'textFormat': {'strikethrough': False}})
 
 
     
@@ -1525,27 +1535,32 @@ async def second_command(ctx, ник: str=None, наказание: app_commands
             if warnCount > needToAdd:
                 worksheet.update(f'D{row+needToAdd}', str(f'Правило {rule}'))
                 worksheet.insert_note(f'D{row+needToAdd}', f'{reason}')
+                worksheet.format(f'D{row+needToAdd}', {'textFormat': {'strikethrough': False}})
 
             elif warnCount < needToAdd:
                 addField(warnCount)
                 worksheet.update(f'C{row+warnCount}', str(f'{warnCount+1}')) # testt
                 worksheet.update(f'D{row+warnCount}', str(f'Правило {rule}'))
                 worksheet.insert_note(f'D{row+warnCount}', f'{reason}')
+                worksheet.format(f'D{row+warnCount}', {'textFormat': {'strikethrough': False}})
 
             elif warnCount == needToAdd:
                 if warnCount == 0 and needToAdd == 0:
                     worksheet.update(f'C{row+needToAdd}', str(f'1'))
                     worksheet.update(f'D{row+needToAdd}', str(f'Правило {rule}'))
                     worksheet.insert_note(f'D{row+needToAdd}', f'{reason}')
+                    worksheet.format(f'D{row+needToAdd}', {'textFormat': {'strikethrough': False}})
                 elif warnCount < mainCount:
                     worksheet.update(f'C{row+needToAdd}', str(f'{warnCount+1}'))
                     worksheet.update(f'D{row+needToAdd}', str(f'Правило {rule}'))
                     worksheet.insert_note(f'D{row+needToAdd}', f'{reason}')
+                    worksheet.format(f'D{row+needToAdd}', {'textFormat': {'strikethrough': False}})
                 else:
                     addField(warnCount)
                     worksheet.update(f'C{row+warnCount}', str(f'{warnCount+1}')) # testt
                     worksheet.update(f'D{row+needToAdd}', str(f'Правило {rule}'))
                     worksheet.insert_note(f'D{row+needToAdd}', f'{reason}')
+                    worksheet.format(f'D{row+needToAdd}', {'textFormat': {'strikethrough': False}})
             
             else:
                 print('это ПИЗДец')
@@ -1567,27 +1582,32 @@ async def second_command(ctx, ник: str=None, наказание: app_commands
             if banCount > needToAdd:
                 worksheet.update(f'G{row+needToAdd}', str(f'Правило {rule}'))
                 worksheet.insert_note(f'G{row+needToAdd}', f'{reason}')
+                worksheet.format(f'G{row+needToAdd}', {'textFormat': {'strikethrough': False}})
 
             elif banCount < needToAdd:
                 addField(banCount)
                 worksheet.update(f'F{row+banCount}', str(f'{banCount+1}')) # test
                 worksheet.update(f'G{row+banCount}', str(f'Правило {rule}'))
                 worksheet.insert_note(f'G{row+banCount}', f'{reason}')
+                worksheet.format(f'G{row+banCount}', {'textFormat': {'strikethrough': False}})
 
             elif banCount == needToAdd:
                 if banCount == 0 and needToAdd == 0:
                     worksheet.update(f'F{row+needToAdd}', str(f'1'))
                     worksheet.update(f'G{row+needToAdd}', str(f'Правило {rule}'))
                     worksheet.insert_note(f'G{row+needToAdd}', f'{reason}')
+                    worksheet.format(f'G{row+needToAdd}', {'textFormat': {'strikethrough': False}})
                 elif banCount < mainCount:
                     worksheet.update(f'F{row+needToAdd}', str(f'{banCount+1}'))
                     worksheet.update(f'G{row+needToAdd}', str(f'Правило {rule}'))
                     worksheet.insert_note(f'G{row+needToAdd}', f'{reason}')
+                    worksheet.format(f'G{row+needToAdd}', {'textFormat': {'strikethrough': False}})
                 else:
                     addField(banCount)
                     worksheet.update(f'F{row+banCount}', str(f'{banCount+1}')) # test
                     worksheet.update(f'G{row+needToAdd}', str(f'Правило {rule}'))
                     worksheet.insert_note(f'G{row+needToAdd}', f'{reason}')
+                    worksheet.format(f'G{row+needToAdd}', {'textFormat': {'strikethrough': False}})
 
 
 
@@ -1601,7 +1621,7 @@ async def second_command(ctx, ник: str=None, наказание: app_commands
                 infochat = ctx.channel_id # чат
                 infochat = client.get_channel(infochat)
                 msg = await infochat.send(f'🔄 загружаю данные о {user}..')
-                embed = getProfileFromSheet(user, checkForWarn(row, worksheet), checkForBan(row, worksheet), checkForTest(row, sh), row, col, worksheet)
+                embed = await getProfileFromSheet(user, checkForWarn(row, worksheet), checkForBan(row, worksheet), checkForTest(row, sh), row, col, worksheet, UserWarnBan='User')
                 await asyncio.sleep(3)
                 await ctx.followup.send(embed=embed)
             case 'new':
