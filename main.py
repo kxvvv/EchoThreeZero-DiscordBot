@@ -257,7 +257,50 @@ def checkForTest(row, sh):
         return fin
     
 
+def checkRole(ctx, user):
+    echoRole = discord.utils.find(lambda r: r.name == '☄️', ctx.guild.roles)
+    elysiumRole = discord.utils.find(lambda r: r.name == '🌑', ctx.guild.roles)
+    solarisRole = discord.utils.find(lambda r: r.name == '🌕', ctx.guild.roles)
+    atharaRole = discord.utils.find(lambda r: r.name == '🌌', ctx.guild.roles)
+    novaRole = discord.utils.find(lambda r: r.name == '🪐', ctx.guild.roles)
+    mainRole = discord.utils.find(lambda r: r.name == '🚀', ctx.guild.roles)
+    if echoRole in user.roles:
+        return discord.Colour(0x00FFFF)
+    elif elysiumRole in user.roles:
+        return discord.Colour(0x808080)
+    elif solarisRole in user.roles:
+        return discord.Colour(0xF8FF00)
+    elif atharaRole in user.roles:
+        return discord.Colour(0xC485F7)
+    elif novaRole in user.roles:
+        return discord.Colour(0xFFA500)
+    elif mainRole in user.roles:
+        return discord.Colour(0xFF0000)
+    else:
+        return discord.Colour(0x000000)
+    
+def checkFooter(ctx, user):
+    echoRole = discord.utils.find(lambda r: r.name == '☄️', ctx.guild.roles)
+    elysiumRole = discord.utils.find(lambda r: r.name == '🌑', ctx.guild.roles)
+    solarisRole = discord.utils.find(lambda r: r.name == '🌕', ctx.guild.roles)
+    atharaRole = discord.utils.find(lambda r: r.name == '🌌', ctx.guild.roles)
+    novaRole = discord.utils.find(lambda r: r.name == '🪐', ctx.guild.roles)
+    mainRole = discord.utils.find(lambda r: r.name == '🚀', ctx.guild.roles)
+    if echoRole in user.roles:
+        return f'{user.id}, echo☄️'
+    elif elysiumRole in user.roles:
+        return f'{user.id}, elysium🌑'
+    elif solarisRole in user.roles:
+        return f'{user.id}, solaris🌕'
+    elif atharaRole in user.roles:
+        return f'{user.id}, athara🌌'
+    elif novaRole in ctx.user.roles:
+        return f'{user.id}, nova🪐'
+    elif mainRole in user.roles:
+        return f'{user.id}, main🚀'
 
+    else:
+        return f'{user.id}, ???'
     
 #await msgToLOGG(ctx, worksheet, user, msgAuthor, reason)
 async def msgToLOGG(ctx, worksheet, user, msgAuthor, clrColor=None, clrColum=None, clrNumber=None, choose=None, rule=None, reason=None, isPerma=False, isColor=False):
@@ -275,19 +318,6 @@ async def msgToLOGG(ctx, worksheet, user, msgAuthor, clrColor=None, clrColum=Non
 
     member = msgAuthor
 
-    def checkRole():
-        echoRole = discord.utils.find(lambda r: r.name == '☄️', ctx.guild.roles)
-        if echoRole in ctx.user.roles:
-            return discord.Colour.blue()
-        else:
-            return discord.Colour.red()
-        
-    def checkFooter():
-        echoRole = discord.utils.find(lambda r: r.name == '☄️', ctx.guild.roles)
-        if echoRole in ctx.user.roles:
-            return f'{ctx.user.id}, echo'
-        else:
-            return f'{ctx.user.id}, ???'
         
     def checkForAction():
         if isPerma == True:
@@ -318,7 +348,7 @@ async def msgToLOGG(ctx, worksheet, user, msgAuthor, clrColor=None, clrColum=Non
 
 
     embed = discord.Embed(
-        colour=checkRole(), 
+        colour=checkRole(ctx=ctx, user=ctx.user), 
         description=checkForReason(), 
         title=checkForAction()
     )
@@ -340,7 +370,7 @@ async def msgToLOGG(ctx, worksheet, user, msgAuthor, clrColor=None, clrColum=Non
 
     embed.set_thumbnail(url=member.avatar.url)
 
-    embed.set_footer(text=f'{checkFooter()}, {row}')
+    embed.set_footer(text=f'{checkFooter(ctx=ctx, user=ctx.user)}, {row}')
 
 
     await logs.send(embed=embed)
@@ -442,40 +472,6 @@ async def perma(ctx, игрок: str=None, правило: str=None, причи�
         await ctx.response.send_message(f"⚠️ Игрока `{user}` нет в таблице.")
         playerIsNew = True
         
-    # try:
-    #     if int(rule) not in [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]:
-    #         await ctx.response.send_message('❌ Не корректно выбрано правило, используй только **одно число.**')
-    #         return
-    # except:
-    #     try:
-    #         if float(rule) not in [3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7, 3.8, 3.9]:
-    #             await ctx.response.send_message('❌ Не корректно выбрано правило, используй правильное **дробное число.**')
-    #     except:
-    #         await ctx.response.send_message('❌ Не корректно выбрано правило, **используй числа.**')
-    #         return
-
-
-    # listRules = []
-    # for x in rule:
-    #     if x != ',' and x != ' ':
-    #         if x not in listRules:
-    #             listRules.append(x)
-    #             print(x)
-
-
-    # for x in listRules:
-    #     try:
-    #         if int(x) not in [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]:
-    #             await ctx.response.send_message('❌ Не корректно выбрано правило, используй только **одно число.**')
-    #             return
-    #     except:
-    #         try:
-    #             if float(x) not in [3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7, 3.8, 3.9]:
-    #                 await ctx.response.send_message('❌ Не корректно выбрано правило, используй правильное **дробное число.**')
-    #                 return
-    #         except:
-    #             await ctx.response.send_message('❌ Не корректно выбрано правило, **используй числа.**')
-    #             return
 
     try:
         if 'Правило' in rule or 'правило' in rule:
@@ -1256,26 +1252,12 @@ async def profile(ctx, модератор: discord.Member = None):
         user = ctx.user
     
 
-    def checkRole():
-        echoRole = discord.utils.find(lambda r: r.name == '☄️', ctx.guild.roles)
-        if echoRole in user.roles:
-            return discord.Colour.blue()
-        else:
-            return discord.Colour.red()
-        
-    def checkFooter():
-        echoRole = discord.utils.find(lambda r: r.name == '☄️', ctx.guild.roles)
-        if echoRole in user.roles:
-            return f'{ctx.user.id}, echo'
-        else:
-            return f'{ctx.user.id}, ???'
-
     await ctx.response.defer()
     profile = await get_user_profile(user.id)
 
 
     embed = discord.Embed(
-        colour=checkRole(), 
+        colour=checkRole(ctx=ctx, user=user), 
         #description="Твой профиль.", 
         title=user
     )
@@ -1290,7 +1272,7 @@ async def profile(ctx, модератор: discord.Member = None):
     #embed.set_image(url=member.avatar.url)
     embed.set_thumbnail(url=user.avatar.url)
 
-    embed.set_footer(text=checkFooter())
+    embed.set_footer(text=checkFooter(ctx=ctx, user=user))
 
 
     #await asyncio.sleep(3)
