@@ -95,7 +95,7 @@ async def set_user_profile(user_id, parameter, new_value):
 
 def joinToSheet():
     gc = gspread.service_account(filename='secretkey.json') #test
-    sh = gc.open("копия 2.0") #test
+    sh = gc.open("Коквакс новая таблица банов 2.0") #test
     worksheet = sh.sheet1
     return gc, sh, worksheet
 
@@ -264,6 +264,7 @@ def checkRole(ctx, user):
     atharaRole = discord.utils.find(lambda r: r.name == '🌌', ctx.guild.roles)
     novaRole = discord.utils.find(lambda r: r.name == '🪐', ctx.guild.roles)
     mainRole = discord.utils.find(lambda r: r.name == '🚀', ctx.guild.roles)
+    allRole = discord.utils.find(lambda r: r.name == '🍿', ctx.guild.roles)
     if echoRole in user.roles:
         return discord.Colour(0x00FFFF)
     elif elysiumRole in user.roles:
@@ -276,6 +277,8 @@ def checkRole(ctx, user):
         return discord.Colour(0xFFA500)
     elif mainRole in user.roles:
         return discord.Colour(0xFF0000)
+    elif allRole in user.roles:
+        return discord.Colour(0xFFFFFF)
     else:
         return discord.Colour(0x000000)
     
@@ -286,6 +289,7 @@ def checkFooter(ctx, user):
     atharaRole = discord.utils.find(lambda r: r.name == '🌌', ctx.guild.roles)
     novaRole = discord.utils.find(lambda r: r.name == '🪐', ctx.guild.roles)
     mainRole = discord.utils.find(lambda r: r.name == '🚀', ctx.guild.roles)
+    allRole = discord.utils.find(lambda r: r.name == '🍿', ctx.guild.roles)
     if echoRole in user.roles:
         return f'{user.id}, echo☄️'
     elif elysiumRole in user.roles:
@@ -298,7 +302,8 @@ def checkFooter(ctx, user):
         return f'{user.id}, nova🪐'
     elif mainRole in user.roles:
         return f'{user.id}, main🚀'
-
+    elif allRole in user.roles:
+        return f'{user.id}, all🍿'
     else:
         return f'{user.id}, ???'
     
