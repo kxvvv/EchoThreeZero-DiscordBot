@@ -2,8 +2,6 @@ import discord
 import gspread
 import asyncio
 import json
-import random
-
 
 from discord.ext import commands
 from discord.utils import get
@@ -41,12 +39,6 @@ async def on_ready():
     print(f"Здарова ёпт✌️, это я - {client.user}")
     await client.tree.sync(guild=discord.Object(id=GUILD)) # синхорнизация
     await client.change_presence(status=discord.Status.online, activity = discord.Activity(name = f'на всех свысока.', type = discord.ActivityType.watching))
-
-
-@client.listen("on_command_error")
-async def cooldown_message(ctx, error):
-    errorlog = client.get_channel(ERROR_ROOM) # чат
-    await errorlog.send(f"```\n\n\n\n\n\n_error_\n\n{error}```")
 
 
 # @client.command()
@@ -94,8 +86,8 @@ async def set_user_profile(user_id, parameter, new_value):
 
 
 def joinToSheet():
-    gc = gspread.service_account(filename='secretkey.json') #test
-    sh = gc.open("Коквакс новая таблица банов 2.0") #test
+    gc = gspread.service_account(filename='secretkey.json')
+    sh = gc.open(SHEET) #test #osnova Коквакс новая таблица банов 2.0
     worksheet = sh.sheet1
     return gc, sh, worksheet
 
@@ -120,7 +112,7 @@ async def whatColorYouNeed(row, UserWarnBan='None'):
 
     return thisColor
 
-async def getProfileFromSheet(user, warnCheck, banCheck, testCheck, row, col, worksheet, UserWarnBan):
+async def getProfileFromSheet(user, warnCheck, banCheck, testCheck, row, col, worksheet, UserWarnBan='User'):
 
     async def colorStatus():
         thisColor = await whatColorYouNeed(row=row, UserWarnBan='User')
@@ -307,7 +299,7 @@ def checkFooter(ctx, user):
     else:
         return f'{user.id}, ???'
     
-#await msgToLOGG(ctx, worksheet, user, msgAuthor, reason)
+
 async def msgToLOGG(ctx, worksheet, user, msgAuthor, clrColor=None, clrColum=None, clrNumber=None, choose=None, rule=None, reason=None, isPerma=False, isColor=False):
 
     logs = client.get_channel(LOGS)
@@ -382,6 +374,214 @@ async def msgToLOGG(ctx, worksheet, user, msgAuthor, clrColor=None, clrColum=Non
 
 
 
+
+async def juniorCheck(ctx, user, reason, msg, rule=None, punish=None):
+
+    await msg.edit(content=f'**😐 Ожидай одобрения запроса от старшей администрации.**')
+    request = client.get_channel(REQUEST_ROOM)
+
+    embed = discord.Embed(
+        colour=checkRole(ctx=ctx, user=ctx.user), 
+        description=
+f'''
+
+
+**Модератор:** {ctx.user}
+**Нарушитель:** {user}
+
+**Причина:** {reason}
+
+
+''', 
+        title='❗Статус: ожидает одобрения.'
+    )
+    if punish != None:
+        if punish == 'варн':
+            punish = 'Варн ⚠️'
+        elif punish == 'бан':
+            punish = 'Бан ⛔'
+
+        embed.add_field(name="Наказание", value=punish)
+    if rule != None:
+        embed.add_field(name="Правило", value=rule)
+    embed.set_footer(text=checkFooter(ctx=ctx, user=ctx.user))
+    
+
+    
+
+    msg = await request.send(embed=embed)
+
+    await msg.add_reaction('✅')
+    await msg.add_reaction('❌')
+
+
+
+    def check(payload):
+        reaction = payload.emoji
+        rAuth = payload.member
+        rMsg = payload.message_id
+
+        if msg.id != rMsg:
+            return
+
+        def nextStep():
+            return str(payload.emoji) == '✅' or str(payload.emoji) == '❌'
+
+        access = discord.utils.find(lambda r: r.name == 'модератор', ctx.guild.roles)
+        access2 = discord.utils.find(lambda r: r.name == 'старший модератор', ctx.guild.roles)
+        access3 = discord.utils.find(lambda r: r.name == 'смотритель сервера', ctx.guild.roles)
+        access4 = discord.utils.find(lambda r: r.name == 'смотритель серверов', ctx.guild.roles)
+        if access in rAuth.roles:
+            return nextStep()
+        elif access2 in rAuth.roles:
+            return nextStep()
+        elif access3 in rAuth.roles:
+            return nextStep()
+        elif access4 in rAuth.roles:
+            return nextStep()
+        else:
+            pass
+    try:
+        payload = await client.wait_for('raw_reaction_add', timeout=86400.0, check=check)
+    except asyncio.TimeoutError:
+        await msg.edit(content='❌ **Время на ответ запроса - вышло.**')
+    else:
+        reaction = str(payload.emoji)
+        if reaction == '❌':
+            embed = discord.Embed(
+                colour=checkRole(ctx=ctx, user=ctx.user), 
+                description=
+        f'''
+
+
+        **Модератор:** {ctx.user}
+        **Нарушитель:** {user}
+
+        **Причина:** {reason}
+
+
+        ''', 
+                title='Статус: отказано.'
+            )
+            if punish != None:
+                if punish == 'варн':
+                    punish = 'Варн ⚠️'
+                elif punish == 'бан':
+                    punish = 'Бан ⛔'
+
+                embed.add_field(name="Наказание", value=punish)
+            if rule != None:
+                embed.add_field(name="Правило", value=rule)
+            embed.set_footer(text=checkFooter(ctx=ctx, user=ctx.user))
+            await msg.edit(embed=embed)
+            return False
+        elif reaction == '✅':
+            embed = discord.Embed(
+                colour=checkRole(ctx=ctx, user=ctx.user), 
+                description=
+        f'''
+
+
+        **Модератор:** {ctx.user}
+        **Нарушитель:** {user}
+
+        **Причина:** {reason}
+
+
+        ''', 
+                title='Статус: Одобрено.'
+            )
+            if punish != None:
+                if punish == 'варн':
+                    punish = 'Варн ⚠️'
+                elif punish == 'бан':
+                    punish = 'Бан ⛔'
+
+                embed.add_field(name="Наказание", value=punish)
+            if rule != None:
+                embed.add_field(name="Правило", value=rule)
+            embed.set_footer(text=checkFooter(ctx=ctx, user=ctx.user))
+            await msg.edit(embed=embed)
+            return True
+        else:
+            await msg.edit(content='❌ В запросе отказано. `error #451`')
+
+
+@client.tree.command(name = 'статистика', description='вся статистика пользователей', guild=discord.Object(id=GUILD))
+async def stats(ctx):
+
+    access = discord.utils.find(lambda r: r.name == 'смотритель сервера', ctx.guild.roles)
+    allAcces = discord.utils.find(lambda r: r.name == '⭐', ctx.guild.roles)
+    if allAcces not in ctx.user.roles:
+        if access not in ctx.user.roles:
+            await ctx.response.send_message('❌ У Вас нет доступа к данной команде.')
+            return
+
+
+    with open("basa.json", "r") as file:
+        profile = json.load(file)
+
+    for x in profile:
+        id = x
+        x = profile.get(x)
+        ban = x['ban']
+        warn = x['warn']
+        report = x['report']
+
+
+    embed = discord.Embed(
+        colour=discord.Colour(0xB03060),
+        #description=checkForReason(), 
+        title='Статистика модераторов'
+    )
+    #embed.set_author(name=ctx.user)
+
+
+    guild = client.get_guild(GUILD)
+    members = {}
+    for x in guild.members:
+        id = x.id
+        name = x.name
+        members[id] = {"name": ''}
+
+        newName = members['name'] = name
+
+        members[id]['name'] = newName
+
+
+    with open("basa.json", "r") as file:
+        profile = json.load(file)
+
+    for x in profile:
+        id = x
+        x = profile.get(x)
+        ban = x['ban']
+        warn = x['warn']
+        report = x['report']
+        ban = 'Баны: ' +str(ban)
+        warn = 'Варны: ' + str(warn)
+        report = 'Репорты: ' + str(report)
+
+        li = []
+        li.append(ban)
+        li.append(warn)
+        li.append(report)
+        text = ''
+
+        for x in li:
+            text += x + '\n'
+
+        for x in members:
+            x = f'{x}'
+            if x == id:
+
+                x = members[int(x)]['name']
+                name = x
+
+        embed.add_field(name=f'{name}', value=text)
+
+    await ctx.response.send_message(embed=embed)
+
 @client.tree.command(name = "выдать-заметку", description= 'записывает заметку игроку в таблице', guild=discord.Object(id=GUILD))
 async def note(ctx, игрок: str=None, причина: str=None):
 
@@ -427,35 +627,41 @@ async def note(ctx, игрок: str=None, причина: str=None):
     
  
 
+    embed = discord.Embed(
+        colour=discord.Colour.from_rgb(255,255,255),
+        description=f'{reason}', 
+        title='Всё верно?'
+    )
+    
+    await msg.delete()
+    msg = await infochat.send(embed=embed)
     await msg.add_reaction('✅')
     await msg.add_reaction('❌')
 
-    await msg.edit(content=f'**❓ Вы уверены что хотите вписать игроку следующее сообщение: ```{reason}```**')
-
     trueUser = ctx.user
     
-    def check(reaction, msgAuthor): # trueUser = ctx.user
+    def check(reaction, msgAuthor):
         if trueUser == msgAuthor:
             return msgAuthor == ctx.user and str(reaction.emoji) == '✅' or str(reaction.emoji) == '❌'
     try:
         reaction, msgAuthor = await client.wait_for('reaction_add', timeout=25.0, check=check)
     except asyncio.TimeoutError:
-        await msg.edit(content='❌ Чета случилась ошибочка. либо **реакция не правильная**, либо **время вышло.**')
+        await msg.edit(content='❌ **Время вышло.**')
     else:
         if reaction.emoji == '❌':
-            await msg.edit(content='❌ Отменил операцию.')
+            await msg.edit(content='❌ **Отменил операцию.**')
             return
         elif reaction.emoji == '✅':
-            await msg.edit(content=f'**🔄 Обрабатываю запросик :middle_finger:**') #{reaction.emoji}
+            await msg.edit(content=f'**🔄 Обрабатываю запросик :middle_finger:**')
             await msgToLOGG(ctx, worksheet, user, msgAuthor, reason=reason)
             try:
                 worksheet.insert_note(f'B{row}', f'{reason}')
                 
-                await msg.edit(content=f'**✅ Успешно вписал заметку новому игроку!**')
+                await msg.edit(content=f'**✅ Успешно вписал заметку игроку!**')
             except:
                 await msg.edit(content='❌ Произошла техническая ошибка, пингуй идиота ксова.')
         else:
-            await msg.edit(content='❌ чета случилась ошибочка. либо **реакция не правильная**, либо **время вышло.**')
+            await msg.edit(content='❌ **Время вышло.**')
 
 @client.tree.command(name = "перма", description= 'запись пермы', guild=discord.Object(id=GUILD))
 async def perma(ctx, игрок: str=None, правило: str=None, причина: str=None):
@@ -557,12 +763,11 @@ async def perma(ctx, игрок: str=None, правило: str=None, причи�
 
         if embedOrWrite == 'embed':
             warnCount = checkForWarn(row, worksheet)
-            embed = await getProfileFromSheet(user, warnCount, banCount, checkForTest(row, sh), row, col, worksheet)
+            embed = await getProfileFromSheet(user, warnCount, banCount, checkForTest(row, sh), row, col, worksheet, UserWarnBan='User')
             return embed
 
         if embedOrWrite == 'write':
             warnCount = checkForWarn(row, worksheet)
-            #needToAdd = banCount
             mainCount = max(banCount, warnCount)
             def ruleFormat(count):
                 worksheet.format(f"G{row+count}:G{row+count}", { 'backgroundColor': {
@@ -651,21 +856,28 @@ async def perma(ctx, игрок: str=None, правило: str=None, причи�
     
     if playerIsNew == False:
         msg = await infochat.send(f'🔄 загружаю данные о {user}...')
-        embed = oldPlayer('embed')
+        embed = await oldPlayer('embed')
         await asyncio.sleep(3)
         await ctx.followup.send(embed=embed)
 
     if playerIsNew == True:
         msg = await infochat.send(f'**🔄 ожидай...**')
 
+
+    embed = discord.Embed(
+        colour=discord.Colour.red(),
+        description=f'**Причина:** {reason}', 
+        title='Убедись, правильно ли ты всё записал:'
+    )
+
+    embed.add_field(name="Наказание", value='ПЕРМА.')
+    embed.add_field(name="Правило", value=rule)
+    
+    await msg.delete()
+    msg = await infochat.send(embed=embed)
     await msg.add_reaction('✅')
     await msg.add_reaction('❌')
 
-    
-    if playerIsNew == True:
-        await msg.edit(content=f'**❓ Вы уверены что хотите добавить нового игрока с причиной:** ```{reason}``` ')
-    if playerIsNew == False:
-        await msg.edit(content=f'**❓ Вы уверены что хотите приписать уже существующему игроку данную причину пермы:** ```{reason}```')
 
     trueUser = ctx.user
     
@@ -675,19 +887,41 @@ async def perma(ctx, игрок: str=None, правило: str=None, причи�
     try:
         reaction, msgAuthor = await client.wait_for('reaction_add', timeout=25.0, check=check)
     except asyncio.TimeoutError:
-        await msg.edit(content='❌ Чета случилась ошибочка. либо **реакция не правильная**, либо **время вышло.**')
+        await msg.edit(content='❌ **Время вышло.**')
     else:
         if reaction.emoji == '❌':
-            await msg.edit(content='❌ Отменил операцию.')
+            await msg.edit(content='❌ **Отменил операцию.**')
             return
         elif reaction.emoji == '✅':
+
+
+
+            junior = discord.utils.find(lambda r: r.name == 'младший модератор', ctx.guild.roles)
+            if junior in ctx.user.roles:
+                checkForJunior = await juniorCheck(ctx=ctx, user=user, rule=rule, reason=reason, msg=msg, punish='Перма ❗')
+            else:
+                checkForJunior = True
+
+
+            if checkForJunior == False:
+                await msg.edit(content=f'**❌ Твой запрос не одобрили.**') 
+                return
+
+            elif checkForJunior == True:
+                pass
+
+            else:
+                await msg.edit(content=f'**❌ Тех. ошибка - пингуй ксова. `error #1752/1` **')
+                return
+
+
             await msg.edit(content=f'**🔄 Обрабатываю запросик :middle_finger:**') #{reaction.emoji}
             try:
                 if playerIsNew == True:
                     newPlayer()
                     await msg.edit(content=f'**✅ Успешно вписал ПЕРМУ новому игроку!**')
                 if playerIsNew == False:
-                    oldPlayer('write')
+                    await oldPlayer('write')
                     await msg.edit(content=f'**✅ Успешно вписал ПЕРМУ старому игроку!**')
                 await msgToLOGG(ctx, worksheet, user, msgAuthor, rule=rule, reason=reason, isPerma=True)
                 profile = await get_user_profile(ctx.user.id)
@@ -701,7 +935,7 @@ async def perma(ctx, игрок: str=None, правило: str=None, причи�
             except:
                 await msg.edit(content='❌ Произошла техническая ошибка, пингуй идиота ксова.')
         else:
-            await msg.edit(content='❌ чета случилась ошибочка. либо **реакция не правильная**, либо **время вышло.**')
+            await msg.edit(content='❌ **Время вышло.**')
     
 
 @client.tree.command(name = "выдать-тест", description= 'записывает тест игроку в таблице', guild=discord.Object(id=GUILD))
@@ -726,10 +960,15 @@ async def giveTest(ctx, игрок: str=None, выбор: app_commands.Choice[in
         await ctx.response.send_message(f"❌ Не указан игрок.")
         return
     
-    if choose.value == 0:
+    try:
+        if choose.value == 0:
+            await ctx.response.send_message(f"❌ Не выбрано что записывать в строку теста.")
+            return
+    except:
         await ctx.response.send_message(f"❌ Не выбрано что записывать в строку теста.")
         return
-
+    
+    
     skipOrNot = False
 
     def newPlayer():
@@ -776,14 +1015,23 @@ async def giveTest(ctx, игрок: str=None, выбор: app_commands.Choice[in
         user = f'{user}  '
     else:
         skipOrNot = True
+
         await ctx.response.send_message(f"⚠️ Игрока `{user}` нет в таблице.")
         infochat = ctx.channel_id # чат
         infochat = client.get_channel(infochat)
         
-        msg = await infochat.send(f'**🔄 ожидай...**')
+        embed = discord.Embed(
+            colour=discord.Colour.from_rgb(255,255,255),
+            #description=f'**Причина:** {reason}', 
+            title='Заметь, что игрока в таблице нет, мы пишем нового:'
+        )
+
+        embed.add_field(name="Игрок", value=user)
+        embed.add_field(name="Выбор", value=choose.name)
+        
+        msg = await infochat.send(embed=embed)
         await msg.add_reaction('✅')
         await msg.add_reaction('❌')
-        await msg.edit(content='❓ Добавляем в таблицу?')
 
         trueUser = ctx.user
         
@@ -793,12 +1041,13 @@ async def giveTest(ctx, игрок: str=None, выбор: app_commands.Choice[in
         try:
             reaction, msgAuthor = await client.wait_for('reaction_add', timeout=25.0, check=check)
         except asyncio.TimeoutError:
-            await msg.edit(content='❌ Чета случилась ошибочка. либо **реакция не правильная**, либо **время вышло.**')
+            await msg.edit(content='❌ **Время вышло.**')
         else:
             if reaction.emoji == '❌':
-                await msg.edit(content='❌ Отменил операцию.')
+                await msg.edit(content='❌ **Отменил операцию.**')
                 return
             elif reaction.emoji == '✅':
+        
                 await msg.edit(content=f'**🔄 Обрабатываю запросик :middle_finger:**') #{reaction.emoji}
                 try:
                     newPlayer()
@@ -806,7 +1055,7 @@ async def giveTest(ctx, игрок: str=None, выбор: app_commands.Choice[in
                 except:
                     await msg.edit(content='❌ Произошла техническая ошибка, пингуй идиота ксова.')
             else:
-                await msg.edit(content='❌ чета случилась ошибочка. либо **реакция не правильная**, либо **время вышло.**')
+                await msg.edit(content='❌ **Время вышло.**')
 
 
 
@@ -830,10 +1079,18 @@ async def giveTest(ctx, игрок: str=None, выбор: app_commands.Choice[in
     infochat = ctx.channel_id # чат
     infochat = client.get_channel(infochat)
     
-    msg = await infochat.send(f'**🔄 поиск {user}...**')
+    embed = discord.Embed(
+        colour=discord.Colour.from_rgb(255,255,255),
+        #description=f'**Причина:** {reason}', 
+        title='Убедись, что ты всё правильно написал:'
+    )
+
+    embed.add_field(name="Игрок", value=user)
+    embed.add_field(name="Выбор", value=choose.name)
+    
+    msg = await infochat.send(embed=embed)
     await msg.add_reaction('✅')
     await msg.add_reaction('❌')
-    await msg.edit(content='❓ Это тот самый игрок?')
 
     trueUser = ctx.user
     
@@ -843,15 +1100,15 @@ async def giveTest(ctx, игрок: str=None, выбор: app_commands.Choice[in
     try:
         reaction, msgAuthor = await client.wait_for('reaction_add', timeout=25.0, check=check)
     except asyncio.TimeoutError:
-        await msg.edit(content='❌ Чета случилась ошибочка. либо **реакция не правильная**, либо **время вышло.**')
+        await msg.edit(content='❌ **Время вышло.**')
     else:
         if reaction.emoji == '❌':
-            await msg.edit(content='❌ Отменил операцию.')
+            await msg.edit(content='❌ **Отменил операцию.**')
             return
         elif reaction.emoji == '✅':
             await msg.edit(content=f'**🔄 Обрабатываю запросик :middle_finger:**') #{reaction.emoji}
         else:
-            await msg.edit(content='❌ чета случилась ошибочка. либо **реакция не правильная**, либо **время вышло.**')
+            await msg.edit(content='❌ **Время вышло.**')
             return
 
         logs = client.get_channel(LOGS)
@@ -910,6 +1167,11 @@ async def giveTest(ctx, игрок: str=None, выбор: app_commands.Choice[in
                 await msg.edit(content='❌ Произошла техническая ошибка, пингуй идиота ксова.')
         if reaction.emoji == '❌':
             return
+
+
+
+
+
 
 
 @client.tree.command(name = "сменить-цвет", description= 'смена цвета в таблице', guild=discord.Object(id=GUILD))
@@ -992,10 +1254,36 @@ async def change_color(ctx, ник: str=None, столбик: app_commands.Choic
     infochat = client.get_channel(infochat)
     trueUser = ctx.user
 
-    msg = await infochat.send(f'**🔄 поиск {user}...**')
+
+
+    def colorSwitch(value):
+        if value == 1:
+            return discord.Colour(0xFFFFFF)
+        elif value == 2:
+            return discord.Colour(0x00FF00)
+        elif value == 3:
+            return discord.Colour(0xFFA500)
+        elif value == 4:
+            return discord.Colour(0xFF0000)
+        elif value == 5:
+            return discord.Colour(0x000000)
+
+
+    embed = discord.Embed(
+        colour=colorSwitch(color.value),
+        #description=f'**Причина:** {reason}', 
+        title='Убедись, что ты всё правильно указал:'
+    )
+
+    embed.add_field(name="Игрок", value=user)
+    embed.add_field(name='Столбик', value=punish.name)
+    embed.add_field(name="Выбор", value=color.name)
+    if punish.value != 1:
+        embed.add_field(name='Номер наказания', value=rule_number)
+    
+    msg = await infochat.send(embed=embed)
     await msg.add_reaction('✅')
     await msg.add_reaction('❌')
-    await msg.edit(content='❓ Это тот самый игрок?')
 
 
 
@@ -1005,15 +1293,15 @@ async def change_color(ctx, ник: str=None, столбик: app_commands.Choic
     try:
         reaction, msgAuthor = await client.wait_for('reaction_add', timeout=25.0, check=check)
     except asyncio.TimeoutError:
-        await msg.edit(content='❌ Чета случилась ошибочка. либо **реакция не правильная**, либо **время вышло.**')
+        await msg.edit(content='❌ **Время вышло.**')
     else:
         if reaction.emoji == '❌':
-            await msg.edit(content='❌ Отменил операцию.')
+            await msg.edit(content='❌ **Отменил операцию.**')
             return
         elif reaction.emoji == '✅':
             await msg.edit(content=f'**🔄 Крашу {user}...**')
         else:
-            await msg.edit(content='❌ чета случилась ошибочка. либо **реакция не правильная**, либо **время вышло.**')
+            await msg.edit(content='❌ **Время вышло.**')
             return
 
 
@@ -1351,6 +1639,7 @@ async def second_command(ctx, ник: str=None, наказание: app_commands
         await ctx.response.send_message('❌ У Вас нет доступа к данной команде.')
         return
 
+
     values_list = worksheet.col_values(2)
 
 
@@ -1563,13 +1852,30 @@ async def second_command(ctx, ник: str=None, наказание: app_commands
                 infochat = client.get_channel(infochat)
                 msg = await infochat.send(f'🔄 ожидай..')
         trueUser = ctx.user
-
-
-
         
+        def checkPunishForColor(value):
+            if value == 1:
+                return discord.Colour.gold()
+            elif value == 2:
+                return discord.Colour.red()
+            else:
+                discord.Colour.from_rgb(0, 0, 0)
+                
+
+
+        embed = discord.Embed(
+            colour=checkPunishForColor(value=punish.value), 
+            description=f'**Причина:** {reason}', 
+            title='Убедись, правильно ли ты всё записал:'
+        )
+
+        embed.add_field(name="Наказание", value=punishEmoji)
+        embed.add_field(name="Правило", value=rule)
+        
+        await msg.delete()
+        msg = await infochat.send(embed=embed)
         await msg.add_reaction('✅')
         await msg.add_reaction('❌')
-        await msg.edit(content=f' \n\nНаказание:  {punishEmoji}\n\nПравило: **{rule}**\n\nПричина: ```{reason}```')
 
         def check(reaction, msgAuthor): # trueUser = ctx.user
             if trueUser == msgAuthor:
@@ -1577,22 +1883,42 @@ async def second_command(ctx, ник: str=None, наказание: app_commands
         try:
             reaction, msgAuthor = await client.wait_for('reaction_add', timeout=25.0, check=check)
         except asyncio.TimeoutError:
-            await msg.edit(content='❌ Чета случилась ошибочка. либо **реакция не правильная**, либо **время вышло.**')
+            await msg.edit(content='❌ **Время вышло.**')
         else:
             if reaction.emoji == '❌':
-                await msg.edit(content='❌ Отменил операцию.')
+                await msg.edit(content='❌ **Отменил операцию.**')
                 return
             elif reaction.emoji == '✅':
-                await msg.edit(content=f'**🔄 Обрабатываю запросик :middle_finger:**') #{reaction.emoji}
+
+                junior = discord.utils.find(lambda r: r.name == 'младший модератор', ctx.guild.roles)
+                if junior in ctx.user.roles:
+                    checkForJunior = await juniorCheck(ctx=ctx, user=user, rule=rule, reason=reason, msg=msg, punish=punish.name)
+                else:
+                    checkForJunior = True
+
+
+                if checkForJunior == False:
+                    await msg.edit(content=f'**❌ Твой запрос не одобрили.**') 
+                    return
+    
+                elif checkForJunior == True:
+                    pass
+
+                else:
+                    await msg.edit(content=f'**❌ Тех. ошибка - пингуй ксова. `error #1752/1` **')
+                    return
+                
+                await msg.edit(content=f'**🔄 Обрабатываю запросик :middle_finger:**')
+                
             else:
-                await msg.edit(content='❌ чета случилась ошибочка. либо **реакция не правильная**, либо **время вышло.**')
+                await msg.edit(content='❌ **Время вышло.**')
 
             logs = client.get_channel(LOGS)
 
             await msgToLOGG(ctx, worksheet, user, msgAuthor, rule=rule, reason=reason)
             emoji = (reaction.emoji)
             emoji = str(emoji)
-            if reaction.emoji == '✅':                
+            if reaction.emoji == '✅':             
                 try:
                     match choose:
                         case 'new':
