@@ -300,7 +300,7 @@ def checkFooter(ctx, user):
         return f'{user.id}, ???'
     
 
-async def msgToLOGG(ctx, worksheet, user, msgAuthor, clrColor=None, clrColum=None, clrNumber=None, choose=None, rule=None, reason=None, isPerma=False, isColor=False):
+async def msgToLOGG(ctx, worksheet, user, msgAuthor, clrColor=None, clrColum=None, clrNumber=None, choose=None, rule=None, reason=None, isJobka=False, isPerma=False, isColor=False):
 
     logs = client.get_channel(LOGS)
 
@@ -319,14 +319,21 @@ async def msgToLOGG(ctx, worksheet, user, msgAuthor, clrColor=None, clrColum=Non
     def checkForAction():
         if isPerma == True:
             return f'Записал ПЕРМУ игроку.'
+        elif isJobka != None:
+            return f'Записал новую джобку.'
         elif isColor == True:
-            return f'Поменял цвет игроку'
+            return f'Поменял цвет игроку.'
         elif choose != None:
             return f'Обновил тест игроку.'
+
+        
+
+
+
+
         elif rule != None:
             return f'Записал новое наказание.'
         
-
 
         elif reason != None:
             return f'Записал новую заметку.'
@@ -413,6 +420,7 @@ f'''
 
     await msg.add_reaction('✅')
     await msg.add_reaction('❌')
+    await msg.create_thread(name='Автоветка.')
 
 
 
@@ -663,7 +671,248 @@ async def note(ctx, игрок: str=None, причина: str=None):
         else:
             await msg.edit(content='❌ **Время вышло.**')
 
-@client.tree.command(name = "перма", description= 'запись пермы', guild=discord.Object(id=GUILD))
+
+
+
+@client.tree.command(name = "джобка", description='быстрая запись джобки', guild=discord.Object(id=GUILD))
+@app_commands.choices(отдел=[
+    discord.app_commands.Choice(name='Командный', value=1),
+    discord.app_commands.Choice(name='СБ', value=2),
+    discord.app_commands.Choice(name='РНД', value=3),
+    discord.app_commands.Choice(name='МЕД', value=4),
+    discord.app_commands.Choice(name='КАРГО', value=5),
+    discord.app_commands.Choice(name='ИНЖ', value=6),
+    discord.app_commands.Choice(name='Антагонисты', value=7),
+])
+async def jobka(ctx, игрок: str=None, правило: str=None, причина: str=None, отдел: app_commands.Choice[int]=0):
+
+    user = игрок
+    rule = правило
+    reason = причина
+    jobChoose = отдел
+
+    gc, sh, worksheet = joinToSheet()
+    values_list = worksheet.col_values(2)
+    playerIsNew = False
+
+    if user in values_list:
+        user = f'{user}'
+    elif (f'{user} ' in values_list):
+        user = f'{user} '
+    elif (f'{user}  ' in values_list):
+        user = f'{user}  '
+    else:
+        await ctx.response.send_message(f"⚠️ Игрока `{user}` нет в таблице.")
+        playerIsNew = True
+    
+    if jobChoose.value == 0:
+        await ctx.response.send_message('❌ Не выбрана профессия.')
+        return
+
+    try:
+        if 'Правило' in rule or 'правило' in rule:
+            await ctx.response.send_message('❌ Не корректно выбрано правило, **используй только числа.**')
+            return
+    except:
+        await ctx.response.send_message('❌ Не корректно выбрано правило, **используй только числа.**')
+        return
+
+
+    if reason == None:
+        await ctx.response.send_message('❌ Не выбрана причина.')
+        return
+
+    if playerIsNew == False:
+        await ctx.response.defer()
+
+    def newPlayer():
+        lastdude = values_list[-1]
+
+        cell = worksheet.find(lastdude)
+        row = cell.row
+
+        banCount = checkForBan(row, worksheet)
+        warnCount = checkForWarn(row, worksheet)
+        mainCount = max(banCount, warnCount)
+
+        if mainCount != 0:
+            row += mainCount
+        else:
+            row += 1
+
+        
+        worksheet.update(f'B{row}', user)
+
+        worksheet.update(f'F{row}', '1')
+        worksheet.update(f'G{row}', str(f'JB: {jobChoose.name}. Правило {rule}'))
+        worksheet.insert_note(f'G{row}', f'{reason}')
+
+
+
+    async def oldPlayer(embedOrWrite):
+
+            
+
+
+        cell = worksheet.find(user)
+        
+        row = cell.row
+        col = cell.col
+        banCount = checkForBan(row, worksheet)
+        
+
+
+        if embedOrWrite == 'embed':
+            warnCount = checkForWarn(row, worksheet)
+            embed = await getProfileFromSheet(user, warnCount, banCount, checkForTest(row, sh), row, col, worksheet, UserWarnBan='User')
+            return embed
+
+        if embedOrWrite == 'write':
+            warnCount = checkForWarn(row, worksheet)
+            mainCount = max(banCount, warnCount)
+
+            def addField(count):
+                worksheet.insert_row(['', '', '', '', '', '', ''], index=row+count) #count+1
+                worksheet.merge_cells(f'B{row}:B{row+count}', 'MERGE_ALL')
+            
+            worksheet.update(f'B{row}', user)
+
+            banNullOrNot = worksheet.get_values(f'G{row}:G{row+50}')
+            
+            needToAdd = 0
+            if banNullOrNot[0] != ['']:
+                for x in banNullOrNot:
+                    if x == ['']:
+                        break
+                    needToAdd += 1
+            if banCount > needToAdd:
+                worksheet.update(f'G{row+needToAdd}', str(f'JB: {jobChoose.name}. Правило {rule}'))
+                worksheet.insert_note(f'G{row+needToAdd}', f'{reason}')
+                worksheet.format(f'G{row+needToAdd}', {'textFormat': {'strikethrough': False}})
+
+            elif banCount < needToAdd:
+                addField(banCount)
+                worksheet.update(f'F{row+banCount}', str(f'{banCount+1}')) # test
+                worksheet.update(f'G{row+banCount}', str(f'JB: {jobChoose.name}. Правило {rule}'))
+                worksheet.insert_note(f'G{row+banCount}', f'{reason}')
+                worksheet.format(f'G{row+banCount}', {'textFormat': {'strikethrough': False}})
+
+            elif banCount == needToAdd:
+                if banCount == 0 and needToAdd == 0:
+                    worksheet.update(f'F{row+needToAdd}', str(f'1'))
+                    worksheet.update(f'G{row+needToAdd}', str(f'JB: {jobChoose.name}. Правило {rule}'))
+                    worksheet.insert_note(f'G{row+needToAdd}', f'{reason}')
+                    worksheet.format(f'G{row+needToAdd}', {'textFormat': {'strikethrough': False}})
+                elif banCount < mainCount:
+                    worksheet.update(f'F{row+needToAdd}', str(f'{banCount+1}'))
+                    worksheet.update(f'G{row+needToAdd}', str(f'JB: {jobChoose.name}. Правило {rule}'))
+                    worksheet.insert_note(f'G{row+needToAdd}', f'{reason}')
+                    worksheet.format(f'G{row+needToAdd}', {'textFormat': {'strikethrough': False}})
+                else:
+                    addField(banCount)
+                    worksheet.update(f'F{row+banCount}', str(f'{banCount+1}')) # test
+                    worksheet.update(f'G{row+needToAdd}', str(f'JB: {jobChoose.name}. Правило {rule}'))
+                    worksheet.insert_note(f'G{row+needToAdd}', f'{reason}')
+                    worksheet.format(f'G{row+needToAdd}', {'textFormat': {'strikethrough': False}})
+            return
+
+    
+        
+
+
+
+
+
+    trueUser = ctx.user
+
+    infochat = ctx.channel_id # чат
+    infochat = client.get_channel(infochat)
+    
+    if playerIsNew == False:
+        msg = await infochat.send(f'🔄 загружаю данные о {user}...')
+        embed = await oldPlayer('embed')
+        await asyncio.sleep(3)
+        await ctx.followup.send(embed=embed)
+
+    if playerIsNew == True:
+        msg = await infochat.send(f'**🔄 ожидай...**')
+
+
+    embed = discord.Embed(
+        colour=discord.Colour(0x800080),
+        description=f'**Причина:** {reason}', 
+        title='Убедись, правильно ли ты всё записал:'
+    )
+
+    embed.add_field(name="Наказание", value=f'JB: {jobChoose.name}')
+    embed.add_field(name="Правило", value=rule)
+    
+    await msg.delete()
+    msg = await infochat.send(embed=embed)
+    await msg.add_reaction('✅')
+    await msg.add_reaction('❌')
+
+
+    trueUser = ctx.user
+    
+    def check(reaction, msgAuthor): # trueUser = ctx.user
+        if trueUser == msgAuthor:
+            return msgAuthor == ctx.user and str(reaction.emoji) == '✅' or str(reaction.emoji) == '❌'
+    try:
+        reaction, msgAuthor = await client.wait_for('reaction_add', timeout=25.0, check=check)
+    except asyncio.TimeoutError:
+        await msg.edit(content='❌ **Время вышло.**')
+    else:
+        if reaction.emoji == '❌':
+            await msg.edit(content='❌ **Отменил операцию.**')
+            return
+        elif reaction.emoji == '✅':
+
+
+
+            junior = discord.utils.find(lambda r: r.name == 'младший модератор', ctx.guild.roles)
+            if junior in ctx.user.roles:
+                checkForJunior = await juniorCheck(ctx=ctx, user=user, rule=rule, reason=reason, msg=msg, punish='Джобка.')
+            else:
+                checkForJunior = True
+
+
+            if checkForJunior == False:
+                await msg.edit(content=f'**❌ Твой запрос не одобрили.**') 
+                return
+
+            elif checkForJunior == True:
+                pass
+
+            else:
+                await msg.edit(content=f'**❌ Тех. ошибка - пингуй ксова. `error #1752/1` **')
+                return
+
+
+            await msg.edit(content=f'**🔄 Обрабатываю запросик :middle_finger:**') #{reaction.emoji}
+            try:
+                if playerIsNew == True:
+                    newPlayer()
+                    await msg.edit(content=f'**✅ Успешно вписал джобку новому игроку!**')
+                if playerIsNew == False:
+                    await oldPlayer('write')
+                    await msg.edit(content=f'**✅ Успешно вписал джобку старому игроку!**')
+                await msgToLOGG(ctx, worksheet, user, msgAuthor, rule=rule, reason=reason, isJobka=True)
+                profile = await get_user_profile(ctx.user.id)
+                user_id = ctx.user.id
+                new_value = profile['ban'] + 1
+                parameter = 'ban'
+                await set_user_profile(user_id, parameter, new_value)
+
+                logs = client.get_channel(ERROR_ROOM)
+                await logs.send(f'⛔ {ctx.user} записал себе банчик')
+            except:
+                await msg.edit(content='❌ Произошла техническая ошибка, пингуй идиота ксова.')
+        else:
+            await msg.edit(content='❌ **Время вышло.**')
+
+
+@client.tree.command(name = "перма", description= 'быстрая запись пермы', guild=discord.Object(id=GUILD))
 async def perma(ctx, игрок: str=None, правило: str=None, причина: str=None):
 
     user = игрок
@@ -930,7 +1179,7 @@ async def perma(ctx, игрок: str=None, правило: str=None, причи�
                 parameter = 'ban'
                 await set_user_profile(user_id, parameter, new_value)
 
-                logs = client.get_channel(LOGS)
+                logs = client.get_channel(ERROR_ROOM)
                 await logs.send(f'⛔ {ctx.user} записал себе банчик')
             except:
                 await msg.edit(content='❌ Произошла техническая ошибка, пингуй идиота ксова.')
@@ -1933,7 +2182,7 @@ async def second_command(ctx, ник: str=None, наказание: app_commands
                         parameter = 'warn'
                         await set_user_profile(user_id, parameter, new_value)
                         
-                        logs = client.get_channel(LOGS)
+                        logs = client.get_channel(ERROR_ROOM)
                         await logs.send(f'⚠️ {ctx.user} записал себе варнчик')
                     elif punish.value == 2:
                         profile = await get_user_profile(ctx.user.id)
@@ -1942,10 +2191,10 @@ async def second_command(ctx, ник: str=None, наказание: app_commands
                         parameter = 'ban'
                         await set_user_profile(user_id, parameter, new_value)
 
-                        logs = client.get_channel(LOGS)
+                        logs = client.get_channel(ERROR_ROOM)
                         await logs.send(f'⛔ {ctx.user} записал себе банчик')
                     else:
-                        logs = client.get_channel(LOGS)
+                        logs = client.get_channel(ERROR_ROOM)
                         await logs.send(f'❓ {ctx.user} что то сделал, и я должен был чёта записать... похуй)')
                 except:
                     await msg.edit(content='❌ Произошла техническая ошибка, пингуй идиота ксова.')
