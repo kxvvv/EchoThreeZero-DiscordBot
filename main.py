@@ -2,6 +2,7 @@ import discord
 import gspread
 import asyncio
 import json
+import random
 
 from discord.ext import commands
 from discord.utils import get
@@ -40,6 +41,12 @@ async def on_ready():
     await client.tree.sync(guild=discord.Object(id=GUILD)) # синхорнизация
     await client.change_presence(status=discord.Status.online, activity = discord.Activity(name = f'на всех свысока.', type = discord.ActivityType.watching))
 
+
+
+
+# @client.event("on_command_erroe")
+# async def cooldown_message():
+#     return
 
 # @client.command()
 # async def qwe(ctx):
@@ -108,7 +115,7 @@ async def whatColorYouNeed(row, UserWarnBan='None'):
     await asyncio.sleep(3)
 
     thisColor = worksheet.get(f'A{row}')
-    worksheet.update(f'A{row}', '')
+    #worksheet.update(f'A{row}', '')
 
     return thisColor
 
@@ -122,11 +129,15 @@ async def getProfileFromSheet(user, warnCheck, banCheck, testCheck, row, col, wo
 
         h = color.lstrip('#')
 
-        rgb = tuple(int(h[i:i+2], 16) for i in (0, 2, 4))
+        try:
+            rgb = tuple(int(h[i:i+2], 16) for i in (0, 2, 4))
+            colour=discord.Colour.from_rgb(rgb[0], rgb[1], rgb[2])
+            return colour
+        except:
+            await asyncio.sleep(random.randint(5, 15))
+            return await colorStatus()
 
-        colour=discord.Colour.from_rgb(rgb[0], rgb[1], rgb[2])
 
-        return colour
 
 
     embed = discord.Embed(
@@ -513,7 +524,7 @@ f'''
             return True
         else:
             await msg.edit(content='❌ В запросе отказано. `error #451`')
-
+    
 
 @client.tree.command(name = 'статистика', description='вся статистика пользователей', guild=discord.Object(id=GUILD))
 async def stats(ctx):
@@ -596,7 +607,7 @@ async def note(ctx, игрок: str=None, причина: str=None):
     user = игрок
     reason = причина
 
-    await ctx.response.defer()
+    
 
     gc, sh, worksheet = joinToSheet()
 
@@ -612,7 +623,7 @@ async def note(ctx, игрок: str=None, причина: str=None):
     elif (f'{user}  ' in values_list):
         user = f'{user}  '
     else:
-        await ctx.response.send_message(f"❌ Игрока `{user}` нет в таблице.")
+        await ctx.followup.send(f"❌ Игрока `{user}` нет в таблице.")
         return
 
 
@@ -672,8 +683,11 @@ async def note(ctx, игрок: str=None, причина: str=None):
             await msg.edit(content='❌ **Время вышло.**')
 
 
-
-
+async def errorDeferMessage(ctx, errorValue):
+    errorCh = client.get_channel(ctx.channel.id)
+    print(f'erorr {errorValue}')
+    await errorCh.send(f'<@{ctx.user.id}> **попробуй еще раз, дискорд не захотел принимать твою команду.**')
+    
 @client.tree.command(name = "джобка", description='быстрая запись джобки', guild=discord.Object(id=GUILD))
 @app_commands.choices(отдел=[
     discord.app_commands.Choice(name='Командный', value=1),
@@ -723,7 +737,11 @@ async def jobka(ctx, игрок: str=None, правило: str=None, причи�
         return
 
     if playerIsNew == False:
-        await ctx.response.defer()
+        try:
+            await ctx.response.defer() # ephemeral=True
+        except:
+            await errorDeferMessage(ctx=ctx, errorValue='743')
+            return
 
     def newPlayer():
         lastdude = values_list[-1]
@@ -947,8 +965,12 @@ async def perma(ctx, игрок: str=None, правило: str=None, причи�
         return
 
     if playerIsNew == False:
-        await ctx.response.defer()
-
+        try:
+            await ctx.response.defer() # ephemeral=True
+        except:
+            await errorDeferMessage(ctx=ctx, errorValue='971')
+            return
+        
     def newPlayer():
         lastdude = values_list[-1]
 
@@ -1311,7 +1333,12 @@ async def giveTest(ctx, игрок: str=None, выбор: app_commands.Choice[in
 
     if skipOrNot == True:
         return
-    await ctx.response.defer()
+    
+    try:
+        await ctx.response.defer() # ephemeral=True
+    except:
+        await errorDeferMessage(ctx=ctx, errorValue='1340')
+        return
 
     cell = worksheet.find(user)
     
@@ -1479,7 +1506,12 @@ async def change_color(ctx, ник: str=None, столбик: app_commands.Choic
             await ctx.response.send_message('❌ Не выбран номер наказания.')
             return
 
-    await ctx.response.defer()
+    try:
+        await ctx.response.defer() # ephemeral=True
+    except:
+        await errorDeferMessage(ctx=ctx, errorValue='1509')
+        return
+    
     gc, sh, worksheet = joinToSheet()
     values_list = worksheet.col_values(2)
 
@@ -1794,7 +1826,12 @@ async def profile(ctx, модератор: discord.Member = None):
         user = ctx.user
     
 
-    await ctx.response.defer()
+    try:
+        await ctx.response.defer() # ephemeral=True
+    except:
+        await errorDeferMessage(ctx=ctx, errorValue='1832')
+        return
+    
     profile = await get_user_profile(user.id)
 
 
@@ -1826,13 +1863,20 @@ async def profile(ctx, модератор: discord.Member = None):
 @client.tree.command(name = "поиск", description = "поиск игрока в таблице", guild=discord.Object(id=GUILD))
 async def first_command(ctx, игрок: str = None):
 
+    try:
+        await ctx.response.defer() # ephemeral=True
+    except:
+        await errorDeferMessage(ctx=ctx, errorValue='1869')
+        return
+    
     user = игрок
-
+    
+    
     gc, sh, worksheet = joinToSheet()
 
 
     if user == None:
-        await ctx.response.send_message(f"❌ Не введены аргументы.")
+        await ctx.followup.send(f"❌ Не введены аргументы.")
         return
 
     
@@ -1848,11 +1892,11 @@ async def first_command(ctx, игрок: str = None):
     elif (f'{user}  ' in values_list):
         user = f'{user}  '
     else:
-        await ctx.response.send_message(f"❌ Игрок `{user}` не найден, проверяйте регистр.")
+        await ctx.followup.send(f"❌ Игрок `{user}` не найден, проверяйте регистр.")
         return
 
     
-    await ctx.response.defer() # ephemeral=True
+    
 
     
     cell = worksheet.find(user)
@@ -2243,20 +2287,25 @@ async def second_command(ctx, ник: str=None, наказание: app_commands
 
     values_list = worksheet.col_values(2)
 
+    
+    try:
+        await ctx.response.defer() # ephemeral=True
+    except:
+        await errorDeferMessage(ctx=ctx, errorValue='2294')
+        return
+
+
     if user in values_list:
         user = f'{user}'
-        await ctx.response.defer()
         await nextStep('old')
     elif (f'{user} ' in values_list):
-        await ctx.response.defer()
         user = f'{user} '
         await nextStep('old')
     elif (f'{user}  ' in values_list):
-        await ctx.response.defer()
         user = f'{user}  '
         await nextStep('old')
     else:
-        await ctx.response.send_message(f"⚠️ Игрок `{user}` не найден.")
+        await ctx.followup.send(f"⚠️ Игрок `{user}` не найден.")
         await nextStep('new')
 
 
