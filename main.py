@@ -607,13 +607,18 @@ async def note(ctx, игрок: str=None, причина: str=None):
     user = игрок
     reason = причина
 
-    
+
+    try:
+        await ctx.response.defer() # ephemeral=True
+    except:
+        await errorDeferMessage(ctx=ctx, errorValue='619')
+        return
 
     gc, sh, worksheet = joinToSheet()
 
     values_list = worksheet.col_values(2)
 
-    
+
 
 
     if user in values_list:
