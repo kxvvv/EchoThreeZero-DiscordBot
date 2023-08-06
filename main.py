@@ -330,7 +330,7 @@ async def msgToLOGG(ctx, worksheet, user, msgAuthor, clrColor=None, clrColum=Non
     def checkForAction():
         if isPerma == True:
             return f'Записал ПЕРМУ игроку.'
-        elif isJobka != None:
+        elif isJobka == True:
             return f'Записал новую джобку.'
         elif isColor == True:
             return f'Поменял цвет игроку.'
