@@ -1853,8 +1853,10 @@ async def profile(ctx, модератор: discord.Member = None):
     embed.add_field(name="⏰ Жалобы", value=f'{profile["report"]}')
     
     
-    #embed.set_image(url=member.avatar.url)
-    embed.set_thumbnail(url=user.avatar.url)
+    try:
+        embed.set_thumbnail(url=user.avatar.url)
+    except:
+        embed.set_thumbnail(url='https://static.wikia.nocookie.net/evade-nextbot/images/b/b5/Nerd.png/revision/latest?cb=20220822144117')
 
     embed.set_footer(text=checkFooter(ctx=ctx, user=user))
 
