@@ -174,55 +174,6 @@ async def stats(ctx, client):
                     embedMain.add_field(name=f'{y.name}', value=takeStats(x))
 
 
-
-    
-
-    
-    # for x in profile:
-    #     id = x
-    #     x = profile.get(x)
-    #     ban = x['ban']
-    #     warn = x['warn']
-    #     report = x['report']
-    #     if ban + warn + report != 0:
-    #         ban = 'Баны: ' +str(ban)
-    #         warn = 'Варны: ' + str(warn)
-    #         report = 'Репорты: ' + str(report)
-
-    #         li = []
-    #         li.append(ban)
-    #         li.append(warn)
-    #         li.append(report)
-    #         text = ''
-
-        
-    #         for x in li:
-    #             text += x + '\n'
-
-
-    #         if name not in guild.members:
-    #             name = 'unknown'
-    #             embed.add_field(name=f'{name}', value=text)
-
-    #         for x in allMembers:
-    #             for y in guild.members:
-    #                 if x == y:
-    #                     if echoRole in y.roles:
-    #                         embedEcho.add_field(name=f'{y.name}', value=text)
-    #                     elif solarisRole in y.roles:
-    #                         embedSolaris.add_field(name=f'{y.name}', value=text)
-    #                     elif novaRole in y.roles:
-    #                         embedNova.add_field(name=f'{y.name}', value=text)
-    #                     elif atharaRole in y.roles:
-    #                         embedAthara.add_field(name=f'{y.name}', value=text)
-    #                     elif elysiumRole in y.roles:
-    #                         embedElysium.add_field(name=f'{y.name}', value=text)
-    #                     elif allRole in y.roles:
-    #                         embedAllRole.add_field(name=f'{y.name}', value=text)
-    #                     elif mainRole in y.roles:
-    #                         embedMain.add_field(name=f'{y.name}', value=text)
-
-
                     
     return embedEcho, embedSolaris, embedNova, embedAthara, embedElysium, embedAllRole, embedMain
             
