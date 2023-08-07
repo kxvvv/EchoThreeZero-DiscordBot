@@ -3,6 +3,8 @@ import gspread
 import asyncio
 import json
 import random
+from stats import *
+
 
 from discord.ext import commands
 from discord.utils import get
@@ -480,7 +482,7 @@ f'''
 
 
         ''', 
-                title='Статус: отказано.'
+                title='Статус: Отказано.'
             )
             if punish != None:
                 if punish == 'варн':
@@ -527,79 +529,19 @@ f'''
     
 
 @client.tree.command(name = 'статистика', description='вся статистика пользователей', guild=discord.Object(id=GUILD))
-async def stats(ctx):
+async def toStats(ctx):
+    embed, embedEcho, embedSolaris, embedNova, embedAthara, embedElysium, embedAllRole, embedMain = await stats(ctx=ctx, client=client)
+    await ctx.response.send_message('Загружаю информацию.')
+    ctx = client.get_channel(ctx.channel.id)
+    await ctx.send(embed=embed)
+    await ctx.send(embed=embedEcho)
+    await ctx.send(embed=embedSolaris)
+    await ctx.send(embed=embedNova)
+    await ctx.send(embed=embedAthara)
+    await ctx.send(embed=embedElysium)
+    await ctx.send(embed=embedMain)
+    await ctx.send(embed=embedAllRole)
 
-    access = discord.utils.find(lambda r: r.name == 'смотритель сервера', ctx.guild.roles)
-    allAcces = discord.utils.find(lambda r: r.name == '⭐', ctx.guild.roles)
-    if allAcces not in ctx.user.roles:
-        if access not in ctx.user.roles:
-            await ctx.response.send_message('❌ У Вас нет доступа к данной команде.')
-            return
-
-
-    with open("basa.json", "r") as file:
-        profile = json.load(file)
-
-    for x in profile:
-        id = x
-        x = profile.get(x)
-        ban = x['ban']
-        warn = x['warn']
-        report = x['report']
-
-
-    embed = discord.Embed(
-        colour=discord.Colour(0xB03060),
-        #description=checkForReason(), 
-        title='Статистика модераторов'
-    )
-    #embed.set_author(name=ctx.user)
-
-
-    guild = client.get_guild(GUILD)
-    members = {}
-    for x in guild.members:
-        id = x.id
-        name = x.name
-        members[id] = {"name": ''}
-
-        newName = members['name'] = name
-
-        members[id]['name'] = newName
-
-
-    with open("basa.json", "r") as file:
-        profile = json.load(file)
-
-    for x in profile:
-        id = x
-        x = profile.get(x)
-        ban = x['ban']
-        warn = x['warn']
-        report = x['report']
-        ban = 'Баны: ' +str(ban)
-        warn = 'Варны: ' + str(warn)
-        report = 'Репорты: ' + str(report)
-
-        li = []
-        li.append(ban)
-        li.append(warn)
-        li.append(report)
-        text = ''
-
-        for x in li:
-            text += x + '\n'
-
-        for x in members:
-            x = f'{x}'
-            if x == id:
-
-                x = members[int(x)]['name']
-                name = x
-
-        embed.add_field(name=f'{name}', value=text)
-
-    await ctx.response.send_message(embed=embed)
 
 @client.tree.command(name = "выдать-заметку", description= 'записывает заметку игроку в таблице', guild=discord.Object(id=GUILD))
 async def note(ctx, игрок: str=None, причина: str=None):
