@@ -530,10 +530,9 @@ f'''
 
 @client.tree.command(name = 'статистика', description='вся статистика пользователей', guild=discord.Object(id=GUILD))
 async def toStats(ctx):
-    embed, embedEcho, embedSolaris, embedNova, embedAthara, embedElysium, embedAllRole, embedMain = await stats(ctx=ctx, client=client)
+    embedEcho, embedSolaris, embedNova, embedAthara, embedElysium, embedAllRole, embedMain = await stats(ctx=ctx, client=client)
     await ctx.response.send_message('Загружаю информацию.')
     ctx = client.get_channel(ctx.channel.id)
-    await ctx.send(embed=embed)
     await ctx.send(embed=embedEcho)
     await ctx.send(embed=embedSolaris)
     await ctx.send(embed=embedNova)
@@ -1738,7 +1737,20 @@ async def change_color(ctx, ник: str=None, столбик: app_commands.Choic
 
 
 @client.tree.command(name = "выдать-жалобу", description= 'выдает жалобу в статистику модератору, указывать нужно айди в дискорде', guild=discord.Object(id=GUILD))
-async def report(ctx, user: str=None):
+async def report(ctx, модератор: discord.Member = None):
+
+    user = модератор
+
+    try:
+        if user.id:
+            user = user.id
+            pass
+        else:
+            await ctx.response.send_message('❌ Указывать нужно айди..')
+            return
+    except:
+        await ctx.response.send_message('❌ Указывать нужно айди..')
+        return
 
 
     #вавден

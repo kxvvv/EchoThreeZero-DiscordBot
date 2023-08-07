@@ -34,10 +34,10 @@ async def stats(ctx, client):
         report = x['report']
 
 
-    embed = discord.Embed(
-        colour=discord.Colour(0xB03060),
-        title='Статистика неизвестных модераторов'
-    )
+    # embed = discord.Embed(
+    #     colour=discord.Colour(0xB03060),
+    #     title='Статистика неизвестных модераторов'
+    # )
 
     embedEcho = discord.Embed(
         colour=discord.Colour(0x00FFFF),
@@ -97,52 +97,134 @@ async def stats(ctx, client):
         profile = json.load(file)
 
     allMembers = client.get_all_members()
+
+
+    def takeStats(x, text=None):
+            x = profile.get(x)
+
+                
+            ban = x['ban']
+            warn = x['warn']
+            report = x['report']
+            if int(ban) + int(warn) + int(report) != 0:
+                ban = 'Баны: ' +str(ban)
+                warn = 'Варны: ' + str(warn)
+                report = 'Репорты: ' + str(report)
+
+                li = []
+                li.append(ban)
+                li.append(warn)
+                li.append(report)
+                text = ''
+
+            
+                for x in li:
+                    text += x + '\n'
+
+
+
+
+                return text
+            else:
+                ban = 'Баны: 0'
+                warn = 'Варны: 0'
+                report = 'Репорты: 0'
+
+                li = []
+                li.append(ban)
+                li.append(warn)
+                li.append(report)
+                text = ''
+
+            
+                for x in li:
+                    text += x + '\n'
+
+                return text
+
+
+            
+
+
+
+
     for x in profile:
         id = x
-        x = profile.get(x)
-        ban = x['ban']
-        warn = x['warn']
-        report = x['report']
-        if ban + warn + report != 0:
-            ban = 'Баны: ' +str(ban)
-            warn = 'Варны: ' + str(warn)
-            report = 'Репорты: ' + str(report)
+        for y in guild.members:
+            try:
+                id = int(id)
+            except:
+                id = 0
+            if y.id == id:
+                name = y.name#ubrat
 
-            li = []
-            li.append(ban)
-            li.append(warn)
-            li.append(report)
-            text = ''
+                if echoRole in y.roles:
+                    embedEcho.add_field(name=f'{y.name}', value=takeStats(x))
+                elif solarisRole in y.roles:
+                    embedSolaris.add_field(name=f'{y.name}', value=takeStats(x))
+                elif novaRole in y.roles:
+                    embedNova.add_field(name=f'{y.name}', value=takeStats(x))
+                elif atharaRole in y.roles:
+                    embedAthara.add_field(name=f'{y.name}', value=takeStats(x))
+                elif elysiumRole in y.roles:
+                    embedElysium.add_field(name=f'{y.name}', value=takeStats(x))
+                elif allRole in y.roles:
+                    embedAllRole.add_field(name=f'{y.name}', value=takeStats(x))
+                elif mainRole in y.roles:
+                    embedMain.add_field(name=f'{y.name}', value=takeStats(x))
+
+
+
+    
+
+    
+    # for x in profile:
+    #     id = x
+    #     x = profile.get(x)
+    #     ban = x['ban']
+    #     warn = x['warn']
+    #     report = x['report']
+    #     if ban + warn + report != 0:
+    #         ban = 'Баны: ' +str(ban)
+    #         warn = 'Варны: ' + str(warn)
+    #         report = 'Репорты: ' + str(report)
+
+    #         li = []
+    #         li.append(ban)
+    #         li.append(warn)
+    #         li.append(report)
+    #         text = ''
 
         
-            for x in li:
-                text += x + '\n'
+    #         for x in li:
+    #             text += x + '\n'
 
-            
-        
-            
-            
-            embed.add_field(name=f'{name}', value=text)
-            for x in allMembers:
-                for y in guild.members:
-                    if x == y:
-                        if echoRole in y.roles:
-                            embedEcho.add_field(name=f'{y.name}', value=text)
-                        if solarisRole in y.roles:
-                            embedSolaris.add_field(name=f'{y.name}', value=text)
-                        if novaRole in y.roles:
-                            embedNova.add_field(name=f'{y.name}', value=text)
-                        if atharaRole in y.roles:
-                            embedAthara.add_field(name=f'{y.name}', value=text)
-                        if elysiumRole in y.roles:
-                            embedElysium.add_field(name=f'{y.name}', value=text)
-                        if allRole in y.roles:
-                            embedAllRole.add_field(name=f'{y.name}', value=text)
-                        if mainRole in y.roles:
-                            embedMain.add_field(name=f'{y.name}', value=text)
+
+    #         if name not in guild.members:
+    #             name = 'unknown'
+    #             embed.add_field(name=f'{name}', value=text)
+
+    #         for x in allMembers:
+    #             for y in guild.members:
+    #                 if x == y:
+    #                     if echoRole in y.roles:
+    #                         embedEcho.add_field(name=f'{y.name}', value=text)
+    #                     elif solarisRole in y.roles:
+    #                         embedSolaris.add_field(name=f'{y.name}', value=text)
+    #                     elif novaRole in y.roles:
+    #                         embedNova.add_field(name=f'{y.name}', value=text)
+    #                     elif atharaRole in y.roles:
+    #                         embedAthara.add_field(name=f'{y.name}', value=text)
+    #                     elif elysiumRole in y.roles:
+    #                         embedElysium.add_field(name=f'{y.name}', value=text)
+    #                     elif allRole in y.roles:
+    #                         embedAllRole.add_field(name=f'{y.name}', value=text)
+    #                     elif mainRole in y.roles:
+    #                         embedMain.add_field(name=f'{y.name}', value=text)
+
 
                     
-    return embed, embedEcho, embedSolaris, embedNova, embedAthara, embedElysium, embedAllRole, embedMain
+    return embedEcho, embedSolaris, embedNova, embedAthara, embedElysium, embedAllRole, embedMain
             
 
 
