@@ -70,7 +70,7 @@ async def stats(ctx, client):
     )
 
     embedAllRole = discord.Embed(
-        colour=discord.Colour(0x00FFFF),
+        colour=discord.Colour(0xFFFFFF),
         title='Статистика Одиночки модератора'
     )
 
@@ -128,34 +128,16 @@ async def stats(ctx, client):
                     if x == y:
                         if echoRole in y.roles:
                             embedEcho.add_field(name=f'{y.name}', value=text)
-            for x in allMembers:
-                for y in guild.members:
-                    if x == y:
                         if solarisRole in y.roles:
                             embedSolaris.add_field(name=f'{y.name}', value=text)
-            for x in allMembers:
-                for y in guild.members:
-                    if x == y:
                         if novaRole in y.roles:
                             embedNova.add_field(name=f'{y.name}', value=text)
-            for x in allMembers:
-                for y in guild.members:
-                    if x == y:
                         if atharaRole in y.roles:
                             embedAthara.add_field(name=f'{y.name}', value=text)
-            for x in allMembers:
-                for y in guild.members:
-                    if x == y:
                         if elysiumRole in y.roles:
                             embedElysium.add_field(name=f'{y.name}', value=text)
-            for x in allMembers:
-                for y in guild.members:
-                    if x == y:
                         if allRole in y.roles:
                             embedAllRole.add_field(name=f'{y.name}', value=text)
-            for x in allMembers:
-                for y in guild.members:
-                    if x == y:
                         if mainRole in y.roles:
                             embedMain.add_field(name=f'{y.name}', value=text)
 
