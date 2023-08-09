@@ -405,16 +405,24 @@ f'''
         title='❗Статус: ожидает одобрения.'
     )
     if punish != None:
+        punishIsVisible = False
         if punish == 'варн':
             punish = 'Варн ⚠️'
         elif punish == 'бан':
             punish = 'Бан ⛔'
+            punishIsVisible = True
+        elif punish == 'джобка':
+            punish = 'Джобка 👤'
+            punishIsVisible = True
+        elif punish == 'перма':
+            punish = 'ПЕРМА ❗'
 
         embed.add_field(name="Наказание", value=punish)
     if rule != None:
         embed.add_field(name="Правило", value=rule)
-    if punishTime != None:
-        embed.add_field(name='Срок', value=punishTime)
+    if punishIsVisible == True:
+        if punishTime != None:
+            embed.add_field(name='Срок', value=punishTime)
     embed.set_footer(text=checkFooter(ctx=ctx, user=ctx.user))
     
 
@@ -828,7 +836,7 @@ async def jobka(ctx, игрок: str=None, правило: str=None, причи�
 
             junior = discord.utils.find(lambda r: r.name == 'младший модератор', ctx.guild.roles)
             if junior in ctx.user.roles:
-                checkForJunior = await juniorCheck(ctx=ctx, user=user, rule=rule, reason=reason, msg=msg, punish='Джобка.', punishTime=punishTime)
+                checkForJunior = await juniorCheck(ctx=ctx, user=user, rule=rule, reason=reason, msg=msg, punish='джобка', punishTime=punishTime)
             else:
                 checkForJunior = True
 
@@ -1107,7 +1115,7 @@ async def perma(ctx, игрок: str=None, правило: str=None, причи�
 
             junior = discord.utils.find(lambda r: r.name == 'младший модератор', ctx.guild.roles)
             if junior in ctx.user.roles:
-                checkForJunior = await juniorCheck(ctx=ctx, user=user, rule=rule, reason=reason, msg=msg, punish='Перма ❗')
+                checkForJunior = await juniorCheck(ctx=ctx, user=user, rule=rule, reason=reason, msg=msg, punish='перма')
             else:
                 checkForJunior = True
 
