@@ -46,17 +46,6 @@ async def on_ready():
 
 
 
-# @client.event("on_command_erroe")
-# async def cooldown_message():
-#     return
-
-# @client.command()
-# async def qwe(ctx):
-#     guild = client.get_guild(GUILD)
-#     for guild in client.guilds:
-#         for member in guild.members:
-#             print(member)
-
 
 async def get_user_profile(user_id):
     user_id = str(user_id)
@@ -96,7 +85,7 @@ async def set_user_profile(user_id, parameter, new_value):
 
 def joinToSheet():
     gc = gspread.service_account(filename='secretkey.json')
-    sh = gc.open(SHEET) #test #osnova Коквакс новая таблица банов 2.0
+    sh = gc.open(SHEET)
     worksheet = sh.sheet1
     return gc, sh, worksheet
 
@@ -2135,7 +2124,7 @@ async def second_command(ctx, ник: str=None, наказание: app_commands
             if trueUser == msgAuthor:
                 return msgAuthor == ctx.user and str(reaction.emoji) == '✅' or str(reaction.emoji) == '❌'
         try:
-            reaction, msgAuthor = await client.wait_for('reaction_add', timeout=25.0, check=check)
+            reaction, msgAuthor = await client.wait_for('reaction_add', timeout=300.0, check=check)
         except asyncio.TimeoutError:
             await msg.edit(content='❌ **Время вышло.**')
         else:
