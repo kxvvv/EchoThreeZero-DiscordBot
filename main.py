@@ -4,7 +4,6 @@ import asyncio
 import json
 import random
 from stats import *
-from whatColorYouNeed import *
 
 
 from discord.ext import commands
@@ -47,6 +46,18 @@ async def on_ready():
 
 
 
+# @client.event("on_command_erroe")
+# async def cooldown_message():
+#     return
+
+# @client.command()
+# async def qwe(ctx):
+#     guild = client.get_guild(GUILD)
+#     for guild in client.guilds:
+#         for member in guild.members:
+#             print(member)
+
+
 async def get_user_profile(user_id):
     user_id = str(user_id)
 
@@ -85,29 +96,54 @@ async def set_user_profile(user_id, parameter, new_value):
 
 def joinToSheet():
     gc = gspread.service_account(filename='secretkey.json')
-    sh = gc.open(SHEET)
+    sh = gc.open(SHEET) #test #osnova Коквакс новая таблица банов 2.0
     worksheet = sh.sheet1
     return gc, sh, worksheet
 
 
+async def whatColorYouNeed(row, UserWarnBan='None'):
+
+    if UserWarnBan == 'None':
+        return 'None'
+
+    whatColor = 'whatColor'
+    whatColor += UserWarnBan
+
+    gc, sh, worksheet = joinToSheet()
+
+    worksheet.format(f'A{row}', {'textFormat': {'foregroundColor': {'red': 255/255, 'green': 255/255, 'blue': 255/255}}})
+    worksheet.update(f'A{row}', whatColor)
+
+    await asyncio.sleep(3)
+
+    thisColor = worksheet.get(f'A{row}')
+    #worksheet.update(f'A{row}', '')
+
+    return thisColor
 
 async def getProfileFromSheet(user, warnCheck, banCheck, testCheck, row, col, worksheet, UserWarnBan='User'):
 
     async def colorStatus():
+        thisColor = await whatColorYouNeed(row=row, UserWarnBan='User')
+        thisColor = thisColor[0]
+        thisColor = thisColor[0]
+        color = thisColor
 
-        if UserWarnBan == 'User':
-            rgb, cell_data = await whatColorYouNeed(row=row, UserWarnBan='User')
-        
+        h = color.lstrip('#')
 
-        colour=discord.Colour.from_rgb(rgb[0], rgb[1], rgb[2])
-        
-        return colour, cell_data
+        try:
+            rgb = tuple(int(h[i:i+2], 16) for i in (0, 2, 4))
+            colour=discord.Colour.from_rgb(rgb[0], rgb[1], rgb[2])
+            return colour
+        except:
+            await asyncio.sleep(random.randint(5, 15))
+            return await colorStatus()
 
 
-    color, cell_data = await colorStatus()
+
 
     embed = discord.Embed(
-        colour=color,
+        colour=await colorStatus(),
         #description="Информация с таблицы", 
         title=u"Информация с таблицы"
     )
@@ -116,103 +152,28 @@ async def getProfileFromSheet(user, warnCheck, banCheck, testCheck, row, col, wo
 
 
 
-    
-
-
-
-
-    
-    # value = 6
-    # cell_ban = cell_data[0]["rowData"][row]["values"][value]
-    
-
-
-    cellWarnList = {}
-    cellBanList = {}
-
     warnNullOrNot = worksheet.get_values(f'D{row}:D{row+50}')
     banNullOrNot = worksheet.get_values(f'G{row}:G{row+50}')
     listWarn = ''
     listBan = ''
 
-
-    colorCounter = row - 2
     warnCount = warnCheck
     for x in warnNullOrNot:
         if warnCount == 0:
             break
         if x == ['']:
             break
-        listWarn += f"{x[0]}"
+        listWarn += f"{x[0]}\n"
         warnCount -= 1
 
-        colorCounter += 1
-        cell_warn = cell_data[0]["rowData"][colorCounter]["values"][3] # 3 - warn colum
-        backgroundWarnColor = cell_warn["effectiveFormat"]["backgroundColor"]
-
-        if cell_warn != None:
-            red = backgroundWarnColor['red'] * 100
-            green = backgroundWarnColor['green'] * 100
-            blue = backgroundWarnColor['blue'] * 100
-            red = int(red)
-            green = int(green)
-            blue = int(blue)
-
-            rgb = (f'{red}', f'{green}',f'{blue}')
-
-            rgb = tuple(int(int(s) * 2.55) for s in rgb)
-
-
-            if rgb != (254, 254, 254):
-                if rgb == (232, 66, 51):
-                    listWarn += f" 🟥"
-                elif rgb == (249, 186, 2):
-                    listWarn += f" 🟧"
-                else:
-                    listWarn += f" ❗"
-
-        listWarn += '\n'
-
-
-
-
-    colorCounter = row - 2
     banCount = banCheck
     for x in banNullOrNot:
         if banCount == 0:
             break
         if x == ['']:
             break
-        listBan += f"{x[0]}"
+        listBan += f"{x[0]}\n"
         banCount -= 1
-        
-        colorCounter += 1
-        cell_ban = cell_data[0]["rowData"][colorCounter]["values"][6] # 6 - ban colum
-        backgroundWarnColor = cell_ban["effectiveFormat"]["backgroundColor"]
-
-        if cell_ban != None:
-            red = backgroundWarnColor['red'] * 100
-            green = backgroundWarnColor['green'] * 100
-            blue = backgroundWarnColor['blue'] * 100
-            red = int(red)
-            green = int(green)
-            blue = int(blue)
-
-            rgb = (f'{red}', f'{green}',f'{blue}')
-
-            rgb = tuple(int(int(s) * 2.55) for s in rgb)
-
-
-            if rgb != (254, 254, 254):
-                if rgb == (232, 66, 51):
-                    listBan += f" 🟥"
-                elif rgb == (249, 186, 2):
-                    listBan += f" 🟧"
-                else:
-                    listBan += f" ❗"
-
-
-        listBan += '\n'
 
 
     if listWarn == '':
@@ -434,7 +395,7 @@ async def msgToLOGG(ctx, worksheet, user, msgAuthor, clrColor=None, clrColum=Non
 
 
 
-async def juniorCheck(ctx, user, reason, msg, rule=None, punish=None, punishTime=None):
+async def juniorCheck(ctx, user, reason, msg, rule=None, punish=None):
 
     await msg.edit(content=f'**😐 Ожидай одобрения запроса от старшей администрации.**')
     request = client.get_channel(REQUEST_ROOM)
@@ -463,8 +424,6 @@ f'''
         embed.add_field(name="Наказание", value=punish)
     if rule != None:
         embed.add_field(name="Правило", value=rule)
-    if punishTime != None:
-        embed.add_field(name="Срок", value=punishTime)
     embed.set_footer(text=checkFooter(ctx=ctx, user=ctx.user))
     
 
@@ -650,7 +609,7 @@ async def note(ctx, игрок: str=None, причина: str=None):
         if trueUser == msgAuthor:
             return msgAuthor == ctx.user and str(reaction.emoji) == '✅' or str(reaction.emoji) == '❌'
     try:
-        reaction, msgAuthor = await client.wait_for('reaction_add', timeout=120.0, check=check)
+        reaction, msgAuthor = await client.wait_for('reaction_add', timeout=25.0, check=check)
     except asyncio.TimeoutError:
         await msg.edit(content='❌ **Время вышло.**')
     else:
@@ -864,7 +823,7 @@ async def jobka(ctx, игрок: str=None, правило: str=None, причи�
         if trueUser == msgAuthor:
             return msgAuthor == ctx.user and str(reaction.emoji) == '✅' or str(reaction.emoji) == '❌'
     try:
-        reaction, msgAuthor = await client.wait_for('reaction_add', timeout=120.0, check=check)
+        reaction, msgAuthor = await client.wait_for('reaction_add', timeout=25.0, check=check)
     except asyncio.TimeoutError:
         await msg.edit(content='❌ **Время вышло.**')
     else:
@@ -1143,7 +1102,7 @@ async def perma(ctx, игрок: str=None, правило: str=None, причи�
         if trueUser == msgAuthor:
             return msgAuthor == ctx.user and str(reaction.emoji) == '✅' or str(reaction.emoji) == '❌'
     try:
-        reaction, msgAuthor = await client.wait_for('reaction_add', timeout=120.0, check=check)
+        reaction, msgAuthor = await client.wait_for('reaction_add', timeout=25.0, check=check)
     except asyncio.TimeoutError:
         await msg.edit(content='❌ **Время вышло.**')
     else:
@@ -1297,7 +1256,7 @@ async def giveTest(ctx, игрок: str=None, выбор: app_commands.Choice[in
             if trueUser == msgAuthor:
                 return msgAuthor == ctx.user and str(reaction.emoji) == '✅' or str(reaction.emoji) == '❌'
         try:
-            reaction, msgAuthor = await client.wait_for('reaction_add', timeout=120.0, check=check)
+            reaction, msgAuthor = await client.wait_for('reaction_add', timeout=25.0, check=check)
         except asyncio.TimeoutError:
             await msg.edit(content='❌ **Время вышло.**')
         else:
@@ -1361,7 +1320,7 @@ async def giveTest(ctx, игрок: str=None, выбор: app_commands.Choice[in
         if trueUser == msgAuthor:
             return msgAuthor == ctx.user and str(reaction.emoji) == '✅' or str(reaction.emoji) == '❌'
     try:
-        reaction, msgAuthor = await client.wait_for('reaction_add', timeout=120.0, check=check)
+        reaction, msgAuthor = await client.wait_for('reaction_add', timeout=25.0, check=check)
     except asyncio.TimeoutError:
         await msg.edit(content='❌ **Время вышло.**')
     else:
@@ -1559,7 +1518,7 @@ async def change_color(ctx, ник: str=None, столбик: app_commands.Choic
         if trueUser == msgAuthor:
             return msgAuthor == ctx.user and str(reaction.emoji) == '✅' or str(reaction.emoji) == '❌'
     try:
-        reaction, msgAuthor = await client.wait_for('reaction_add', timeout=120.0, check=check)
+        reaction, msgAuthor = await client.wait_for('reaction_add', timeout=25.0, check=check)
     except asyncio.TimeoutError:
         await msg.edit(content='❌ **Время вышло.**')
     else:
@@ -1919,13 +1878,12 @@ async def first_command(ctx, игрок: str = None):
     discord.app_commands.Choice(name='варн', value=1),
     discord.app_commands.Choice(name='бан', value=2),
 ])
-async def second_command(ctx, ник: str=None, наказание: app_commands.Choice[int]=0, правило: str=None, причина: str='None', срок: str='None'):
+async def second_command(ctx, ник: str=None, наказание: app_commands.Choice[int]=0, правило: str=None, причина: str='None'):
 
     user = ник
     punish = наказание
     rule = правило
     reason = причина
-    punishTime = срок
 
     gc, sh, worksheet = joinToSheet()
 
@@ -2177,7 +2135,7 @@ async def second_command(ctx, ник: str=None, наказание: app_commands
             if trueUser == msgAuthor:
                 return msgAuthor == ctx.user and str(reaction.emoji) == '✅' or str(reaction.emoji) == '❌'
         try:
-            reaction, msgAuthor = await client.wait_for('reaction_add', timeout=120.0, check=check)
+            reaction, msgAuthor = await client.wait_for('reaction_add', timeout=25.0, check=check)
         except asyncio.TimeoutError:
             await msg.edit(content='❌ **Время вышло.**')
         else:
@@ -2188,7 +2146,7 @@ async def second_command(ctx, ник: str=None, наказание: app_commands
 
                 junior = discord.utils.find(lambda r: r.name == 'младший модератор', ctx.guild.roles)
                 if junior in ctx.user.roles:
-                    checkForJunior = await juniorCheck(ctx=ctx, user=user, rule=rule, reason=reason, msg=msg, punish=punish.name, punishTime=punishTime)
+                    checkForJunior = await juniorCheck(ctx=ctx, user=user, rule=rule, reason=reason, msg=msg, punish=punish.name)
                 else:
                     checkForJunior = True
 
