@@ -504,7 +504,7 @@ f'''
         else:
             pass
     try:
-        payload = await client.wait_for('raw_reaction_add', timeout=86400.0, check=check)
+        payload = await client.wait_for('raw_reaction_add', timeout=604800.0, check=check)
     except asyncio.TimeoutError:
         await msg.edit(content='❌ **Время на ответ запроса - вышло.**')
     else:
