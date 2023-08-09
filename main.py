@@ -384,7 +384,7 @@ async def msgToLOGG(ctx, worksheet, user, msgAuthor, clrColor=None, clrColum=Non
 
 
 
-async def juniorCheck(ctx, user, reason, msg, rule=None, punish=None):
+async def juniorCheck(ctx, user, reason, msg, rule=None, punish=None, punishTime=None):
 
     await msg.edit(content=f'**😐 Ожидай одобрения запроса от старшей администрации.**')
     request = client.get_channel(REQUEST_ROOM)
@@ -413,6 +413,8 @@ f'''
         embed.add_field(name="Наказание", value=punish)
     if rule != None:
         embed.add_field(name="Правило", value=rule)
+    if punishTime != None:
+        embed.add_field(name='Срок', value=punishTime)
     embed.set_footer(text=checkFooter(ctx=ctx, user=ctx.user))
     
 
@@ -598,7 +600,7 @@ async def note(ctx, игрок: str=None, причина: str=None):
         if trueUser == msgAuthor:
             return msgAuthor == ctx.user and str(reaction.emoji) == '✅' or str(reaction.emoji) == '❌'
     try:
-        reaction, msgAuthor = await client.wait_for('reaction_add', timeout=25.0, check=check)
+        reaction, msgAuthor = await client.wait_for('reaction_add', timeout=300.0, check=check)
     except asyncio.TimeoutError:
         await msg.edit(content='❌ **Время вышло.**')
     else:
@@ -633,12 +635,13 @@ async def errorDeferMessage(ctx, errorValue):
     discord.app_commands.Choice(name='ИНЖ', value=6),
     discord.app_commands.Choice(name='Антагонисты', value=7),
 ])
-async def jobka(ctx, игрок: str=None, правило: str=None, причина: str=None, отдел: app_commands.Choice[int]=0):
+async def jobka(ctx, игрок: str=None, правило: str=None, причина: str=None, отдел: app_commands.Choice[int]=0, срок: str='None'):
 
     user = игрок
     rule = правило
     reason = причина
     jobChoose = отдел
+    punishTime = срок
 
     gc, sh, worksheet = joinToSheet()
     values_list = worksheet.col_values(2)
@@ -812,7 +815,7 @@ async def jobka(ctx, игрок: str=None, правило: str=None, причи�
         if trueUser == msgAuthor:
             return msgAuthor == ctx.user and str(reaction.emoji) == '✅' or str(reaction.emoji) == '❌'
     try:
-        reaction, msgAuthor = await client.wait_for('reaction_add', timeout=25.0, check=check)
+        reaction, msgAuthor = await client.wait_for('reaction_add', timeout=300.0, check=check)
     except asyncio.TimeoutError:
         await msg.edit(content='❌ **Время вышло.**')
     else:
@@ -825,7 +828,7 @@ async def jobka(ctx, игрок: str=None, правило: str=None, причи�
 
             junior = discord.utils.find(lambda r: r.name == 'младший модератор', ctx.guild.roles)
             if junior in ctx.user.roles:
-                checkForJunior = await juniorCheck(ctx=ctx, user=user, rule=rule, reason=reason, msg=msg, punish='Джобка.')
+                checkForJunior = await juniorCheck(ctx=ctx, user=user, rule=rule, reason=reason, msg=msg, punish='Джобка.', punishTime=punishTime)
             else:
                 checkForJunior = True
 
@@ -1091,7 +1094,7 @@ async def perma(ctx, игрок: str=None, правило: str=None, причи�
         if trueUser == msgAuthor:
             return msgAuthor == ctx.user and str(reaction.emoji) == '✅' or str(reaction.emoji) == '❌'
     try:
-        reaction, msgAuthor = await client.wait_for('reaction_add', timeout=25.0, check=check)
+        reaction, msgAuthor = await client.wait_for('reaction_add', timeout=300.0, check=check)
     except asyncio.TimeoutError:
         await msg.edit(content='❌ **Время вышло.**')
     else:
@@ -1245,7 +1248,7 @@ async def giveTest(ctx, игрок: str=None, выбор: app_commands.Choice[in
             if trueUser == msgAuthor:
                 return msgAuthor == ctx.user and str(reaction.emoji) == '✅' or str(reaction.emoji) == '❌'
         try:
-            reaction, msgAuthor = await client.wait_for('reaction_add', timeout=25.0, check=check)
+            reaction, msgAuthor = await client.wait_for('reaction_add', timeout=300.0, check=check)
         except asyncio.TimeoutError:
             await msg.edit(content='❌ **Время вышло.**')
         else:
@@ -1309,7 +1312,7 @@ async def giveTest(ctx, игрок: str=None, выбор: app_commands.Choice[in
         if trueUser == msgAuthor:
             return msgAuthor == ctx.user and str(reaction.emoji) == '✅' or str(reaction.emoji) == '❌'
     try:
-        reaction, msgAuthor = await client.wait_for('reaction_add', timeout=25.0, check=check)
+        reaction, msgAuthor = await client.wait_for('reaction_add', timeout=300.0, check=check)
     except asyncio.TimeoutError:
         await msg.edit(content='❌ **Время вышло.**')
     else:
@@ -1507,7 +1510,7 @@ async def change_color(ctx, ник: str=None, столбик: app_commands.Choic
         if trueUser == msgAuthor:
             return msgAuthor == ctx.user and str(reaction.emoji) == '✅' or str(reaction.emoji) == '❌'
     try:
-        reaction, msgAuthor = await client.wait_for('reaction_add', timeout=25.0, check=check)
+        reaction, msgAuthor = await client.wait_for('reaction_add', timeout=300.0, check=check)
     except asyncio.TimeoutError:
         await msg.edit(content='❌ **Время вышло.**')
     else:
@@ -1867,12 +1870,13 @@ async def first_command(ctx, игрок: str = None):
     discord.app_commands.Choice(name='варн', value=1),
     discord.app_commands.Choice(name='бан', value=2),
 ])
-async def second_command(ctx, ник: str=None, наказание: app_commands.Choice[int]=0, правило: str=None, причина: str='None'):
+async def second_command(ctx, ник: str=None, наказание: app_commands.Choice[int]=0, правило: str=None, причина: str='None', срок: str='None'):
 
     user = ник
     punish = наказание
     rule = правило
     reason = причина
+    punishTime = срок
 
     gc, sh, worksheet = joinToSheet()
 
@@ -2135,7 +2139,7 @@ async def second_command(ctx, ник: str=None, наказание: app_commands
 
                 junior = discord.utils.find(lambda r: r.name == 'младший модератор', ctx.guild.roles)
                 if junior in ctx.user.roles:
-                    checkForJunior = await juniorCheck(ctx=ctx, user=user, rule=rule, reason=reason, msg=msg, punish=punish.name)
+                    checkForJunior = await juniorCheck(ctx=ctx, user=user, rule=rule, reason=reason, msg=msg, punish=punish.name, punishTime=punishTime)
                 else:
                     checkForJunior = True
 
