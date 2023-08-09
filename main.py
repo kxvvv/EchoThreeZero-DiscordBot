@@ -384,7 +384,7 @@ async def msgToLOGG(ctx, worksheet, user, msgAuthor, clrColor=None, clrColum=Non
 
 
 
-async def juniorCheck(ctx, user, reason, msg, rule=None, punish=None, punishTime=None):
+async def juniorCheck(ctx, user, reason, msg, rule=None, punish=None, punishTime=None, jobChoose=None):
 
     await msg.edit(content=f'**😐 Ожидай одобрения запроса от старшей администрации.**')
     request = client.get_channel(REQUEST_ROOM)
@@ -412,7 +412,7 @@ f'''
             punish = 'Бан ⛔'
             punishIsVisible = True
         elif punish == 'джобка':
-            punish = 'Джобка 👤'
+            punish = f'Джобка 👤'
             punishIsVisible = True
         elif punish == 'перма':
             punish = 'ПЕРМА ❗'
@@ -423,6 +423,8 @@ f'''
     if punishIsVisible == True:
         if punishTime != None:
             embed.add_field(name='Срок', value=punishTime)
+    if jobChoose != None:
+        embed.add_field(name='Отдел', value=jobChoose)
     embed.set_footer(text=checkFooter(ctx=ctx, user=ctx.user))
     
 
@@ -836,7 +838,7 @@ async def jobka(ctx, игрок: str=None, правило: str=None, причи�
 
             junior = discord.utils.find(lambda r: r.name == 'младший модератор', ctx.guild.roles)
             if junior in ctx.user.roles:
-                checkForJunior = await juniorCheck(ctx=ctx, user=user, rule=rule, reason=reason, msg=msg, punish='джобка', punishTime=punishTime)
+                checkForJunior = await juniorCheck(ctx=ctx, user=user, rule=rule, reason=reason, msg=msg, punish='джобка', punishTime=punishTime, jobChoose=jobChoose.name)
             else:
                 checkForJunior = True
 
