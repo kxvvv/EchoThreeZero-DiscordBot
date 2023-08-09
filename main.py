@@ -434,7 +434,7 @@ f'''
 
     await msg.add_reaction('✅')
     await msg.add_reaction('❌')
-    await msg.create_thread(name='Автоветка.')
+    #await msg.create_thread(name='Автоветка.')
 
 
 
@@ -449,10 +449,10 @@ f'''
         def nextStep():
             return str(payload.emoji) == '✅' or str(payload.emoji) == '❌'
 
-        access = discord.utils.find(lambda r: r.name == 'модератор', ctx.guild.roles)
-        access2 = discord.utils.find(lambda r: r.name == 'старший модератор', ctx.guild.roles)
-        access3 = discord.utils.find(lambda r: r.name == 'смотритель сервера', ctx.guild.roles)
-        access4 = discord.utils.find(lambda r: r.name == 'смотритель серверов', ctx.guild.roles)
+        access = discord.utils.find(lambda r: r.name == 'Модератор', ctx.guild.roles)
+        access2 = discord.utils.find(lambda r: r.name == 'Старший Модератор', ctx.guild.roles)
+        access3 = discord.utils.find(lambda r: r.name == 'Смотритель Сервера', ctx.guild.roles)
+        access4 = discord.utils.find(lambda r: r.name == 'Смотритель Серверов', ctx.guild.roles)
         if access in rAuth.roles:
             return nextStep()
         elif access2 in rAuth.roles:
@@ -529,8 +529,54 @@ f'''
             await msg.edit(content='❌ В запросе отказано. `error #451`')
     
 
+
+
+async def checkForModeratorRole(ctx):
+    access = discord.utils.find(lambda r: r.name == 'Младший Модератор', ctx.guild.roles)
+    access1 = discord.utils.find(lambda r: r.name == 'Модератор', ctx.guild.roles)
+    access2 = discord.utils.find(lambda r: r.name == 'Старший Модератор', ctx.guild.roles)
+    access3 = discord.utils.find(lambda r: r.name == 'Смотритель Сервера', ctx.guild.roles)
+    access4 = discord.utils.find(lambda r: r.name == 'Смотритель Серверов', ctx.guild.roles)
+    access5 = discord.utils.find(lambda r: r.name == 'Младший Администратор', ctx.guild.roles)
+    access6 = discord.utils.find(lambda r: r.name == 'Администратор', ctx.guild.roles)
+
+
+    roles = ctx.guild.roles
+
+    accesses = (access, access1, access2, access3, access4, access5, access6)
+
+    if any([True for access in accesses if access in roles]):
+        return True
+
+    
+
 @client.tree.command(name = 'статистика', description='вся статистика пользователей', guild=discord.Object(id=GUILD))
 async def toStats(ctx):
+
+    access = await checkForModeratorRole(ctx)
+    if access == False:
+        await ctx.response.send_message('❌ У Вас нет доступа к данной команде.')
+        return
+
+    access2 = discord.utils.find(lambda r: r.name == 'Старший Модератор', ctx.guild.roles)
+    access3 = discord.utils.find(lambda r: r.name == 'Смотритель Сервера', ctx.guild.roles)
+    access4 = discord.utils.find(lambda r: r.name == 'Смотритель Серверов', ctx.guild.roles)
+    access5 = discord.utils.find(lambda r: r.name == 'Младший Администратор', ctx.guild.roles)
+    access6 = discord.utils.find(lambda r: r.name == 'Администратор', ctx.guild.roles)
+    if access2 in ctx.user.roles:
+        pass
+    elif access3 in ctx.user.roles:
+        pass
+    elif access4 in ctx.user.roles:
+        pass
+    elif access5 in ctx.user.roles:
+        pass
+    elif access6 in ctx.user.roles:
+        pass
+    else:
+        await ctx.response.send_message('❌ У Вас нет доступа к данной команде.')
+        return
+
     embedEcho, embedSolaris, embedNova, embedAthara, embedElysium, embedAllRole, embedMain = await stats(ctx=ctx, client=client)
     await ctx.response.send_message('Загружаю информацию.')
     ctx = client.get_channel(ctx.channel.id)
@@ -545,6 +591,11 @@ async def toStats(ctx):
 
 @client.tree.command(name = "выдать-заметку", description= 'записывает заметку игроку в таблице', guild=discord.Object(id=GUILD))
 async def note(ctx, игрок: str=None, причина: str=None):
+
+    access = await checkForModeratorRole(ctx)
+    if access == False:
+        await ctx.response.send_message('❌ У Вас нет доступа к данной команде.')
+        return
 
     user = игрок
     reason = причина
@@ -646,6 +697,11 @@ async def errorDeferMessage(ctx, errorValue):
     discord.app_commands.Choice(name='Антагонисты', value=7),
 ])
 async def jobka(ctx, игрок: str=None, правило: str=None, причина: str=None, отдел: app_commands.Choice[int]=0, срок: str='None'):
+
+    access = await checkForModeratorRole(ctx)
+    if access == False:
+        await ctx.response.send_message('❌ У Вас нет доступа к данной команде.')
+        return
 
     user = игрок
     rule = правило
@@ -836,7 +892,7 @@ async def jobka(ctx, игрок: str=None, правило: str=None, причи�
 
 
 
-            junior = discord.utils.find(lambda r: r.name == 'младший модератор', ctx.guild.roles)
+            junior = discord.utils.find(lambda r: r.name == 'Младший Модератор', ctx.guild.roles)
             if junior in ctx.user.roles:
                 checkForJunior = await juniorCheck(ctx=ctx, user=user, rule=rule, reason=reason, msg=msg, punish='джобка', punishTime=punishTime, jobChoose=jobChoose.name)
             else:
@@ -880,6 +936,11 @@ async def jobka(ctx, игрок: str=None, правило: str=None, причи�
 
 @client.tree.command(name = "перма", description= 'быстрая запись пермы', guild=discord.Object(id=GUILD))
 async def perma(ctx, игрок: str=None, правило: str=None, причина: str=None):
+
+    access = await checkForModeratorRole(ctx)
+    if access == False:
+        await ctx.response.send_message('❌ У Вас нет доступа к данной команде.')
+        return
 
     user = игрок
     rule = правило
@@ -1115,7 +1176,7 @@ async def perma(ctx, игрок: str=None, правило: str=None, причи�
 
 
 
-            junior = discord.utils.find(lambda r: r.name == 'младший модератор', ctx.guild.roles)
+            junior = discord.utils.find(lambda r: r.name == 'Младший Модератор', ctx.guild.roles)
             if junior in ctx.user.roles:
                 checkForJunior = await juniorCheck(ctx=ctx, user=user, rule=rule, reason=reason, msg=msg, punish='перма')
             else:
@@ -1165,15 +1226,16 @@ async def perma(ctx, игрок: str=None, правило: str=None, причи�
 ])
 async def giveTest(ctx, игрок: str=None, выбор: app_commands.Choice[int]=0):
 
+    access = await checkForModeratorRole(ctx)
+    if access == False:
+        await ctx.response.send_message('❌ У Вас нет доступа к данной команде.')
+        return
+
     user = игрок
     choose = выбор
 
     gc, sh, worksheet = joinToSheet()
 
-    access = discord.utils.find(lambda r: r.name == '📝', ctx.guild.roles)
-    if access not in ctx.user.roles:
-        await ctx.response.send_message('❌ У Вас нет доступа к данной команде.')
-        return
 
     if user == None:
         await ctx.response.send_message(f"❌ Не указан игрок.")
@@ -1413,15 +1475,16 @@ discord.app_commands.Choice(name='бан', value=3),
 ])
 async def change_color(ctx, ник: str=None, столбик: app_commands.Choice[int]=0, цвет: app_commands.Choice[int]=0, номер_наказания: int=0):
 
+    access = await checkForModeratorRole(ctx)
+    if access == False:
+        await ctx.response.send_message('❌ У Вас нет доступа к данной команде.')
+        return
+
     user = ник
     color = цвет
     punish = столбик
     rule_number = номер_наказания
 
-    access = discord.utils.find(lambda r: r.name == '📝', ctx.guild.roles)
-    if access not in ctx.user.roles:
-        await ctx.response.send_message('❌ У Вас нет доступа к данной команде.')
-        return
 
 
     if user == None:
@@ -1741,6 +1804,11 @@ async def change_color(ctx, ник: str=None, столбик: app_commands.Choic
 @client.tree.command(name = "выдать-жалобу", description= 'выдает жалобу в статистику модератору, указывать нужно айди в дискорде', guild=discord.Object(id=GUILD))
 async def report(ctx, модератор: discord.Member = None):
 
+    access = await checkForModeratorRole(ctx)
+    if access == False:
+        await ctx.response.send_message('❌ У Вас нет доступа к данной команде.')
+        return
+
     user = модератор
 
     try:
@@ -1781,6 +1849,11 @@ async def report(ctx, модератор: discord.Member = None):
 
 @client.tree.command(name = "профиль", description = 'твой профиль', guild=discord.Object(id=GUILD))
 async def profile(ctx, модератор: discord.Member = None):
+
+    access = await checkForModeratorRole(ctx)
+    if access == False:
+        await ctx.response.send_message('❌ У Вас нет доступа к данной команде.')
+        return
 
     user = модератор
     if user == None:
@@ -1825,6 +1898,11 @@ async def profile(ctx, модератор: discord.Member = None):
 
 @client.tree.command(name = "поиск", description = "поиск игрока в таблице", guild=discord.Object(id=GUILD))
 async def first_command(ctx, игрок: str = None):
+
+    access = await checkForModeratorRole(ctx)
+    if access == False:
+        await ctx.response.send_message('❌ У Вас нет доступа к данной команде.')
+        return
 
     try:
         await ctx.response.defer() # ephemeral=True
@@ -1882,6 +1960,11 @@ async def first_command(ctx, игрок: str = None):
 ])
 async def second_command(ctx, ник: str=None, наказание: app_commands.Choice[int]=0, правило: str=None, причина: str='None', срок: str='None'):
 
+    access = await checkForModeratorRole(ctx)
+    if access == False:
+        await ctx.response.send_message('❌ У Вас нет доступа к данной команде.')
+        return
+
     user = ник
     punish = наказание
     rule = правило
@@ -1889,12 +1972,6 @@ async def second_command(ctx, ник: str=None, наказание: app_commands
     punishTime = срок
 
     gc, sh, worksheet = joinToSheet()
-
-    # 📝
-    access = discord.utils.find(lambda r: r.name == '📝', ctx.guild.roles)
-    if access not in ctx.user.roles:
-        await ctx.response.send_message('❌ У Вас нет доступа к данной команде.')
-        return
 
 
     values_list = worksheet.col_values(2)
@@ -2147,7 +2224,7 @@ async def second_command(ctx, ник: str=None, наказание: app_commands
                 return
             elif reaction.emoji == '✅':
 
-                junior = discord.utils.find(lambda r: r.name == 'младший модератор', ctx.guild.roles)
+                junior = discord.utils.find(lambda r: r.name == 'Младший Модератор', ctx.guild.roles)
                 if junior in ctx.user.roles:
                     checkForJunior = await juniorCheck(ctx=ctx, user=user, rule=rule, reason=reason, msg=msg, punish=punish.name, punishTime=punishTime)
                 else:
