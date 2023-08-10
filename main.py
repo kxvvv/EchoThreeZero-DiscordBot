@@ -389,6 +389,10 @@ f'''
             punishIsVisible = True
         elif punish == 'перма':
             punish = 'ПЕРМА ❗'
+        elif punish == 'ПДК':
+            punish = 'ПДК 😡'
+        elif punish == 'СНЯТЬ ПДК':
+            punish = 'Снять ПДК 🙏'
 
         embed.add_field(name="Наказание", value=punish)
     if rule != None:
@@ -524,11 +528,16 @@ async def checkForModeratorRole(ctx):
 
 
 @client.tree.command(name='пдк', description='сообщение в #запросы, без таблицы', guild=discord.Object(id=GUILD))
-async def pdk(ctx, игрок: str=None, правило: int=None, причина: str=None):
+@app_commands.choices(пдк=[
+    discord.app_commands.Choice(name='дать ПДК', value=1),
+    discord.app_commands.Choice(name='снять ПДК', value=2),
+])
+async def pdk(ctx, игрок: str=None, правило: int=None, причина: str=None, пдк: app_commands.Choice[int]=1):
 
     user = игрок
     rule = правило
     reason = причина
+    pdk = пдк
 
     access = await checkForModeratorRole(ctx)
     if access == False:
@@ -551,7 +560,10 @@ async def pdk(ctx, игрок: str=None, правило: int=None, причин�
         msg = await ctx.response.send_message('✅ Запрос отправлен.', ephemeral=True)
         msg = client.get_channel(ctx.channel.id)
         msg = await ctx.original_response()
-        checkForJunior = await juniorCheck(ctx=ctx, user=user, rule=rule, reason=reason, msg=msg, punish='ПДК')
+        if pdk.value == 1:
+            checkForJunior = await juniorCheck(ctx=ctx, user=user, rule=rule, reason=reason, msg=msg, punish='ПДК')
+        else:
+            checkForJunior = await juniorCheck(ctx=ctx, user=user, rule=rule, reason=reason, msg=msg, punish='СНЯТЬ ПДК')
 
 
         match checkForJunior:
