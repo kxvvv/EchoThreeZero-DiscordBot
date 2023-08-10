@@ -3,8 +3,11 @@ import gspread
 import asyncio
 import json
 import random
-from stats import *
+import gspread_formatting as gf
 
+from gspread_formatting import *
+from stats import *
+from whatColorYouNeed import *
 
 from discord.ext import commands
 from discord.utils import get
@@ -90,43 +93,13 @@ def joinToSheet():
     return gc, sh, worksheet
 
 
-async def whatColorYouNeed(row, UserWarnBan='None'):
-
-    if UserWarnBan == 'None':
-        return 'None'
-
-    whatColor = 'whatColor'
-    whatColor += UserWarnBan
-
-    gc, sh, worksheet = joinToSheet()
-
-    worksheet.format(f'A{row}', {'textFormat': {'foregroundColor': {'red': 255/255, 'green': 255/255, 'blue': 255/255}}})
-    worksheet.update(f'A{row}', whatColor)
-
-    await asyncio.sleep(3)
-
-    thisColor = worksheet.get(f'A{row}')
-    #worksheet.update(f'A{row}', '')
-
-    return thisColor
-
 async def getProfileFromSheet(user, warnCheck, banCheck, testCheck, row, col, worksheet, UserWarnBan='User'):
 
     async def colorStatus():
-        thisColor = await whatColorYouNeed(row=row, UserWarnBan='User')
-        thisColor = thisColor[0]
-        thisColor = thisColor[0]
-        color = thisColor
+        rgb = await whatColorYouNeed(row=row, UserWarnBan='User')
 
-        h = color.lstrip('#')
-
-        try:
-            rgb = tuple(int(h[i:i+2], 16) for i in (0, 2, 4))
-            colour=discord.Colour.from_rgb(rgb[0], rgb[1], rgb[2])
-            return colour
-        except:
-            await asyncio.sleep(random.randint(5, 15))
-            return await colorStatus()
+        colour=discord.Colour.from_rgb(rgb[0], rgb[1], rgb[2])
+        return colour
 
 
 
@@ -1935,24 +1908,41 @@ async def profile(ctx, модератор: discord.Member = None):
     await ctx.followup.send(embed=embed)
 
 
-
-
 @client.tree.command(name = "поиск", description = "поиск игрока в таблице", guild=discord.Object(id=GUILD))
-async def first_command(ctx, игрок: str = None):
+@app_commands.choices(скрыто=[
+    discord.app_commands.Choice(name='Показать скрыто', value=1),
+    discord.app_commands.Choice(name='Показать всем', value=2),
+])
+async def first_command(ctx, игрок: str = None, скрыто: app_commands.Choice[int]=1):
 
     access = await checkForModeratorRole(ctx)
     if access == False:
         await ctx.response.send_message('❌ У Вас нет доступа к данной команде.', ephemeral=True)
         return
-
-    try:
-        await ctx.response.defer(ephemeral=True) # ephemeral=True
-    except:
-        await errorDeferMessage(ctx=ctx, errorValue='1869')
-        return
     
     user = игрок
-    
+    hide = скрыто
+
+    try:
+        if hide.value == 2:
+            hide == False
+        else:
+            hide = True
+    except:
+        hide = True
+
+    if hide == True:
+        try:
+            await ctx.response.defer(ephemeral=True) # ephemeral=True
+        except:
+            await errorDeferMessage(ctx=ctx, errorValue='1869')
+            return
+    else:
+        try:
+            await ctx.response.defer() # ephemeral=True
+        except:
+            await errorDeferMessage(ctx=ctx, errorValue='1869')
+            return
     
     gc, sh, worksheet = joinToSheet()
 
