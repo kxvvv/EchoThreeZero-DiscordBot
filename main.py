@@ -560,7 +560,10 @@ f'''
 
     await msg.add_reaction('✅')
     await msg.add_reaction('❌')
-    #await msg.create_thread(name='Автоветка.')
+    try:
+        await msg.create_thread(name='Автоветка.')
+    except:
+        return
 
 
 
