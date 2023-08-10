@@ -275,6 +275,48 @@ def checkFooter(ctx, user):
         return f'{user.id}, ???'
     
 
+
+@client.tree.command(name = "помощь", description= 'подробное описание всех команд в боте', guild=discord.Object(id=GUILD))
+async def perma(ctx):
+        
+        embed = discord.Embed(
+            colour=discord.Colour.dark_purple(),
+            #description=checkForReason(), 
+            title='Команды доступные на сегодняшний день:'
+        )
+        
+        text = '''
+
+`/поиск` - ищет игрока в таблице, если такой есть - пишет данные о нём. цвет сообщения - цвет игрока в таблице.
+
+`/выдать-наказание` - обычное записывание в таблице. варн/бан.
+`/выдать-заметку` - записывает заметку в таблицу на __ник__  в __ячейке__ игрока.
+`/выдать-тест` - устанавливает статус теста на игроке.
+
+`/перма` - быстрая запись пермы, делает игрока сразу чёрным, а 
+бан красным.
+`/джобка` - быстрая запись джобки.
+`/сменить-цвет` - меняет цвет игрока, варна или бана.
+
+# работа вне таблицы
+
+`/профиль` - ваша или чужая статистика. цвет сообщения - цвет вашего сервера.
+`/выдать-жалобу` - даёт +1 к жалобе в статистику.
+`/пдк` - делает запрос на пдк
+
+'''
+
+
+        embed = discord.Embed(
+            colour=discord.Colour.pink(),
+            description=text, 
+            title='Команды доступные на сегодняшний день:'
+        )
+
+        #await ctx.response.send_message('❌ Еще не работает.', ephemeral=True)
+        await ctx.response.send_message(embed=embed, ephemeral=True)
+        return
+
 async def msgToLOGG(ctx, worksheet, user, msgAuthor, clrColor=None, clrColum=None, clrNumber=None, choose=None, rule=None, reason=None, isJobka=False, isPerma=False, isColor=False):
 
     logs = client.get_channel(LOGS)
@@ -526,7 +568,6 @@ async def checkForModeratorRole(ctx):
         return True
 
 
-
 @client.tree.command(name='пдк', description='сообщение в #запросы, без таблицы', guild=discord.Object(id=GUILD))
 @app_commands.choices(пдк=[
     discord.app_commands.Choice(name='дать ПДК', value=1),
@@ -651,7 +692,7 @@ async def note(ctx, игрок: str=None, причина: str=None):
         return
 
 
-    infochat = ctx.channel_id # чат
+    infochat = ctx.channel.id # чат
     infochat = client.get_channel(infochat)
     msg = await infochat.send(f'**🔄 поиск {user}...**')
 
@@ -873,7 +914,7 @@ async def jobka(ctx, игрок: str=None, правило: str=None, причи�
 
     trueUser = ctx.user
 
-    infochat = ctx.channel_id # чат
+    infochat = ctx.channel.id # чат
     infochat = client.get_channel(infochat)
     
     if playerIsNew == False:
@@ -1157,7 +1198,7 @@ async def perma(ctx, игрок: str=None, правило: str=None, причи�
 
     trueUser = ctx.user
 
-    infochat = ctx.channel_id # чат
+    infochat = ctx.channel.id # чат
     infochat = client.get_channel(infochat)
     
     if playerIsNew == False:
@@ -1324,7 +1365,7 @@ async def giveTest(ctx, игрок: str=None, выбор: app_commands.Choice[in
         skipOrNot = True
 
         await ctx.response.send_message(f"⚠️ Игрока `{user}` нет в таблице.", ephemeral=True)
-        infochat = ctx.channel_id # чат
+        infochat = ctx.channel.id # чат
         infochat = client.get_channel(infochat)
         
         embed = discord.Embed(
@@ -1388,7 +1429,7 @@ async def giveTest(ctx, игрок: str=None, выбор: app_commands.Choice[in
 
     await asyncio.sleep(3)
     await ctx.followup.send(embed=embed)
-    infochat = ctx.channel_id # чат
+    infochat = ctx.channel.id # чат
     infochat = client.get_channel(infochat)
     
     embed = discord.Embed(
@@ -1568,7 +1609,7 @@ async def change_color(ctx, ник: str=None, столбик: app_commands.Choic
 
     
     
-    infochat = ctx.channel_id # чат
+    infochat = ctx.channel.id # чат
     infochat = client.get_channel(infochat)
     trueUser = ctx.user
 
@@ -1850,7 +1891,7 @@ async def report(ctx, модератор: discord.Member = None):
 
 
     #вавден
-    echoRole = discord.utils.find(lambda r: r.name == '✌️', ctx.guild.roles)
+    echoRole = discord.utils.find(lambda r: r.name == 'Смотритель Сервера', ctx.guild.roles)
     if echoRole not in ctx.user.roles:
         await ctx.response.send_message('❌ У Вас нет доступа к данной команде.', ephemeral=True)
         return
@@ -2218,14 +2259,14 @@ async def second_command(ctx, ник: str=None, наказание: app_commands
                 row = cell.row
                 col = cell.col
 
-                infochat = ctx.channel_id # чат
+                infochat = ctx.channel.id # чат
                 infochat = client.get_channel(infochat)
                 msg = await infochat.send(f'🔄 загружаю данные о {user}..')
                 embed = await getProfileFromSheet(user, checkForWarn(row, worksheet), checkForBan(row, worksheet), checkForTest(row, sh), row, col, worksheet, UserWarnBan='User')
                 await asyncio.sleep(3)
                 await ctx.followup.send(embed=embed)
             case 'new':
-                infochat = ctx.channel_id # чат
+                infochat = ctx.channel.id # чат
                 infochat = client.get_channel(infochat)
                 msg = await infochat.send(f'🔄 ожидай..')
         trueUser = ctx.user
