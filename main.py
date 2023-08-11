@@ -8,6 +8,7 @@ import gspread_formatting as gf
 from gspread_formatting import *
 from stats import *
 from whatColorYouNeed import *
+from commandChannel import *
 
 from discord.ext import commands
 from discord.utils import get
@@ -661,6 +662,14 @@ f'''
 
 
 async def checkForModeratorRole(ctx):
+
+    checkForChannel = await commandChannelCheck(ctx=ctx)
+    if checkForChannel == True:
+        pass
+    else:
+        await ctx.response.send_message(f'❌ Писать команды можно только тут - <#{COMMAND_ROOM}>', ephemeral=True)
+        return
+
     access = discord.utils.find(lambda r: r.name == 'Младший Модератор', ctx.guild.roles)
     access1 = discord.utils.find(lambda r: r.name == 'Модератор', ctx.guild.roles)
     access2 = discord.utils.find(lambda r: r.name == 'Старший Модератор', ctx.guild.roles)
@@ -683,7 +692,7 @@ async def checkForModeratorRole(ctx):
     discord.app_commands.Choice(name='дать ПДК', value=1),
     discord.app_commands.Choice(name='снять ПДК', value=2),
 ])
-async def pdk(ctx, игрок: str=None, правило: int=None, причина: str=None, пдк: app_commands.Choice[int]=1):
+async def pdk(ctx, игрок: str=None, правило: str=None, причина: str=None, пдк: app_commands.Choice[int]=1):
 
     user = игрок
     rule = правило
@@ -859,9 +868,9 @@ async def note(ctx, игрок: str=None, причина: str=None):
 
 
 async def errorDeferMessage(ctx, errorValue):
-    errorCh = client.get_channel(ctx.channel.id)
+    # errorCh = client.get_channel(ctx.channel.id)
     print(f'erorr {errorValue}')
-    await errorCh.send(f'<@{ctx.user.id}> **попробуй еще раз, дискорд не захотел принимать твою команду.**')
+    # await errorCh.send(f'<@{ctx.user.id}> **попробуй еще раз, дискорд не захотел принимать твою команду.**')
     
 @client.tree.command(name = "джобка", description='быстрая запись джобки', guild=discord.Object(id=GUILD))
 @app_commands.choices(отдел=[
@@ -2082,7 +2091,8 @@ async def first_command(ctx, игрок: str = None, скрыто: app_commands.
     if access == False:
         await ctx.response.send_message('❌ У Вас нет доступа к данной команде.', ephemeral=True)
         return
-    
+
+
     user = игрок
     hide = скрыто
 
