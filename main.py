@@ -46,6 +46,12 @@ async def on_ready():
     print(f"Здарова ёпт✌️, это я - {client.user}")
     await client.tree.sync(guild=discord.Object(id=GUILD)) # синхорнизация
     await client.change_presence(status=discord.Status.online, activity = discord.Activity(name = f'на всех свысока.', type = discord.ActivityType.watching))
+    try:
+        ctx = client.get_channel(1139276548650848266)
+        await ctx.send('Я только что обновился.<:catSitting:1089452185122775200>\n\nЕсли Вы делали запросы или что-то подобное, повторите их снова.<:delovoy:1110282584711245874>')
+    except:
+        print('error ctx.send')
+        pass
 
 
 
