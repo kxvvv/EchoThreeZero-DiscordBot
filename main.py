@@ -519,7 +519,7 @@ async def juniorCheck(ctx, user, reason, msg, rule=None, punish=None, punishTime
     request = client.get_channel(REQUEST_ROOM)
 
     embed = discord.Embed(
-        colour=checkRole(ctx=ctx, user=ctx.user), 
+        colour=discord.Colour(0xE6B400), 
         description=
 f'''
 
@@ -607,7 +607,7 @@ f'''
         reaction = str(payload.emoji)
         if reaction == '❌':
             embed = discord.Embed(
-                colour=checkRole(ctx=ctx, user=ctx.user), 
+                colour=discord.Colour(0xDB042F), 
                 description=
         f'''
 
@@ -635,7 +635,7 @@ f'''
             return False
         elif reaction == '✅':
             embed = discord.Embed(
-                colour=checkRole(ctx=ctx, user=ctx.user), 
+                colour=discord.Colour(0x00C72B), 
                 description=
         f'''
 
