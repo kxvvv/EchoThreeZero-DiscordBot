@@ -689,24 +689,6 @@ async def checkForModeratorRole(ctx, ignoreChannelCheck=False):
     else:
         await ctx.response.send_message('❌ У Вас нет доступа к данной команде.')
         return False
-    
-    # if access in roles:
-    #     return True
-    # if access1 in roles:
-    #     return True
-    # elif access2 in roles:
-    #     return True
-    # elif access3 in roles:
-    #     return True
-    # elif access4 in roles:
-    #     return True
-    # elif access5 in roles:
-    #     return True
-    # elif access6 in roles:
-    #     return True
-    # else:
-    #     await ctx.response.send_message('❌ У Вас нет доступа к данной команде.')
-    #     return False
 
 
 
@@ -764,7 +746,7 @@ async def toStats(ctx):
 
     access = await checkForModeratorRole(ctx)
     if access == False:
-        await ctx.response.send_message('❌ У Вас нет доступа к данной команде.')
+
         return
 
     access2 = discord.utils.find(lambda r: r.name == 'Старший Модератор', ctx.guild.roles)
@@ -803,7 +785,7 @@ async def note(ctx, игрок: str=None, причина: str=None):
 
     access = await checkForModeratorRole(ctx)
     if access == False:
-        await ctx.response.send_message('❌ У Вас нет доступа к данной команде.')
+        
         return
 
     user = игрок
@@ -811,7 +793,7 @@ async def note(ctx, игрок: str=None, причина: str=None):
 
 
     try:
-        await ctx.response.defer(ephemeral=True) # ephemeral=True
+        await ctx.response.defer() # ephemeral=True
     except:
         await errorDeferMessage(ctx=ctx, errorValue='619')
         return
@@ -909,7 +891,7 @@ async def jobka(ctx, игрок: str=None, правило: str=None, причи�
 
     access = await checkForModeratorRole(ctx)
     if access == False:
-        await ctx.response.send_message('❌ У Вас нет доступа к данной команде.')
+        
         return
 
     user = игрок
@@ -951,7 +933,7 @@ async def jobka(ctx, игрок: str=None, правило: str=None, причи�
 
     if playerIsNew == False:
         try:
-            await ctx.response.defer(ephemeral=True) # ephemeral=True
+            await ctx.response.defer() # ephemeral=True
         except:
             await errorDeferMessage(ctx=ctx, errorValue='743')
             return
@@ -1148,7 +1130,7 @@ async def perma(ctx, игрок: str=None, правило: str=None, причи�
 
     access = await checkForModeratorRole(ctx)
     if access == False:
-        await ctx.response.send_message('❌ У Вас нет доступа к данной команде.')
+        
         return
 
     user = игрок
@@ -1184,7 +1166,7 @@ async def perma(ctx, игрок: str=None, правило: str=None, причи�
 
     if playerIsNew == False:
         try:
-            await ctx.response.defer(ephemeral=True) # ephemeral=True
+            await ctx.response.defer() # ephemeral=True
         except:
             await errorDeferMessage(ctx=ctx, errorValue='971')
             return
@@ -1437,7 +1419,7 @@ async def giveTest(ctx, игрок: str=None, выбор: app_commands.Choice[in
 
     access = await checkForModeratorRole(ctx)
     if access == False:
-        await ctx.response.send_message('❌ У Вас нет доступа к данной команде.')
+        
         return
 
     user = игрок
@@ -1554,7 +1536,7 @@ async def giveTest(ctx, игрок: str=None, выбор: app_commands.Choice[in
         return
     
     try:
-        await ctx.response.defer(ephemeral=True) # ephemeral=True
+        await ctx.response.defer() # ephemeral=True
     except:
         await errorDeferMessage(ctx=ctx, errorValue='1340')
         return
@@ -1686,7 +1668,7 @@ async def change_color(ctx, ник: str=None, столбик: app_commands.Choic
 
     access = await checkForModeratorRole(ctx)
     if access == False:
-        await ctx.response.send_message('❌ У Вас нет доступа к данной команде.')
+        
         return
 
     user = ник
@@ -1727,7 +1709,7 @@ async def change_color(ctx, ник: str=None, столбик: app_commands.Choic
             return
 
     try:
-        await ctx.response.defer(ephemeral=True) # ephemeral=True
+        await ctx.response.defer() # ephemeral=True
     except:
         await errorDeferMessage(ctx=ctx, errorValue='1509')
         return
@@ -2015,7 +1997,7 @@ async def report(ctx, модератор: discord.Member = None):
 
     access = await checkForModeratorRole(ctx)
     if access == False:
-        await ctx.response.send_message('❌ У Вас нет доступа к данной команде.')
+        
         return
 
     user = модератор
@@ -2035,7 +2017,7 @@ async def report(ctx, модератор: discord.Member = None):
     #вавден
     echoRole = discord.utils.find(lambda r: r.name == 'Смотритель Сервера', ctx.guild.roles)
     if echoRole not in ctx.user.roles:
-        await ctx.response.send_message('❌ У Вас нет доступа к данной команде.')
+        
         return
     
 
@@ -2061,7 +2043,7 @@ async def profile(ctx, модератор: discord.Member = None):
 
     access = await checkForModeratorRole(ctx, ignoreChannelCheck=True)
     if access == False:
-        await ctx.response.send_message('❌ У Вас нет доступа к данной команде.')
+        
         return
 
     user = модератор
@@ -2070,7 +2052,7 @@ async def profile(ctx, модератор: discord.Member = None):
     
 
     try:
-        await ctx.response.defer(ephemeral=True) # ephemeral=True
+        await ctx.response.defer() # ephemeral=True
     except:
         await errorDeferMessage(ctx=ctx, errorValue='1832')
         return
@@ -2112,7 +2094,7 @@ async def first_command(ctx, игрок: str = None, скрыто: app_commands.
 
     access = await checkForModeratorRole(ctx, ignoreChannelCheck=True)
     if access == False:
-        await ctx.response.send_message('❌ У Вас нет доступа к данной команде.')
+        
         return
 
 
@@ -2129,7 +2111,7 @@ async def first_command(ctx, игрок: str = None, скрыто: app_commands.
 
     if hide == True:
         try:
-            await ctx.response.defer(ephemeral=True) # ephemeral=True
+            await ctx.response.defer() # ephemeral=True
         except:
             await errorDeferMessage(ctx=ctx, errorValue='1869')
             return
@@ -2189,7 +2171,7 @@ async def second_command(ctx, ник: str=None, наказание: app_commands
 
     access = await checkForModeratorRole(ctx)
     if access == False:
-        await ctx.response.send_message('❌ У Вас нет доступа к данной команде.')
+        
         return
 
     user = ник
@@ -2557,7 +2539,7 @@ async def second_command(ctx, ник: str=None, наказание: app_commands
 
     
     try:
-        await ctx.response.defer(ephemeral=True) # ephemeral=True
+        await ctx.response.defer() # ephemeral=True
     except:
         await errorDeferMessage(ctx=ctx, errorValue='2294')
         return
