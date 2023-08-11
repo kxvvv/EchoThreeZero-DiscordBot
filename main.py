@@ -421,8 +421,8 @@ async def perma(ctx):
             #title='Команды доступные на сегодняшний день:'
         )
 
-        #await ctx.response.send_message('❌ Еще не работает.', ephemeral=True)
-        await ctx.response.send_message(embed=embed, ephemeral=True)
+        #await ctx.response.send_message('❌ Еще не работает.')
+        await ctx.response.send_message(embed=embed)
         return
 
 async def msgToLOGG(ctx, worksheet, user, msgAuthor, clrColor=None, clrColum=None, clrNumber=None, choose=None, rule=None, reason=None, isJobka=False, isPerma=False, isColor=False):
@@ -661,14 +661,15 @@ f'''
 
 
 
-async def checkForModeratorRole(ctx):
+async def checkForModeratorRole(ctx, ignoreChannelCheck=False):
 
-    checkForChannel = await commandChannelCheck(ctx=ctx)
-    if checkForChannel == True:
-        pass
-    else:
-        await ctx.response.send_message(f'❌ Писать команды можно только тут - <#{COMMAND_ROOM}>', ephemeral=True)
-        return
+    if ignoreChannelCheck == False:            
+        checkForChannel = await commandChannelCheck(ctx=ctx)
+        if checkForChannel == True:
+            pass
+        else:
+            await ctx.response.send_message(f'❌ Писать команды можно только тут - <#{COMMAND_ROOM}>', ephemeral=True)
+            return
 
     access = discord.utils.find(lambda r: r.name == 'Младший Модератор', ctx.guild.roles)
     access1 = discord.utils.find(lambda r: r.name == 'Модератор', ctx.guild.roles)
@@ -701,23 +702,23 @@ async def pdk(ctx, игрок: str=None, правило: str=None, причин�
 
     access = await checkForModeratorRole(ctx)
     if access == False:
-        await ctx.response.send_message('❌ У Вас нет доступа к данной команде.', ephemeral=True)
+        await ctx.response.send_message('❌ У Вас нет доступа к данной команде.')
         return
     
     if user == None:
-            await ctx.response.send_message('❌ Не указан игрок.', ephemeral=True)
+            await ctx.response.send_message('❌ Не указан игрок.')
             return
     if rule == None:
-            await ctx.response.send_message('❌ Не указано правило.', ephemeral=True)
+            await ctx.response.send_message('❌ Не указано правило.')
             return
     if reason == None:
-            await ctx.response.send_message('❌ Не указана причина.', ephemeral=True)
+            await ctx.response.send_message('❌ Не указана причина.')
             return
 
     #msg = client.get_channel(ctx.channel.id)
     junior = discord.utils.find(lambda r: r.name == 'Младший Модератор', ctx.guild.roles)
     if junior in ctx.user.roles:
-        msg = await ctx.response.send_message('✅ Запрос отправлен.', ephemeral=True)
+        msg = await ctx.response.send_message('✅ Запрос отправлен.')
         msg = client.get_channel(ctx.channel.id)
         msg = await ctx.original_response()
         if pdk.value == 1:
@@ -734,14 +735,14 @@ async def pdk(ctx, игрок: str=None, правило: str=None, причин�
                 await msg.edit(content=f'**✅ Твой запрос одобрили.**') 
                 return
     else:
-        msg = await ctx.response.send_message('❌ Вы уже взрослый смешарик, Вам это никчему.', ephemeral=True)
+        msg = await ctx.response.send_message('❌ Вы уже взрослый смешарик, Вам это никчему.')
 
 @client.tree.command(name = 'статистика', description='вся статистика пользователей', guild=discord.Object(id=GUILD))
 async def toStats(ctx):
 
     access = await checkForModeratorRole(ctx)
     if access == False:
-        await ctx.response.send_message('❌ У Вас нет доступа к данной команде.', ephemeral=True)
+        await ctx.response.send_message('❌ У Вас нет доступа к данной команде.')
         return
 
     access2 = discord.utils.find(lambda r: r.name == 'Старший Модератор', ctx.guild.roles)
@@ -760,7 +761,7 @@ async def toStats(ctx):
     elif access6 in ctx.user.roles:
         pass
     else:
-        await ctx.response.send_message('❌ У Вас нет доступа к данной команде.', ephemeral=True)
+        await ctx.response.send_message('❌ У Вас нет доступа к данной команде.')
         return
 
     embedEcho, embedSolaris, embedNova, embedAthara, embedElysium, embedAllRole, embedMain = await stats(ctx=ctx, client=client)
@@ -780,7 +781,7 @@ async def note(ctx, игрок: str=None, причина: str=None):
 
     access = await checkForModeratorRole(ctx)
     if access == False:
-        await ctx.response.send_message('❌ У Вас нет доступа к данной команде.', ephemeral=True)
+        await ctx.response.send_message('❌ У Вас нет доступа к данной команде.')
         return
 
     user = игрок
@@ -886,7 +887,7 @@ async def jobka(ctx, игрок: str=None, правило: str=None, причи�
 
     access = await checkForModeratorRole(ctx)
     if access == False:
-        await ctx.response.send_message('❌ У Вас нет доступа к данной команде.', ephemeral=True)
+        await ctx.response.send_message('❌ У Вас нет доступа к данной команде.')
         return
 
     user = игрок
@@ -906,24 +907,24 @@ async def jobka(ctx, игрок: str=None, правило: str=None, причи�
     elif (f'{user}  ' in values_list):
         user = f'{user}  '
     else:
-        await ctx.response.send_message(f"⚠️ Игрока `{user}` нет в таблице.", ephemeral=True)
+        await ctx.response.send_message(f"⚠️ Игрока `{user}` нет в таблице.")
         playerIsNew = True
     
     if jobChoose.value == 0:
-        await ctx.response.send_message('❌ Не выбрана профессия.', ephemeral=True)
+        await ctx.response.send_message('❌ Не выбрана профессия.')
         return
 
     try:
         if 'Правило' in rule or 'правило' in rule:
-            await ctx.response.send_message('❌ Не корректно выбрано правило, **используй только числа.**', ephemeral=True)
+            await ctx.response.send_message('❌ Не корректно выбрано правило, **используй только числа.**')
             return
     except:
-        await ctx.response.send_message('❌ Не корректно выбрано правило, **используй только числа.**', ephemeral=True)
+        await ctx.response.send_message('❌ Не корректно выбрано правило, **используй только числа.**')
         return
 
 
     if reason == None:
-        await ctx.response.send_message('❌ Не выбрана причина.', ephemeral=True)
+        await ctx.response.send_message('❌ Не выбрана причина.')
         return
 
     if playerIsNew == False:
@@ -1125,7 +1126,7 @@ async def perma(ctx, игрок: str=None, правило: str=None, причи�
 
     access = await checkForModeratorRole(ctx)
     if access == False:
-        await ctx.response.send_message('❌ У Вас нет доступа к данной команде.', ephemeral=True)
+        await ctx.response.send_message('❌ У Вас нет доступа к данной команде.')
         return
 
     user = игрок
@@ -1142,21 +1143,21 @@ async def perma(ctx, игрок: str=None, правило: str=None, причи�
     elif (f'{user}  ' in values_list):
         user = f'{user}  '
     else:
-        await ctx.response.send_message(f"⚠️ Игрока `{user}` нет в таблице.", ephemeral=True)
+        await ctx.response.send_message(f"⚠️ Игрока `{user}` нет в таблице.")
         playerIsNew = True
         
 
     try:
         if 'Правило' in rule or 'правило' in rule:
-            await ctx.response.send_message('❌ Не корректно выбрано правило, **используй только числа.**', ephemeral=True)
+            await ctx.response.send_message('❌ Не корректно выбрано правило, **используй только числа.**')
             return
     except:
-        await ctx.response.send_message('❌ Не корректно выбрано правило, **используй только числа.**', ephemeral=True)
+        await ctx.response.send_message('❌ Не корректно выбрано правило, **используй только числа.**')
         return
 
 
     if reason == None:
-        await ctx.response.send_message('❌ Не выбрана причина.', ephemeral=True)
+        await ctx.response.send_message('❌ Не выбрана причина.')
         return
 
     if playerIsNew == False:
@@ -1414,7 +1415,7 @@ async def giveTest(ctx, игрок: str=None, выбор: app_commands.Choice[in
 
     access = await checkForModeratorRole(ctx)
     if access == False:
-        await ctx.response.send_message('❌ У Вас нет доступа к данной команде.', ephemeral=True)
+        await ctx.response.send_message('❌ У Вас нет доступа к данной команде.')
         return
 
     user = игрок
@@ -1424,15 +1425,15 @@ async def giveTest(ctx, игрок: str=None, выбор: app_commands.Choice[in
 
 
     if user == None:
-        await ctx.response.send_message(f"❌ Не указан игрок.", ephemeral=True)
+        await ctx.response.send_message(f"❌ Не указан игрок.")
         return
     
     try:
         if choose.value == 0:
-            await ctx.response.send_message(f"❌ Не выбрано что записывать в строку теста.", ephemeral=True)
+            await ctx.response.send_message(f"❌ Не выбрано что записывать в строку теста.")
             return
     except:
-        await ctx.response.send_message(f"❌ Не выбрано что записывать в строку теста.", ephemeral=True)
+        await ctx.response.send_message(f"❌ Не выбрано что записывать в строку теста.")
         return
     
     
@@ -1483,7 +1484,7 @@ async def giveTest(ctx, игрок: str=None, выбор: app_commands.Choice[in
     else:
         skipOrNot = True
 
-        await ctx.response.send_message(f"⚠️ Игрока `{user}` нет в таблице.", ephemeral=True)
+        await ctx.response.send_message(f"⚠️ Игрока `{user}` нет в таблице.")
         infochat = ctx.channel.id # чат
         infochat = client.get_channel(infochat)
         
@@ -1663,7 +1664,7 @@ async def change_color(ctx, ник: str=None, столбик: app_commands.Choic
 
     access = await checkForModeratorRole(ctx)
     if access == False:
-        await ctx.response.send_message('❌ У Вас нет доступа к данной команде.', ephemeral=True)
+        await ctx.response.send_message('❌ У Вас нет доступа к данной команде.')
         return
 
     user = ник
@@ -1674,24 +1675,24 @@ async def change_color(ctx, ник: str=None, столбик: app_commands.Choic
 
 
     if user == None:
-        await ctx.response.send_message(f"❌ Не указан игрок.", ephemeral=True)
+        await ctx.response.send_message(f"❌ Не указан игрок.")
         return
 
     
     try:
         if color.value == 0:
-            await ctx.response.send_message('❌ Не выбран цвет.', ephemeral=True)
+            await ctx.response.send_message('❌ Не выбран цвет.')
             return
     except AttributeError:
-        await ctx.response.send_message('❌ Не выбран цвет.', ephemeral=True)
+        await ctx.response.send_message('❌ Не выбран цвет.')
         return
 
     try:
         if punish.value == 0:
-            await ctx.response.send_message('❌ Не выбрано правило.', ephemeral=True)
+            await ctx.response.send_message('❌ Не выбрано правило.')
             return
     except AttributeError:
-        await ctx.response.send_message('❌ Не выбрано правило.', ephemeral=True)
+        await ctx.response.send_message('❌ Не выбрано правило.')
         return
 
 
@@ -1700,7 +1701,7 @@ async def change_color(ctx, ник: str=None, столбик: app_commands.Choic
 
     if punish.value != 1:
         if rule_number == 0:
-            await ctx.response.send_message('❌ Не выбран номер наказания.', ephemeral=True)
+            await ctx.response.send_message('❌ Не выбран номер наказания.')
             return
 
     try:
@@ -1992,7 +1993,7 @@ async def report(ctx, модератор: discord.Member = None):
 
     access = await checkForModeratorRole(ctx)
     if access == False:
-        await ctx.response.send_message('❌ У Вас нет доступа к данной команде.', ephemeral=True)
+        await ctx.response.send_message('❌ У Вас нет доступа к данной команде.')
         return
 
     user = модератор
@@ -2002,22 +2003,22 @@ async def report(ctx, модератор: discord.Member = None):
             user = user.id
             pass
         else:
-            await ctx.response.send_message('❌ Указывать нужно айди..', ephemeral=True)
+            await ctx.response.send_message('❌ Указывать нужно айди..')
             return
     except:
-        await ctx.response.send_message('❌ Указывать нужно айди..', ephemeral=True)
+        await ctx.response.send_message('❌ Указывать нужно айди..')
         return
 
 
     #вавден
     echoRole = discord.utils.find(lambda r: r.name == 'Смотритель Сервера', ctx.guild.roles)
     if echoRole not in ctx.user.roles:
-        await ctx.response.send_message('❌ У Вас нет доступа к данной команде.', ephemeral=True)
+        await ctx.response.send_message('❌ У Вас нет доступа к данной команде.')
         return
     
 
     if user == None:
-        await ctx.response.send_message('❌ Не указан модератор.', ephemeral=True)
+        await ctx.response.send_message('❌ Не указан модератор.')
         return
 
     profile = await get_user_profile(user)
@@ -2036,9 +2037,9 @@ async def report(ctx, модератор: discord.Member = None):
 @client.tree.command(name = "профиль", description = 'твой профиль', guild=discord.Object(id=GUILD))
 async def profile(ctx, модератор: discord.Member = None):
 
-    access = await checkForModeratorRole(ctx)
+    access = await checkForModeratorRole(ctx, ignoreChannelCheck=True)
     if access == False:
-        await ctx.response.send_message('❌ У Вас нет доступа к данной команде.', ephemeral=True)
+        await ctx.response.send_message('❌ У Вас нет доступа к данной команде.')
         return
 
     user = модератор
@@ -2087,9 +2088,9 @@ async def profile(ctx, модератор: discord.Member = None):
 ])
 async def first_command(ctx, игрок: str = None, скрыто: app_commands.Choice[int]=1):
 
-    access = await checkForModeratorRole(ctx)
+    access = await checkForModeratorRole(ctx, ignoreChannelCheck=True)
     if access == False:
-        await ctx.response.send_message('❌ У Вас нет доступа к данной команде.', ephemeral=True)
+        await ctx.response.send_message('❌ У Вас нет доступа к данной команде.')
         return
 
 
@@ -2166,7 +2167,7 @@ async def second_command(ctx, ник: str=None, наказание: app_commands
 
     access = await checkForModeratorRole(ctx)
     if access == False:
-        await ctx.response.send_message('❌ У Вас нет доступа к данной команде.', ephemeral=True)
+        await ctx.response.send_message('❌ У Вас нет доступа к данной команде.')
         return
 
     user = ник
@@ -2499,15 +2500,15 @@ async def second_command(ctx, ник: str=None, наказание: app_commands
 
 
     if user == None:
-        await ctx.response.send_message('❌ Не выбран игрок.', ephemeral=True)
+        await ctx.response.send_message('❌ Не выбран игрок.')
         return
     
     try:
         if punish.value == 0:
-            await ctx.response.send_message('❌ Не выбрано наказание.', ephemeral=True)
+            await ctx.response.send_message('❌ Не выбрано наказание.')
             return
     except AttributeError:
-        await ctx.response.send_message('❌ Не выбрано наказание.', ephemeral=True)
+        await ctx.response.send_message('❌ Не выбрано наказание.')
         return
     
 
@@ -2522,10 +2523,10 @@ async def second_command(ctx, ник: str=None, наказание: app_commands
 
     try:
         if 'Правило' in rule or 'правило' in rule:
-            await ctx.response.send_message('❌ Не корректно выбрано правило, **используй только числа.**', ephemeral=True)
+            await ctx.response.send_message('❌ Не корректно выбрано правило, **используй только числа.**')
             return
     except:
-        await ctx.response.send_message('❌ Не корректно выбрано правило, **используй только числа.**', ephemeral=True)
+        await ctx.response.send_message('❌ Не корректно выбрано правило, **используй только числа.**')
         return
 
 
