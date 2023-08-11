@@ -7,12 +7,6 @@ from config import *
 
 async def stats(ctx, client):
 
-    access = discord.utils.find(lambda r: r.name == 'смотритель сервера', ctx.guild.roles)
-    allAcces = discord.utils.find(lambda r: r.name == '⭐', ctx.guild.roles)
-    if allAcces not in ctx.user.roles:
-        if access not in ctx.user.roles:
-            await ctx.response.send_message('❌ У Вас нет доступа к данной команде.')
-            return
 
     echoRole = discord.utils.find(lambda r: r.name == '☄️', ctx.guild.roles)
     elysiumRole = discord.utils.find(lambda r: r.name == '🌑', ctx.guild.roles)
@@ -109,7 +103,7 @@ async def stats(ctx, client):
             if int(ban) + int(warn) + int(report) != 0:
                 ban = 'Баны: ' +str(ban)
                 warn = 'Варны: ' + str(warn)
-                report = 'Репорты: ' + str(report)
+                report = 'Жалобы: ' + str(report)
 
                 li = []
                 li.append(ban)
@@ -128,7 +122,7 @@ async def stats(ctx, client):
             else:
                 ban = 'Баны: 0'
                 warn = 'Варны: 0'
-                report = 'Репорты: 0'
+                report = 'Жалобы: 0'
 
                 li = []
                 li.append(ban)

@@ -705,7 +705,6 @@ async def pdk(ctx, игрок: str=None, правило: str=None, причин�
     pdk = пдк
 
     access = await checkForModeratorRole(ctx)
-    print(access)
     if access == False:
         return
     
@@ -904,15 +903,7 @@ async def jobka(ctx, игрок: str=None, правило: str=None, причи�
     values_list = worksheet.col_values(2)
     playerIsNew = False
 
-    if user in values_list:
-        user = f'{user}'
-    elif (f'{user} ' in values_list):
-        user = f'{user} '
-    elif (f'{user}  ' in values_list):
-        user = f'{user}  '
-    else:
-        await ctx.response.send_message(f"⚠️ Игрока `{user}` нет в таблице.")
-        playerIsNew = True
+
     
     if jobChoose.value == 0:
         await ctx.response.send_message('❌ Не выбрана профессия.')
@@ -930,6 +921,18 @@ async def jobka(ctx, игрок: str=None, правило: str=None, причи�
     if reason == None:
         await ctx.response.send_message('❌ Не выбрана причина.')
         return
+
+
+    if user in values_list:
+        user = f'{user}'
+    elif (f'{user} ' in values_list):
+        user = f'{user} '
+    elif (f'{user}  ' in values_list):
+        user = f'{user}  '
+    else:
+        await ctx.response.send_message(f"⚠️ Игрока `{user}` нет в таблице.")
+        playerIsNew = True
+
 
     if playerIsNew == False:
         try:
@@ -1140,15 +1143,7 @@ async def perma(ctx, игрок: str=None, правило: str=None, причи�
     values_list = worksheet.col_values(2)
     playerIsNew = False
 
-    if user in values_list:
-        user = f'{user}'
-    elif (f'{user} ' in values_list):
-        user = f'{user} '
-    elif (f'{user}  ' in values_list):
-        user = f'{user}  '
-    else:
-        await ctx.response.send_message(f"⚠️ Игрока `{user}` нет в таблице.")
-        playerIsNew = True
+
         
 
     try:
@@ -1163,6 +1158,18 @@ async def perma(ctx, игрок: str=None, правило: str=None, причи�
     if reason == None:
         await ctx.response.send_message('❌ Не выбрана причина.')
         return
+
+
+    if user in values_list:
+        user = f'{user}'
+    elif (f'{user} ' in values_list):
+        user = f'{user} '
+    elif (f'{user}  ' in values_list):
+        user = f'{user}  '
+    else:
+        await ctx.response.send_message(f"⚠️ Игрока `{user}` нет в таблице.")
+        playerIsNew = True
+
 
     if playerIsNew == False:
         try:
