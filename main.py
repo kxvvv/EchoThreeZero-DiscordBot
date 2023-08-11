@@ -680,7 +680,7 @@ async def checkForModeratorRole(ctx, ignoreChannelCheck=False):
     access6 = discord.utils.find(lambda r: r.name == 'Администратор', ctx.guild.roles)
 
 
-    roles = ctx.guild.roles
+    roles = ctx.user.roles
 
     accesses = (access, access1, access2, access3, access4, access5, access6)
 
@@ -689,6 +689,25 @@ async def checkForModeratorRole(ctx, ignoreChannelCheck=False):
     else:
         await ctx.response.send_message('❌ У Вас нет доступа к данной команде.')
         return False
+    
+    # if access in roles:
+    #     return True
+    # if access1 in roles:
+    #     return True
+    # elif access2 in roles:
+    #     return True
+    # elif access3 in roles:
+    #     return True
+    # elif access4 in roles:
+    #     return True
+    # elif access5 in roles:
+    #     return True
+    # elif access6 in roles:
+    #     return True
+    # else:
+    #     await ctx.response.send_message('❌ У Вас нет доступа к данной команде.')
+    #     return False
+
 
 
 @client.tree.command(name='пдк', description='сообщение в #запросы, без таблицы', guild=discord.Object(id=GUILD))
@@ -704,6 +723,7 @@ async def pdk(ctx, игрок: str=None, правило: str=None, причин�
     pdk = пдк
 
     access = await checkForModeratorRole(ctx)
+    print(access)
     if access == False:
         return
     
