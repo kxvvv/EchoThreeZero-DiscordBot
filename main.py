@@ -422,7 +422,7 @@ async def perma(ctx):
         )
 
         #await ctx.response.send_message('❌ Еще не работает.')
-        await ctx.response.send_message(embed=embed)
+        await ctx.response.send_message(embed=embed, ephemeral=True)
         return
 
 async def msgToLOGG(ctx, worksheet, user, msgAuthor, clrColor=None, clrColum=None, clrNumber=None, choose=None, rule=None, reason=None, isJobka=False, isPerma=False, isColor=False):
@@ -2540,6 +2540,10 @@ async def second_command(ctx, ник: str=None, наказание: app_commands
         await ctx.response.send_message('❌ Не корректно выбрано правило, **используй только числа.**')
         return
 
+
+    if 'рецедив' in rule.lower():
+        rule = rule.lower()
+        rule = rule.replace('рецедив', 'Рецидив')
 
 
     values_list = worksheet.col_values(2)
