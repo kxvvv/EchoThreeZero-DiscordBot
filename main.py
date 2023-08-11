@@ -669,7 +669,7 @@ async def checkForModeratorRole(ctx, ignoreChannelCheck=False):
             pass
         else:
             await ctx.response.send_message(f'❌ Писать команды можно только тут - <#{COMMAND_ROOM}>', ephemeral=True)
-            return
+            return False
 
     access = discord.utils.find(lambda r: r.name == 'Младший Модератор', ctx.guild.roles)
     access1 = discord.utils.find(lambda r: r.name == 'Модератор', ctx.guild.roles)
@@ -686,6 +686,9 @@ async def checkForModeratorRole(ctx, ignoreChannelCheck=False):
 
     if any([True for access in accesses if access in roles]):
         return True
+    else:
+        await ctx.response.send_message('❌ У Вас нет доступа к данной команде.')
+        return False
 
 
 @client.tree.command(name='пдк', description='сообщение в #запросы, без таблицы', guild=discord.Object(id=GUILD))
@@ -702,7 +705,6 @@ async def pdk(ctx, игрок: str=None, правило: str=None, причин�
 
     access = await checkForModeratorRole(ctx)
     if access == False:
-        await ctx.response.send_message('❌ У Вас нет доступа к данной команде.')
         return
     
     if user == None:
