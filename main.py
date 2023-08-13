@@ -113,11 +113,10 @@ async def getProfileFromSheet(user, warnCheck, banCheck, testCheck, row, col, wo
 
     embed = discord.Embed(
         colour=await colorStatus(),
-        #description="Информация с таблицы", 
+        description="Нажмите на ник, что-бы перейти в таблицу.", 
         title=u"Информация с таблицы"
     )
-    embed.set_author(name=user)
-
+    embed.set_author(name=user, url=LINK+str(row))
 
 
 
@@ -2124,7 +2123,7 @@ async def first_command(ctx, игрок: str = None, скрыто: app_commands.
 
     if hide == True:
         try:
-            await ctx.response.defer() # ephemeral=True
+            await ctx.response.defer(ephemeral=True) # ephemeral=True
         except:
             await errorDeferMessage(ctx=ctx, errorValue='1869')
             return
