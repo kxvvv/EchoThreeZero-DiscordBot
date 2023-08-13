@@ -750,13 +750,14 @@ async def pdk(ctx, игрок: str=None, правило: str=None, причин�
     else:
         msg = await ctx.response.send_message('❌ Вы уже взрослый смешарик, Вам это никчему.')
 
-@client.tree.command(name = 'статистика', description='вся статистика пользователей', guild=discord.Object(id=GUILD))
+
+@client.tree.command(name = 'статистика', description='вся статистика пользователей, команда для смотрителей', guild=discord.Object(id=GUILD))
 async def toStats(ctx):
 
-    access = await checkForModeratorRole(ctx)
-    if access == False:
+    # access = await checkForModeratorRole(ctx)
+    # if access == False:
 
-        return
+    #     return
 
     access2 = discord.utils.find(lambda r: r.name == 'Старший Модератор', ctx.guild.roles)
     access3 = discord.utils.find(lambda r: r.name == 'Смотритель Сервера', ctx.guild.roles)
@@ -778,8 +779,9 @@ async def toStats(ctx):
         return
 
     embedEcho, embedSolaris, embedNova, embedAthara, embedElysium, embedAllRole, embedMain = await stats(ctx=ctx, client=client)
-    await ctx.response.send_message('Загружаю информацию.')
-    ctx = client.get_channel(ctx.channel.id)
+    await ctx.response.send_message('Отправляю информацию на Эхо.', ephemeral=True)
+    id = ctx.user.id
+    ctx = client.get_channel(STAT_ROOM)
     await ctx.send(embed=embedEcho)
     await ctx.send(embed=embedSolaris)
     await ctx.send(embed=embedNova)
@@ -787,6 +789,7 @@ async def toStats(ctx):
     await ctx.send(embed=embedElysium)
     await ctx.send(embed=embedMain)
     await ctx.send(embed=embedAllRole)
+    await ctx.send(f'<@{id}>')
 
 
 @client.tree.command(name = "внести-заметку", description= 'записывает заметку игроку в таблице', guild=discord.Object(id=GUILD))

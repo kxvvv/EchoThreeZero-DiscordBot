@@ -23,3 +23,7 @@ MODERS = {'AshaTears', 'kxv', 'phobia'}
 #LINK = 'https://docs.google.com/spreadsheets/d/1R9kxpwp9PopkUoiF2DXTVphvwLDepJ0gkwDV8a2_8tQ/edit?pli=1#gid=0&range=D' # test
 
 LINK = 'https://docs.google.com/spreadsheets/d/1tBm6ic0Qu_Lx7mokiGqcDjuTsv5iUeUjjvGsK_ioaN8/edit#gid=0&range=D' # osnova
+
+BD_ROOM = 1134517152158847057 # test 1134517152158847057 # osnova 1137687925925093459
+
+STAT_ROOM = 1137687925925093459 # osnova 1137687925925093459
