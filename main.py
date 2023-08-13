@@ -9,6 +9,7 @@ from gspread_formatting import *
 from stats import *
 from whatColorYouNeed import *
 from commandChannel import *
+from datetime import datetime as dt
 
 from discord.ext import commands
 from discord.utils import get
@@ -52,6 +53,10 @@ async def on_ready():
     except:
         print('error ctx.send')
         pass
+
+
+
+    await cycle('')
 
 
 
@@ -1659,9 +1664,27 @@ async def giveTest(ctx, игрок: str=None, выбор: app_commands.Choice[in
 
 
 
+newDay = True
+async def sendDatabaseToEcho(ctx):
+    global newDay
+    hour = dt.now().hour
+    minute = dt.now().minute
+    if minute in range(1, 9):
+        minute = '0' + str(minute)
 
+    print(f'time now: {hour}:{minute}')
 
+    if hour == 23 and newDay == True:
+        ctx = client.get_channel(BD_ROOM)
+        await ctx.send(content=f'{dt.now()}',file=discord.File('basa.json'))
+        newDay = False
+    else:
+        newDay = True
 
+async def cycle(ctx):
+    while True:
+        await asyncio.sleep(600)
+        await sendDatabaseToEcho(ctx)
 
 @client.tree.command(name = "сменить-цвет", description= 'смена цвета в таблице', guild=discord.Object(id=GUILD))
 @app_commands.choices(цвет=[
