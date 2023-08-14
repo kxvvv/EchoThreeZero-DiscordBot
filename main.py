@@ -517,7 +517,7 @@ async def msgToLOGG(ctx, worksheet, user, msgAuthor, clrColor=None, clrColum=Non
 
 
 
-async def juniorCheck(ctx, user, reason, msg, rule=None, punish=None, punishTime=None, jobChoose=None):
+async def juniorCheck(ctx, user, reason, msg, rule=None, punish=None, punishTime=None, jobChoose=None, playerEmbed=None):
 
     await msg.edit(content=f'**😐 Ожидай одобрения запроса от старшей администрации.**')
     request = client.get_channel(REQUEST_ROOM)
@@ -572,7 +572,12 @@ f'''
     await msg.add_reaction('✅')
     await msg.add_reaction('❌')
     try:
-        await msg.create_thread(name='Автоветка.')
+        thread = await msg.create_thread(name='Автоветка.')
+        if playerEmbed != None:
+            await thread.send(embed=playerEmbed)
+        else:
+            await thread.send('**⚠️ Не нашёл информацию о игроке. Либо его нет в таблице, либо я его вообще и не искал. 🙂**')
+        await thread.send(f'<@{ctx.user.id}> тебе могут задать вопрос по твоему наказанию, обсуди это здесь.')
     except:
         return
 
@@ -1101,7 +1106,11 @@ async def jobka(ctx, игрок: str=None, правило: str=None, причи�
 
             junior = discord.utils.find(lambda r: r.name == 'Младший Модератор', ctx.guild.roles)
             if junior in ctx.user.roles:
-                checkForJunior = await juniorCheck(ctx=ctx, user=user, rule=rule, reason=reason, msg=msg, punish='джобка', punishTime=punishTime, jobChoose=jobChoose.name)
+                try:
+                    playerEmbed = oldPlayer('embed')
+                    checkForJunior = await juniorCheck(ctx=ctx, user=user, rule=rule, reason=reason, msg=msg, punish='джобка', punishTime=punishTime, jobChoose=jobChoose.name, playerEmbed=playerEmbed)
+                except:
+                    checkForJunior = await juniorCheck(ctx=ctx, user=user, rule=rule, reason=reason, msg=msg, punish='джобка', punishTime=punishTime, jobChoose=jobChoose.name)
             else:
                 checkForJunior = True
 
@@ -1255,6 +1264,7 @@ async def perma(ctx, игрок: str=None, правило: str=None, причи�
         if embedOrWrite == 'embed':
             warnCount = checkForWarn(row, worksheet)
             embed = await getProfileFromSheet(user, warnCount, banCount, checkForTest(row, sh), row, col, worksheet, UserWarnBan='User')
+            playerEmbed = embed
             return embed
 
         if embedOrWrite == 'write':
@@ -1389,7 +1399,11 @@ async def perma(ctx, игрок: str=None, правило: str=None, причи�
 
             junior = discord.utils.find(lambda r: r.name == 'Младший Модератор', ctx.guild.roles)
             if junior in ctx.user.roles:
-                checkForJunior = await juniorCheck(ctx=ctx, user=user, rule=rule, reason=reason, msg=msg, punish='перма')
+                try:
+                    playerEmbed = await oldPlayer('embed')
+                    checkForJunior = await juniorCheck(ctx=ctx, user=user, rule=rule, reason=reason, msg=msg, punish='перма', playerEmbed=playerEmbed)
+                except:
+                    checkForJunior = await juniorCheck(ctx=ctx, user=user, rule=rule, reason=reason, msg=msg, punish='перма')
             else:
                 checkForJunior = True
 
@@ -2426,6 +2440,7 @@ async def second_command(ctx, ник: str=None, наказание: app_commands
                 infochat = client.get_channel(infochat)
                 msg = await infochat.send(f'🔄 загружаю данные о {user}..')
                 embed = await getProfileFromSheet(user, checkForWarn(row, worksheet), checkForBan(row, worksheet), checkForTest(row, sh), row, col, worksheet, UserWarnBan='User')
+                playerEmbed = embed
                 await asyncio.sleep(3)
                 await ctx.followup.send(embed=embed)
             case 'new':
@@ -2473,7 +2488,10 @@ async def second_command(ctx, ник: str=None, наказание: app_commands
 
                 junior = discord.utils.find(lambda r: r.name == 'Младший Модератор', ctx.guild.roles)
                 if junior in ctx.user.roles:
-                    checkForJunior = await juniorCheck(ctx=ctx, user=user, rule=rule, reason=reason, msg=msg, punish=punish.name, punishTime=punishTime)
+                    try:
+                        checkForJunior = await juniorCheck(ctx=ctx, user=user, rule=rule, reason=reason, msg=msg, punish=punish.name, punishTime=punishTime, playerEmbed=playerEmbed)
+                    except:
+                        checkForJunior = await juniorCheck(ctx=ctx, user=user, rule=rule, reason=reason, msg=msg, punish=punish.name, punishTime=punishTime)
                 else:
                     checkForJunior = True
 
