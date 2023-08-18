@@ -2045,6 +2045,7 @@ async def change_color(ctx, ник: str=None, столбик: app_commands.Choic
                     case 'cBan':
                         cBan()
                 await msg.edit(content=f'✅ **Бан #{rule_number} покрашен в {colorEmoji}!**')
+            msgAuthor = ctx.author
             await msgToLOGG(ctx, worksheet, user, msgAuthor, clrColor=colorEmoji, clrColum=punishWord, clrNumber=rule_number, isColor=True)
         else:
             await msg.edit(content=f'❌ В такой цвет - {colorEmoji}, {punishWord} красить нельзя.')
