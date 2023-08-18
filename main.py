@@ -4,6 +4,7 @@ import asyncio
 import json
 import random
 import gspread_formatting as gf
+import logging
 
 from gspread_formatting import *
 from stats import *
@@ -17,6 +18,12 @@ from config import *
 
 from discord import app_commands
 
+
+logging.basicConfig(
+    filename='file.log', 
+    filemode='w', 
+    format='%(asctime)s - %(name)s - %(levelname)s - %(funcName)s - %(message)s'
+)
 
 intents = discord.Intents.all()
 intents.members = True
@@ -1660,7 +1667,10 @@ async def giveTest(ctx, игрок: str=None, выбор: app_commands.Choice[in
 
             mainCount = max(warnCount, banCount)
             
+            
+            #print(mainCount)
             if mainCount > 1:
+                mainCount -= 1
                 try:
                     worksheet.merge_cells(f'H{row}:H{row+mainCount}', 'MERGE_ALL')
                 except:
