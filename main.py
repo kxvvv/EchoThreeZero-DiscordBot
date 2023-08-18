@@ -68,7 +68,6 @@ async def on_ready():
 
 
 
-
 async def get_user_profile(user_id):
     user_id = str(user_id)
 
@@ -1699,7 +1698,7 @@ async def sendDatabaseToEcho(ctx):
     if minute in range(1, 9):
         minute = '0' + str(minute)
 
-    print(f'time now: {hour}:{minute}')
+    #print(f'time now: {hour}:{minute}')
 
     if hour == 23 and newDay == True:
         ctx = client.get_channel(BD_ROOM)
