@@ -1721,7 +1721,7 @@ async def cycle(ctx):
     discord.app_commands.Choice(name='чёрный', value=5),
 ], 
 столбик=[
-discord.app_commands.Choice(name='игрок', value=1),
+discord.app_commands.Choice(name='сикей', value=1),
 discord.app_commands.Choice(name='варн', value=2),
 discord.app_commands.Choice(name='бан', value=3),
 ])
