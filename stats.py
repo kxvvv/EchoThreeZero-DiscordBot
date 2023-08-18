@@ -20,13 +20,13 @@ async def stats(ctx, client):
     with open("basa.json", "r") as file:
         profile = json.load(file)
 
-    for x in profile:
-        id = x
-        x = profile.get(x)
-        ban = x['ban']
-        warn = x['warn']
-        report = x['report']
-        ahelp = x['ahelp']
+    # for x in profile:
+    #     id = x
+    #     x = profile.get(x)
+    #     ban = x['ban']
+    #     warn = x['warn']
+    #     report = x['report']
+    #     ahelp = x['ahelp']
 
 
     # embed = discord.Embed(
@@ -101,7 +101,10 @@ async def stats(ctx, client):
             ban = x['ban']
             warn = x['warn']
             report = x['report']
-            ahelp = x['ahelp']
+            try:
+                ahelp = x['ahelp']
+            except:
+                ahelp = 0
             if int(ban) + int(warn) + int(report) != 0:
                 ban = 'Баны: ' +str(ban)
                 warn = 'Варны: ' + str(warn)
