@@ -26,6 +26,7 @@ async def stats(ctx, client):
         ban = x['ban']
         warn = x['warn']
         report = x['report']
+        ahelp = x['ahelp']
 
 
     # embed = discord.Embed(
@@ -100,15 +101,18 @@ async def stats(ctx, client):
             ban = x['ban']
             warn = x['warn']
             report = x['report']
+            ahelp = x['ahelp']
             if int(ban) + int(warn) + int(report) != 0:
                 ban = 'Баны: ' +str(ban)
                 warn = 'Варны: ' + str(warn)
                 report = 'Жалобы: ' + str(report)
+                ahelp = 'Ахелпы: ' + str(ahelp)
 
                 li = []
                 li.append(ban)
                 li.append(warn)
                 li.append(report)
+                li.append(ahelp)
                 text = ''
 
             
@@ -123,11 +127,13 @@ async def stats(ctx, client):
                 ban = 'Баны: 0'
                 warn = 'Варны: 0'
                 report = 'Жалобы: 0'
+                ahelp = 'Ахелпы: 0'
 
                 li = []
                 li.append(ban)
                 li.append(warn)
                 li.append(report)
+                li.append(ahelp)
                 text = ''
 
             

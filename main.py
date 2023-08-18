@@ -2124,7 +2124,7 @@ async def profile(ctx, модератор: discord.Member = None):
 
     embed = discord.Embed(
         colour=checkRole(ctx=ctx, user=user), 
-        #description="Твой профиль.", 
+        description=f"🤬 {profile['ahelp']} АХелпов за прошлый месяц.", 
         title=user
     )
     #embed.set_author(name=user, url="https://docs.google.com/spreadsheets/d/1R9kxpwp9PopkUoiF2DXTVphvwLDepJ0gkwDV8a2_8tQ/edit?pli=1#gid=0")
@@ -2133,6 +2133,8 @@ async def profile(ctx, модератор: discord.Member = None):
     embed.add_field(name="⚠️ Варны", value=f'{profile["warn"]}')
     embed.add_field(name="⛔ Баны", value=f'{profile["ban"]}')
     embed.add_field(name="⏰ Жалобы", value=f'{profile["report"]}')
+    #embed.add_field(name="🤬 Ахелпы", value=f'{profile["ahelp"]} за месяц.')
+
     
     
     try:
