@@ -841,12 +841,10 @@ async def note(ctx, игрок: str=None, причина: str=None):
         elif reaction.emoji == '✅':
             await msg.edit(content=f'**🔄 Обрабатываю запросик :middle_finger:**')
             await msgToLOGG(ctx, worksheet, user, msgAuthor, reason=reason)
-            try:
-                worksheet.insert_note(f'B{row}', f'{reason}')
-                
-                await msg.edit(content=f'**✅ Успешно вписал заметку игроку!**')
-            except:
-                await msg.edit(content='❌ Произошла техническая ошибка, пингуй идиота ксова.')
+
+            worksheet.insert_note(f'B{row}', f'{reason}')
+            
+            await msg.edit(content=f'**✅ Успешно вписал заметку игроку!**')
         else:
             await msg.edit(content='❌ **Время вышло.**')
 
@@ -1085,29 +1083,26 @@ async def jobka(ctx, игрок: str=None, правило: str=None, причи�
                 pass
 
             else:
-                await msg.edit(content=f'**❌ Тех. ошибка - пингуй ксова. `error #1752/1` **')
+                await msg.edit(content=f'**❌ Тех. ошибка - пингуй ксова. `error #1086/1` **')
                 return
 
 
             await msg.edit(content=f'**🔄 Обрабатываю запросик :middle_finger:**') #{reaction.emoji}
-            try:
-                if playerIsNew == True:
-                    newPlayer()
-                    await msg.edit(content=f'**✅ Успешно вписал джобку новому игроку!**')
-                if playerIsNew == False:
-                    await oldPlayer('write')
-                    await msg.edit(content=f'**✅ Успешно вписал джобку старому игроку!**')
-                await msgToLOGG(ctx, worksheet, user, msgAuthor, rule=rule, reason=reason, isJobka=True)
-                profile = await get_user_profile(ctx.user.id)
-                user_id = ctx.user.id
-                new_value = profile['ban'] + 1
-                parameter = 'ban'
-                await set_user_profile(user_id, parameter, new_value)
+            if playerIsNew == True:
+                newPlayer()
+                await msg.edit(content=f'**✅ Успешно вписал джобку новому игроку!**')
+            if playerIsNew == False:
+                await oldPlayer('write')
+                await msg.edit(content=f'**✅ Успешно вписал джобку старому игроку!**')
+            await msgToLOGG(ctx, worksheet, user, msgAuthor, rule=rule, reason=reason, isJobka=True)
+            profile = await get_user_profile(ctx.user.id)
+            user_id = ctx.user.id
+            new_value = profile['ban'] + 1
+            parameter = 'ban'
+            await set_user_profile(user_id, parameter, new_value)
 
-                logs = client.get_channel(ERROR_ROOM)
-                await logs.send(f'⛔ {ctx.user} записал себе банчик')
-            except:
-                await msg.edit(content='❌ Произошла техническая ошибка, пингуй идиота ксова.')
+            logs = client.get_channel(ERROR_ROOM)
+            await logs.send(f'⛔ {ctx.user} записал себе банчик')
         else:
             await msg.edit(content='❌ **Время вышло.**')
 
@@ -1378,29 +1373,26 @@ async def perma(ctx, игрок: str=None, правило: str=None, причи�
                 pass
 
             else:
-                await msg.edit(content=f'**❌ Тех. ошибка - пингуй ксова. `error #1752/1` **')
+                await msg.edit(content=f'**❌ Тех. ошибка - пингуй ксова. `error #1376/1` **')
                 return
 
 
             await msg.edit(content=f'**🔄 Обрабатываю запросик :middle_finger:**') #{reaction.emoji}
-            try:
-                if playerIsNew == True:
-                    newPlayer()
-                    await msg.edit(content=f'**✅ Успешно вписал ПЕРМУ новому игроку!**')
-                if playerIsNew == False:
-                    await oldPlayer('write')
-                    await msg.edit(content=f'**✅ Успешно вписал ПЕРМУ старому игроку!**')
-                await msgToLOGG(ctx, worksheet, user, msgAuthor, rule=rule, reason=reason, isPerma=True)
-                profile = await get_user_profile(ctx.user.id)
-                user_id = ctx.user.id
-                new_value = profile['ban'] + 1
-                parameter = 'ban'
-                await set_user_profile(user_id, parameter, new_value)
+            if playerIsNew == True:
+                newPlayer()
+                await msg.edit(content=f'**✅ Успешно вписал ПЕРМУ новому игроку!**')
+            if playerIsNew == False:
+                await oldPlayer('write')
+                await msg.edit(content=f'**✅ Успешно вписал ПЕРМУ старому игроку!**')
+            await msgToLOGG(ctx, worksheet, user, msgAuthor, rule=rule, reason=reason, isPerma=True)
+            profile = await get_user_profile(ctx.user.id)
+            user_id = ctx.user.id
+            new_value = profile['ban'] + 1
+            parameter = 'ban'
+            await set_user_profile(user_id, parameter, new_value)
 
-                logs = client.get_channel(ERROR_ROOM)
-                await logs.send(f'⛔ {ctx.user} записал себе банчик')
-            except:
-                await msg.edit(content='❌ Произошла техническая ошибка, пингуй идиота ксова.')
+            logs = client.get_channel(ERROR_ROOM)
+            await logs.send(f'⛔ {ctx.user} записал себе банчик')
         else:
             await msg.edit(content='❌ **Время вышло.**')
     
@@ -1517,11 +1509,8 @@ async def giveTest(ctx, игрок: str=None, выбор: app_commands.Choice[in
             elif reaction.emoji == '✅':
         
                 await msg.edit(content=f'**🔄 Обрабатываю запросик :middle_finger:**') #{reaction.emoji}
-                try:
-                    newPlayer()
-                    await msg.edit(content=f'✅ Успешно вписал тест новому игроку!')
-                except:
-                    await msg.edit(content='❌ Произошла техническая ошибка, пингуй идиота ксова.')
+                newPlayer()
+                await msg.edit(content=f'✅ Успешно вписал тест новому игроку!')
             else:
                 await msg.edit(content='❌ **Время вышло.**')
 
@@ -1636,11 +1625,8 @@ async def giveTest(ctx, игрок: str=None, выбор: app_commands.Choice[in
         emoji = (reaction.emoji)
         emoji = str(emoji)
         if reaction.emoji == '✅':                
-            try:
-                oldPlayer()
-                await msg.edit(content='✅ Успешно обновил данные игрока.')
-            except:
-                await msg.edit(content='❌ Произошла техническая ошибка, пингуй идиота ксова.')
+            oldPlayer()
+            await msg.edit(content='✅ Успешно обновил данные игрока.')
         if reaction.emoji == '❌':
             return
 
@@ -2474,7 +2460,7 @@ async def second_command(ctx, ник: str=None, наказание: app_commands
                     pass
 
                 else:
-                    await msg.edit(content=f'**❌ Тех. ошибка - пингуй ксова. `error #1752/1` **')
+                    await msg.edit(content=f'**❌ Тех. ошибка - пингуй ксова. `error #2463/1` **')
                     return
                 
                 await msg.edit(content=f'**🔄 Обрабатываю запросик :middle_finger:**')
@@ -2488,36 +2474,33 @@ async def second_command(ctx, ник: str=None, наказание: app_commands
             emoji = (reaction.emoji)
             emoji = str(emoji)
             if reaction.emoji == '✅':             
-                try:
-                    match choose:
-                        case 'new':
-                            newPlayer()
-                        case 'old':
-                            oldPlayer()
-                    await msg.edit(content='✅ Успешно обновил данные игрока.')
-                    if punish.value == 1:
-                        profile = await get_user_profile(ctx.user.id)
-                        user_id = ctx.user.id
-                        new_value = profile['warn'] + 1
-                        parameter = 'warn'
-                        await set_user_profile(user_id, parameter, new_value)
-                        
-                        logs = client.get_channel(ERROR_ROOM)
-                        await logs.send(f'⚠️ {ctx.user} записал себе варнчик')
-                    elif punish.value == 2:
-                        profile = await get_user_profile(ctx.user.id)
-                        user_id = ctx.user.id
-                        new_value = profile['ban'] + 1
-                        parameter = 'ban'
-                        await set_user_profile(user_id, parameter, new_value)
+                match choose:
+                    case 'new':
+                        newPlayer()
+                    case 'old':
+                        oldPlayer()
+                await msg.edit(content='✅ Успешно обновил данные игрока.')
+                if punish.value == 1:
+                    profile = await get_user_profile(ctx.user.id)
+                    user_id = ctx.user.id
+                    new_value = profile['warn'] + 1
+                    parameter = 'warn'
+                    await set_user_profile(user_id, parameter, new_value)
+                    
+                    logs = client.get_channel(ERROR_ROOM)
+                    await logs.send(f'⚠️ {ctx.user} записал себе варнчик')
+                elif punish.value == 2:
+                    profile = await get_user_profile(ctx.user.id)
+                    user_id = ctx.user.id
+                    new_value = profile['ban'] + 1
+                    parameter = 'ban'
+                    await set_user_profile(user_id, parameter, new_value)
 
-                        logs = client.get_channel(ERROR_ROOM)
-                        await logs.send(f'⛔ {ctx.user} записал себе банчик')
-                    else:
-                        logs = client.get_channel(ERROR_ROOM)
-                        await logs.send(f'❓ {ctx.user} что то сделал, и я должен был чёта записать... похуй)')
-                except:
-                    await msg.edit(content='❌ Произошла техническая ошибка, пингуй идиота ксова.')
+                    logs = client.get_channel(ERROR_ROOM)
+                    await logs.send(f'⛔ {ctx.user} записал себе банчик')
+                else:
+                    logs = client.get_channel(ERROR_ROOM)
+                    await logs.send(f'❓ {ctx.user} что то сделал, и я должен был чёта записать... похуй)')
             if reaction.emoji == '❌':
                 return
         
