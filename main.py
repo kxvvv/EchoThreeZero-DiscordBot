@@ -77,7 +77,7 @@ async def get_user_profile(user_id):
     if user_id not in profile.keys():
         profile[user_id] = PROFILE_DEFAULT
     
-        logs = client.get_channel(LOGS)
+        logs = client.get_channel(ERROR_ROOM)
         await logs.send(f'❗ <@{user_id}> создаёт себе БД.')
 
     with open("basa.json", "w") as file:
@@ -96,7 +96,7 @@ async def set_user_profile(user_id, parameter, new_value, ckey=False):
     if user_id not in profile.keys():
         profile[user_id] = PROFILE_DEFAULT
 
-        logs = client.get_channel(LOGS)
+        logs = client.get_channel(ERROR_ROOM)
         await logs.send(f'❗ <@{user_id}> создаёт себе БД, и записывает туда данные.')
 
     if ckey == True:
@@ -348,7 +348,7 @@ async def ckey(ctx, ckey: str=None):
     parameter = 'ckey'
     await set_user_profile(user_id, parameter, new_value, ckey=True)
 
-    logs = client.get_channel(LOGS)
+    logs = client.get_channel(ERROR_ROOM)
     await logs.send(f'👤 {ctx.user} установил себе новый ckey - `{ckey}`')
     await ctx.response.send_message(f'✅ Успешно установлен сикей -  `{ckey}`.', ephemeral=True)
 
@@ -2053,7 +2053,7 @@ async def report(ctx, модератор: discord.Member = None):
     parameter = 'report'
     await set_user_profile(user_id, parameter, new_value)
 
-    logs = client.get_channel(LOGS)
+    logs = client.get_channel(ERROR_ROOM)
     await logs.send(f'⏰ {ctx.user} записал <@{user}> новую жалобу')
     await ctx.response.send_message('✅ Успешно выдано.')
 
