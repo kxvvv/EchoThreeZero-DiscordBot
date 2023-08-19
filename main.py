@@ -303,7 +303,7 @@ def checkFooter(ctx, user):
 
 
     if echoRole in user.roles:
-        return f'{user.id}, echo☄️'
+        return f'{user.id}, echo☄️, {ckey}'
     elif elysiumRole in user.roles:
         return f'{user.id}, elysium🌑, {ckey}'
     elif solarisRole in user.roles:
