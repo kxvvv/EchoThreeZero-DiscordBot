@@ -85,7 +85,9 @@ async def get_user_profile(user_id):
 
     return profile[user_id]
 
-async def set_user_profile(user_id, parameter, new_value):
+async def set_user_profile(user_id, parameter, new_value, ckey=False):
+
+
     user_id = str(user_id)
 
     with open("basa.json", "r") as file:
@@ -97,7 +99,11 @@ async def set_user_profile(user_id, parameter, new_value):
         logs = client.get_channel(LOGS)
         await logs.send(f'❗ <@{user_id}> создаёт себе БД, и записывает туда данные.')
 
-    profile[user_id][parameter] = new_value
+    if ckey == True:
+        profile[user_id].setdefault('ckey', new_value)
+        profile[user_id][parameter] = new_value
+    else:
+        profile[user_id][parameter] = new_value
 
     with open("basa.json", "w") as file:
         json.dump(profile, file)
@@ -274,25 +280,77 @@ def checkFooter(ctx, user):
     novaRole = discord.utils.find(lambda r: r.name == '🪐', ctx.guild.roles)
     mainRole = discord.utils.find(lambda r: r.name == '🚀', ctx.guild.roles)
     allRole = discord.utils.find(lambda r: r.name == '🍿', ctx.guild.roles)
+
+
+    def checkCkey():
+        with open("basa.json", "r") as file:
+            profile = json.load(file)
+            try: 
+                for x in profile:
+                    if int(user.id) == int(x):
+                        ckey = profile[x]["ckey"]
+                        if ckey == None:
+                            ckey = '-'
+                        return ckey
+            except:
+                ckey = '-'
+                return ckey
+
+
+    ckey = checkCkey()
+
+
+
+
     if echoRole in user.roles:
         return f'{user.id}, echo☄️'
     elif elysiumRole in user.roles:
-        return f'{user.id}, elysium🌑'
+        return f'{user.id}, elysium🌑, {ckey}'
     elif solarisRole in user.roles:
-        return f'{user.id}, solaris🌕'
+        return f'{user.id}, solaris🌕, {ckey}'
     elif atharaRole in user.roles:
-        return f'{user.id}, athara🌌'
+        return f'{user.id}, athara🌌, {ckey}'
     elif novaRole in ctx.user.roles:
-        return f'{user.id}, nova🪐'
+        return f'{user.id}, nova🪐, {ckey}'
     elif mainRole in user.roles:
-        return f'{user.id}, main🚀'
+        return f'{user.id}, main🚀, {ckey}'
     elif allRole in user.roles:
-        return f'{user.id}, all🍿'
+        return f'{user.id}, all🍿, {ckey}'
     else:
-        return f'{user.id}, ???'
+        return f'{user.id}, ???, {ckey}'
     
 
+@client.tree.command(name = 'мой-сикей', description='установить сикей из игры, для подсчета ахелпов в течении месяца.', guild=discord.Object(id=GUILD))
+async def ckey(ctx, ckey: str=None):
 
+
+    access = await checkForModeratorRole(ctx)
+    if access == False:
+        return
+
+
+    user = ctx.user.id
+
+    if ckey == None:
+        await ctx.response.send_message('❌ Не указан ckey.', ephemeral=True)
+        return
+
+
+
+    profile = await get_user_profile(user)
+
+
+
+
+
+    user_id = ctx.user.id
+    new_value = ckey
+    parameter = 'ckey'
+    await set_user_profile(user_id, parameter, new_value, ckey=True)
+
+    logs = client.get_channel(LOGS)
+    await logs.send(f'👤 {ctx.user} установил себе новый ckey - `{ckey}`')
+    await ctx.response.send_message('✅ Успешно установлено.', ephemeral=True)
 
 @client.tree.command(name = "помощь", description= 'подробное описание всех команд в боте', guild=discord.Object(id=GUILD))
 async def perma(ctx):
@@ -1942,8 +2000,12 @@ async def change_color(ctx, ник: str=None, столбик: app_commands.Choic
                     case 'cBan':
                         cBan()
                 await msg.edit(content=f'✅ **Бан #{rule_number} покрашен в {colorEmoji}!**')
-            msgAuthor = ctx.author
-            await msgToLOGG(ctx, worksheet, user, msgAuthor, clrColor=colorEmoji, clrColum=punishWord, clrNumber=rule_number, isColor=True)
+            try:
+                msgAuthor = ctx.user
+                await msgToLOGG(ctx, worksheet, user, msgAuthor, clrColor=colorEmoji, clrColum=punishWord, clrNumber=rule_number, isColor=True)
+            except:
+                msgAuthor = ctx.author
+                await msgToLOGG(ctx, worksheet, user, msgAuthor, clrColor=colorEmoji, clrColum=punishWord, clrNumber=rule_number, isColor=True)
         else:
             await msg.edit(content=f'❌ В такой цвет - {colorEmoji}, {punishWord} красить нельзя.')
 
@@ -2024,13 +2086,11 @@ async def profile(ctx, модератор: discord.Member = None):
         description=f"🤬 {profile['ahelp']} АХелпов за прошлый месяц.", 
         title=user
     )
-    #embed.set_author(name=user, url="https://docs.google.com/spreadsheets/d/1R9kxpwp9PopkUoiF2DXTVphvwLDepJ0gkwDV8a2_8tQ/edit?pli=1#gid=0")
 
 
     embed.add_field(name="⚠️ Варны", value=f'{profile["warn"]}')
     embed.add_field(name="⛔ Баны", value=f'{profile["ban"]}')
     embed.add_field(name="⏰ Жалобы", value=f'{profile["report"]}')
-    #embed.add_field(name="🤬 Ахелпы", value=f'{profile["ahelp"]} за месяц.')
 
     
     
