@@ -512,8 +512,10 @@ async def msgToLOGG(ctx, worksheet, user, msgAuthor, clrColor=None, clrColum=Non
     if clrNumber != None:
         embed.add_field(name="Номер", value=clrNumber)
     
-
-    embed.set_thumbnail(url=member.avatar.url)
+    try:
+        embed.set_thumbnail(url=member.avatar.url)
+    except:
+        embed.set_thumbnail(url='https://static.wikia.nocookie.net/evade-nextbot/images/b/b5/Nerd.png/revision/latest?cb=20220822144117')
 
     embed.set_footer(text=f'{checkFooter(ctx=ctx, user=ctx.user)}, {row}')
 
