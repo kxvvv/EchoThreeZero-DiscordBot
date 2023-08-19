@@ -674,7 +674,7 @@ async def checkForModeratorRole(ctx, ignoreChannelCheck=False):
     discord.app_commands.Choice(name='дать ПДК', value=1),
     discord.app_commands.Choice(name='снять ПДК', value=2),
 ])
-async def pdk(ctx, игрок: str=None, правило: str=None, причина: str=None, пдк: app_commands.Choice[int]=1):
+async def pdk(ctx, игрок: str=None, правило: str=None, причина: str=None, пдк: app_commands.Choice[int]=0):
 
     user = игрок
     rule = правило
@@ -694,6 +694,9 @@ async def pdk(ctx, игрок: str=None, правило: str=None, причин�
     if reason == None:
             await ctx.response.send_message('❌ Не указана причина.')
             return
+    if pdk.value == 0:
+            await ctx.response.send_message('❌ Не указано дать или снять ПДК.')
+            return
 
     #msg = client.get_channel(ctx.channel.id)
     junior = discord.utils.find(lambda r: r.name == 'Младший Модератор', ctx.guild.roles)
@@ -707,13 +710,16 @@ async def pdk(ctx, игрок: str=None, правило: str=None, причин�
             checkForJunior = await juniorCheck(ctx=ctx, user=user, rule=rule, reason=reason, msg=msg, punish='СНЯТЬ ПДК')
 
 
-        match checkForJunior:
-            case False:
-                await msg.edit(content=f'**❌ Твой запрос не одобрили.**') 
-                return
-            case True:
-                await msg.edit(content=f'**✅ Твой запрос одобрили.**') 
-                return
+        try:
+            match checkForJunior:
+                case False:
+                    await msg.edit(content=f'**❌ Твой запрос не одобрили.**') 
+                    return
+                case True:
+                    await msg.edit(content=f'**✅ Твой запрос одобрили.**') 
+                    return
+        except:
+            return
     else:
         msg = await ctx.response.send_message('❌ Вы уже взрослый смешарик, Вам это никчему.')
 
