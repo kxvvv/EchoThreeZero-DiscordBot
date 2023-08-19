@@ -350,7 +350,7 @@ async def ckey(ctx, ckey: str=None):
 
     logs = client.get_channel(LOGS)
     await logs.send(f'👤 {ctx.user} установил себе новый ckey - `{ckey}`')
-    await ctx.response.send_message('✅ Успешно установлено.', ephemeral=True)
+    await ctx.response.send_message(f'✅ Успешно установлен сикей -  `{ckey}`.', ephemeral=True)
 
 @client.tree.command(name = "помощь", description= 'подробное описание всех команд в боте', guild=discord.Object(id=GUILD))
 async def perma(ctx):
