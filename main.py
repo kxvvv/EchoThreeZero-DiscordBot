@@ -2593,6 +2593,94 @@ async def second_command(ctx, ник: str=None, наказание: app_commands
 
 
 
+
+
+@client.command()
+async def zxczxczxc():
+
+    def checkCkeys():
+        with open('basa.json', 'r') as file:
+            file = json.load(file)
+
+
+        listOfCkeys = []
+
+        for x in file:
+            try:
+                if file[x]['ckey'] != None:
+                    listOfCkeys.append(file[x]['ckey'])
+            except:
+                pass
+        print(len(listOfCkeys))
+        return listOfCkeys
+
+
+    moders = checkCkeys()
+
+    with open('basa.json', 'r') as file:
+        wallets = json.load(file)
+    
+    for x in wallets:
+        wallets[x].setdefault('ahelp', 0)
+        wallets[x]['ahelp'] = 0 
+
+    with open('basa.json', 'w') as file:
+        json.dump(wallets, file)
+
+
+    ahelp = client.get_channel(923319745019801661)
+    m = [message async for message in ahelp.history(limit=LIMIT)]
+
+    modersCounters = {}
+
+    checkingNow = 0
+
+    for x in m:
+        checkingNow += 1
+        print(f'Проверил {checkingNow} из {LIMIT}')
+        m = x
+        m = m.embeds
+        m=m[0]
+        m=m.description
+        m = m.lower()
+
+        ahelpCounter = 0
+        for x in moders:
+            if x in m:
+                modersCounters = await get_user_profile(x)
+
+                modersCounters["ahelp"] += 1
+
+                await set_user_profile(x, "ahelp", modersCounters["ahelp"])
+                ahelpCounter = 0
+
+    with open("basa.json", "r") as file:
+        users_wallets = json.load(file)
+        for x in users_wallets:
+            ahelps = users_wallets[x]['ahelp']
+            print(f'{x}: {ahelps}')
+
+
+    with open("basa.json", "r") as file:
+        users_wallets = json.load(file)
+        for x in users_wallets:
+            users_wallets[x].setdefault('ahelp', 0)
+            users_wallets[x].setdefault('ckey', None)
+            ahelps = users_wallets[x]['ahelp']
+            ckeyName = users_wallets[x]['ckey']
+            if ckeyName == None:
+                continue
+            print(f'{ckeyName}: {ahelps}')
+
+
+LIMIT = 30590
+DEFAULT = {'ahelp': 0}
+
+
+
+
+
+
         
         
                    ##### ######   
