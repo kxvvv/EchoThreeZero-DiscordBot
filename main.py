@@ -2596,7 +2596,12 @@ async def second_command(ctx, ник: str=None, наказание: app_commands
 
 
 @client.command()
-async def zxczxczxc():
+async def ahelpcheck(ctx):
+
+    if str(ctx.author) != 'ksov':
+        return
+    else:
+        await ctx.message.add_reaction('✅')
 
     def checkCkeys():
         with open('basa.json', 'r') as file:
