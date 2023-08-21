@@ -2603,6 +2603,8 @@ async def ahelpcheck(ctx):
     else:
         await ctx.message.add_reaction('✅')
 
+    msg = client.get_channel(ctx.channel.id)
+
     def checkCkeys():
         with open('basa.json', 'r') as file:
             file = json.load(file)
@@ -2649,7 +2651,6 @@ async def ahelpcheck(ctx):
         m=m.description
         m = m.lower()
 
-        ahelpCounter = 0
         for x in moders:
             if x in m:
                 modersCounters = await get_user_profile(x)
@@ -2657,7 +2658,6 @@ async def ahelpcheck(ctx):
                 modersCounters["ahelp"] += 1
 
                 await set_user_profile(x, "ahelp", modersCounters["ahelp"])
-                ahelpCounter = 0
 
     with open("basa.json", "r") as file:
         users_wallets = json.load(file)
@@ -2676,6 +2676,8 @@ async def ahelpcheck(ctx):
             if ckeyName == None:
                 continue
             print(f'{ckeyName}: {ahelps}')
+
+    await msg.send('**✅ Обновил данные АХелпов у модераторов.**')
 
 
 LIMIT = 30590
