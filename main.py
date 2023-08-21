@@ -2625,37 +2625,6 @@ async def ahelpcheck(ctx):
 
 
 
-    async def get_ahelp(user_id):
-        user_id = str(user_id)
-
-        with open("basa.json", "r") as file:
-            users_wallets = json.load(file)
-
-        if user_id not in users_wallets.keys():
-            users_wallets[user_id] = DEFAULT
-
-        with open("basa.json", "w") as file:
-            json.dump(users_wallets, file)
-
-        return users_wallets[user_id]
-
-
-    async def set_ahelp(user_id, parameter, new_value):
-        user_id = str(user_id)
-
-        with open("basa.json", "r") as file:
-            users_wallets = json.load(file)
-
-        if user_id not in users_wallets.keys():
-            users_wallets[user_id] = DEFAULT
-
-        users_wallets[user_id][parameter] = new_value
-
-        with open("basa.json", "w") as file:
-            json.dump(users_wallets, file)
-
-
-
     msg = client.get_channel(ctx.channel.id)
 
     def checkCkeys():
@@ -2663,19 +2632,23 @@ async def ahelpcheck(ctx):
             file = json.load(file)
 
 
-        listOfCkeys = []
+        #listOfCkeys = []
+        list2OfCkeys = {}
 
         for x in file:
             try:
                 if file[x]['ckey'] != None:
-                    listOfCkeys.append(file[x]['ckey'])
+                    #listOfCkeys.append(file[x]['ckey'])
+                    list2OfCkeys.setdefault(file[x]['ckey'], x)
             except:
                 pass
-        print(len(listOfCkeys))
-        return listOfCkeys
+            
+        print(f'Длина сикеев - {len(list2OfCkeys)}')
+        return list2OfCkeys
 
 
     moders = checkCkeys()
+
 
     with open('basa.json', 'r') as file:
         wallets = json.load(file)
@@ -2706,35 +2679,34 @@ async def ahelpcheck(ctx):
 
         for x in moders:
             if str(x).lower() in str(m).lower():
-                modersCounters = await get_ahelp(x)
+                id = moders[x]
+                modersCounters = await get_user_profile(id)
 
                 modersCounters["ahelp"] += 1
 
-                await set_ahelp(x, "ahelp", modersCounters["ahelp"])
-
-    with open("basa.json", "r") as file:
-        users_wallets = json.load(file)
-        for x in users_wallets:
-            ahelps = users_wallets[x]['ahelp']
-            print(f'{x}: {ahelps}')
+                await set_user_profile(id, "ahelp", modersCounters["ahelp"])
 
 
-    with open("basa.json", "r") as file:
-        users_wallets = json.load(file)
-        for x in users_wallets:
-            users_wallets[x].setdefault('ahelp', 0)
-            users_wallets[x].setdefault('ckey', None)
-            ahelps = users_wallets[x]['ahelp']
-            ckeyName = users_wallets[x]['ckey']
-            if ckeyName == None:
-                continue
-            print(f'{ckeyName}: {ahelps}')
+    with open('basa.json', 'r') as file:
+        wallets = json.load(file)
+    
+    for x in wallets:
+        ahelps = wallets[x]['ahelp']
+        try:
+            ckey = wallets[x]['ckey']
+        except:
+            ckey = wallets[x].setdefault('ckey', None)
+        
+        if ckey != None:
+            print(f'{ckey}: {ahelps}')
 
 
-    #await msg.send('**✅ Обновил данные АХелпов у модераторов.**')
 
-LIMIT = 5000
-DEFAULT = {'ahelp': 0}
+
+
+    await msg.send('**✅ Обновил данные АХелпов у модераторов.**')
+
+LIMIT = 31000
 
 
 @client.tree.command(name = "созвать", description = "созывает весь твой отдел.", guild=discord.Object(id=GUILD))
