@@ -2707,10 +2707,6 @@ DEFAULT = {'ahelp': 0}
 @client.tree.command(name = "созвать", description = "созывает весь твой отдел.", guild=discord.Object(id=GUILD))
 async def call(ctx):
 
-    access = await checkForModeratorRole(ctx)
-    if access == False:
-        return
-
     authorRoles = ctx.user.roles
 
     access = discord.utils.find(lambda r: r.name == 'Смотритель Сервера', ctx.guild.roles)
