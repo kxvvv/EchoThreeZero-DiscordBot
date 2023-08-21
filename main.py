@@ -2623,6 +2623,39 @@ async def ahelpcheck(ctx):
     else:
         await ctx.message.add_reaction('✅')
 
+
+
+    async def get_ahelp(user_id):
+        user_id = str(user_id)
+
+        with open("basa.json", "r") as file:
+            users_wallets = json.load(file)
+
+        if user_id not in users_wallets.keys():
+            users_wallets[user_id] = DEFAULT
+
+        with open("basa.json", "w") as file:
+            json.dump(users_wallets, file)
+
+        return users_wallets[user_id]
+
+
+    async def set_ahelp(user_id, parameter, new_value):
+        user_id = str(user_id)
+
+        with open("basa.json", "r") as file:
+            users_wallets = json.load(file)
+
+        if user_id not in users_wallets.keys():
+            users_wallets[user_id] = DEFAULT
+
+        users_wallets[user_id][parameter] = new_value
+
+        with open("basa.json", "w") as file:
+            json.dump(users_wallets, file)
+
+
+
     msg = client.get_channel(ctx.channel.id)
 
     def checkCkeys():
@@ -2673,11 +2706,11 @@ async def ahelpcheck(ctx):
 
         for x in moders:
             if str(x).lower() in str(m).lower():
-                modersCounters = await get_user_profile(x)
+                modersCounters = await get_ahelp(x)
 
                 modersCounters["ahelp"] += 1
 
-                await set_user_profile(x, "ahelp", modersCounters["ahelp"])
+                await set_ahelp(x, "ahelp", modersCounters["ahelp"])
 
     with open("basa.json", "r") as file:
         users_wallets = json.load(file)
@@ -2697,10 +2730,10 @@ async def ahelpcheck(ctx):
                 continue
             print(f'{ckeyName}: {ahelps}')
 
-    await msg.send('**✅ Обновил данные АХелпов у модераторов.**')
 
+    #await msg.send('**✅ Обновил данные АХелпов у модераторов.**')
 
-LIMIT = 30590
+LIMIT = 5000
 DEFAULT = {'ahelp': 0}
 
 
