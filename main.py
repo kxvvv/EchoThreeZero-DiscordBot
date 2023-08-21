@@ -694,6 +694,11 @@ async def pdk(ctx, игрок: str=None, правило: str=None, причин�
     if reason == None:
             await ctx.response.send_message('❌ Не указана причина.')
             return
+
+
+    if pdk == 0:    
+            await ctx.response.send_message('❌ Не указано дать или снять ПДК.')
+            return
     if pdk.value == 0:
             await ctx.response.send_message('❌ Не указано дать или снять ПДК.')
             return
@@ -891,6 +896,10 @@ async def jobka(ctx, игрок: str=None, правило: str=None, причи�
     
     if jobChoose.value == 0:
         await ctx.response.send_message('❌ Не выбрана профессия.')
+        return
+
+    if rule == None:
+        await ctx.response.send_message('❌ Не корректно выбрано правило')
         return
 
     try:
@@ -1128,9 +1137,10 @@ async def perma(ctx, игрок: str=None, правило: str=None, причи�
     values_list = worksheet.col_values(2)
     playerIsNew = False
 
-
+    if rule == None:
+        await ctx.response.send_message('❌ Не корректно выбрано правило')
+        return
         
-
     try:
         if 'Правило' in rule or 'правило' in rule:
             await ctx.response.send_message('❌ Не корректно выбрано правило, **используй только числа.**')
@@ -2538,7 +2548,9 @@ async def second_command(ctx, ник: str=None, наказание: app_commands
     else:
         punishEmoji = '❓'
     
-
+    if rule == None:
+        await ctx.response.send_message('❌ Не корректно выбрано правило')
+        return
 
     try:
         if 'Правило' in rule or 'правило' in rule:
@@ -2576,7 +2588,6 @@ async def second_command(ctx, ник: str=None, наказание: app_commands
     else:
         await ctx.followup.send(f"⚠️ Игрок `{user}` не найден.")
         await nextStep('new')
-
 
 
 
