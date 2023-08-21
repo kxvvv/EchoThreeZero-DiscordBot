@@ -867,15 +867,22 @@ async def errorDeferMessage(ctx, errorValue):
     
 @client.tree.command(name = "джобка", description='быстрая запись джобки', guild=discord.Object(id=GUILD))
 @app_commands.choices(отдел=[
-    discord.app_commands.Choice(name='Командный', value=1),
+    discord.app_commands.Choice(name='КМД', value=1),
     discord.app_commands.Choice(name='СБ', value=2),
     discord.app_commands.Choice(name='РНД', value=3),
     discord.app_commands.Choice(name='МЕД', value=4),
     discord.app_commands.Choice(name='КАРГО', value=5),
     discord.app_commands.Choice(name='ИНЖ', value=6),
-    discord.app_commands.Choice(name='Антагонисты', value=7),
-])
-async def jobka(ctx, игрок: str=None, правило: str=None, причина: str=None, отдел: app_commands.Choice[int]=0, срок: str='None'):
+    discord.app_commands.Choice(name='АНТ', value=7),
+], 
+бан=[
+    discord.app_commands.Choice(name='Нет', value=1),
+    discord.app_commands.Choice(name='Да', value=2),
+]
+)
+
+
+async def jobka(ctx, игрок: str=None, правило: str=None, причина: str=None, отдел: app_commands.Choice[int]=0, срок: str='None', бан: app_commands.Choice[int]=0):
 
     access = await checkForModeratorRole(ctx)
     if access == False:
@@ -887,6 +894,8 @@ async def jobka(ctx, игрок: str=None, правило: str=None, причи�
     reason = причина
     jobChoose = отдел
     punishTime = срок
+    isNeedToBan = бан
+
 
     gc, sh, worksheet = joinToSheet()
     values_list = worksheet.col_values(2)
@@ -914,6 +923,15 @@ async def jobka(ctx, игрок: str=None, правило: str=None, причи�
     if reason == None:
         await ctx.response.send_message('❌ Не выбрана причина.')
         return
+    
+
+    if isNeedToBan != 0:
+        if isNeedToBan.value == 2:
+            ChoosenJob = f"{jobChoose.name} + Бан."
+        else:
+            ChoosenJob = f"{jobChoose.name}."
+    else:
+        ChoosenJob = f"{jobChoose.name}."
 
 
     if user in values_list:
@@ -953,7 +971,7 @@ async def jobka(ctx, игрок: str=None, правило: str=None, причи�
         worksheet.update(f'B{row}', user)
 
         worksheet.update(f'F{row}', '1')
-        worksheet.update(f'G{row}', str(f'JB: {jobChoose.name}. Правило {rule}'))
+        worksheet.update(f'G{row}', str(f'JB: {ChoosenJob} Правило {rule}'))
         worksheet.insert_note(f'G{row}', f'{reason}')
 
 
@@ -995,32 +1013,32 @@ async def jobka(ctx, игрок: str=None, правило: str=None, причи�
                         break
                     needToAdd += 1
             if banCount > needToAdd:
-                worksheet.update(f'G{row+needToAdd}', str(f'JB: {jobChoose.name}. Правило {rule}'))
+                worksheet.update(f'G{row+needToAdd}', str(f'JB: {ChoosenJob} Правило {rule}'))
                 worksheet.insert_note(f'G{row+needToAdd}', f'{reason}')
                 worksheet.format(f'G{row+needToAdd}', {'textFormat': {'strikethrough': False}})
 
             elif banCount < needToAdd:
                 addField(banCount)
                 worksheet.update(f'F{row+banCount}', str(f'{banCount+1}')) # test
-                worksheet.update(f'G{row+banCount}', str(f'JB: {jobChoose.name}. Правило {rule}'))
+                worksheet.update(f'G{row+banCount}', str(f'JB: {ChoosenJob} Правило {rule}'))
                 worksheet.insert_note(f'G{row+banCount}', f'{reason}')
                 worksheet.format(f'G{row+banCount}', {'textFormat': {'strikethrough': False}})
 
             elif banCount == needToAdd:
                 if banCount == 0 and needToAdd == 0:
                     worksheet.update(f'F{row+needToAdd}', str(f'1'))
-                    worksheet.update(f'G{row+needToAdd}', str(f'JB: {jobChoose.name}. Правило {rule}'))
+                    worksheet.update(f'G{row+needToAdd}', str(f'JB: {ChoosenJob} Правило {rule}'))
                     worksheet.insert_note(f'G{row+needToAdd}', f'{reason}')
                     worksheet.format(f'G{row+needToAdd}', {'textFormat': {'strikethrough': False}})
                 elif banCount < mainCount:
                     worksheet.update(f'F{row+needToAdd}', str(f'{banCount+1}'))
-                    worksheet.update(f'G{row+needToAdd}', str(f'JB: {jobChoose.name}. Правило {rule}'))
+                    worksheet.update(f'G{row+needToAdd}', str(f'JB: {ChoosenJob} Правило {rule}'))
                     worksheet.insert_note(f'G{row+needToAdd}', f'{reason}')
                     worksheet.format(f'G{row+needToAdd}', {'textFormat': {'strikethrough': False}})
                 else:
                     addField(banCount)
                     worksheet.update(f'F{row+banCount}', str(f'{banCount+1}')) # test
-                    worksheet.update(f'G{row+needToAdd}', str(f'JB: {jobChoose.name}. Правило {rule}'))
+                    worksheet.update(f'G{row+needToAdd}', str(f'JB: {ChoosenJob} Правило {rule}'))
                     worksheet.insert_note(f'G{row+needToAdd}', f'{reason}')
                     worksheet.format(f'G{row+needToAdd}', {'textFormat': {'strikethrough': False}})
             return
@@ -1053,8 +1071,10 @@ async def jobka(ctx, игрок: str=None, правило: str=None, причи�
         title='Убедись, правильно ли ты всё записал:'
     )
 
-    embed.add_field(name="Наказание", value=f'JB: {jobChoose.name}')
+    embed.add_field(name="Наказание", value=f'JB: {ChoosenJob}')
     embed.add_field(name="Правило", value=rule)
+    if punishTime != 'None' and punishTime != None:
+        embed.add_field(name="Срок", value=punishTime)
     
     await msg.delete()
     msg = await infochat.send(embed=embed)
@@ -2652,7 +2672,7 @@ async def ahelpcheck(ctx):
         m = m.lower()
 
         for x in moders:
-            if x in m:
+            if str(x).lower() in str(m).lower():
                 modersCounters = await get_user_profile(x)
 
                 modersCounters["ahelp"] += 1
@@ -2684,7 +2704,45 @@ LIMIT = 30590
 DEFAULT = {'ahelp': 0}
 
 
+@client.tree.command(name = "созвать", description = "созывает весь твой отдел.", guild=discord.Object(id=GUILD))
+async def call(ctx):
 
+    access = await checkForModeratorRole(ctx)
+    if access == False:
+        return
+
+    authorRoles = ctx.user.roles
+
+    access = discord.utils.find(lambda r: r.name == 'Смотритель Сервера', ctx.guild.roles)
+
+    if access not in authorRoles:
+        await ctx.response.send_message('**❌ У Вас нет доступа.**', ephemeral=True)
+        return
+
+
+
+    echoRole = discord.utils.find(lambda r: r.name == '☄️', ctx.guild.roles)
+    elysiumRole = discord.utils.find(lambda r: r.name == '🌑', ctx.guild.roles)
+    solarisRole = discord.utils.find(lambda r: r.name == '🌕', ctx.guild.roles)
+    atharaRole = discord.utils.find(lambda r: r.name == '🌌', ctx.guild.roles)
+    novaRole = discord.utils.find(lambda r: r.name == '🪐', ctx.guild.roles)
+    mainRole = discord.utils.find(lambda r: r.name == '🚀', ctx.guild.roles)
+    allRole = discord.utils.find(lambda r: r.name == '🍿', ctx.guild.roles)
+
+    
+
+    roles = [echoRole, elysiumRole, solarisRole, atharaRole, novaRole, mainRole, allRole]
+
+    for x in authorRoles:
+        if x in roles:
+            await ctx.response.send_message('**✅ Будет сделано.**', ephemeral=True)
+            channel = client.get_channel(ctx.channel.id)
+            await channel.send(f'**{ctx.user} зовёт всех своих!** <@&{x.id}>')
+            return
+        
+    await ctx.response.send_message('**❌ У Вас нет привязанность роли.**', ephemeral=True)
+
+        
 
 
 
