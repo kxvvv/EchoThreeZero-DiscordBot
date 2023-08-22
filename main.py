@@ -128,12 +128,7 @@ async def getProfileFromSheet(user, warnCheck, banCheck, testCheck, row, col, wo
 
 
 
-    embed = discord.Embed(
-        colour=await colorStatus(),
-        description="Нажмите на ник, что-бы перейти в таблицу.", 
-        title=u"Информация с таблицы"
-    )
-    embed.set_author(name=user, url=LINK+str(row))
+
 
 
 
@@ -163,13 +158,40 @@ async def getProfileFromSheet(user, warnCheck, banCheck, testCheck, row, col, wo
 
     if listWarn == '':
         listWarn = '-'
+        warnCheck = 0
     if listBan == '':
         listBan = '-'
+        banCheck = 0
 
-    embed.add_field(name="⚠️ Варны", value=warnCheck)
-    embed.insert_field_at(1,name="⛔ Баны", value=banCheck)
-    embed.add_field(name="📃 Тест", value=testCheck)
+    textForEmbedDesc = f'''
+
+*Нажмите на ник, что-бы перейти в таблицу.*
+
+⚠️ Варны: **{warnCheck}**
+
+⛔ Баны: **{banCheck}**
+
+📃 Тест: **{testCheck}**
+
+
+''' 
+
+
+
+    embed = discord.Embed(
+        colour=await colorStatus(),
+        description=textForEmbedDesc, 
+        #title=f"Информация о"
+    )
+    embed.set_author(name=user, url=LINK+str(row))
+
+
+    #embed.add_field(name="⚠️ Варны", value=warnCheck)
+    #embed.insert_field_at(1,name="⛔ Баны", value=banCheck)
+
+    #embed.add_field(name="📃 Тест", value=testCheck)
     embed.add_field(name='список варнов', value=listWarn)
+    embed.add_field(name=' ', value=' ')
     embed.add_field(name='список банов', value=listBan)
 
 
