@@ -281,43 +281,22 @@ def checkFooter(ctx, user):
     mainRole = discord.utils.find(lambda r: r.name == '🚀', ctx.guild.roles)
     allRole = discord.utils.find(lambda r: r.name == '🍿', ctx.guild.roles)
 
-
-    def checkCkey():
-        with open("basa.json", "r") as file:
-            profile = json.load(file)
-            try: 
-                for x in profile:
-                    if int(user.id) == int(x):
-                        ckey = profile[x]["ckey"]
-                        if ckey == None:
-                            ckey = '-'
-                        return ckey
-            except:
-                ckey = '-'
-                return ckey
-
-
-    ckey = checkCkey()
-
-
-
-
     if echoRole in user.roles:
-        return f'{user.id}, echo☄️, {ckey}'
+        return f'{user.id}, echo☄️'
     elif elysiumRole in user.roles:
-        return f'{user.id}, elysium🌑, {ckey}'
+        return f'{user.id}, elysium🌑'
     elif solarisRole in user.roles:
-        return f'{user.id}, solaris🌕, {ckey}'
+        return f'{user.id}, solaris🌕'
     elif atharaRole in user.roles:
-        return f'{user.id}, athara🌌, {ckey}'
+        return f'{user.id}, athara🌌'
     elif novaRole in ctx.user.roles:
-        return f'{user.id}, nova🪐, {ckey}'
+        return f'{user.id}, nova🪐'
     elif mainRole in user.roles:
-        return f'{user.id}, main🚀, {ckey}'
+        return f'{user.id}, main🚀'
     elif allRole in user.roles:
-        return f'{user.id}, all🍿, {ckey}'
+        return f'{user.id}, all🍿'
     else:
-        return f'{user.id}, ???, {ckey}'
+        return f'{user.id}, ???'
     
 
 @client.tree.command(name = 'мой-сикей', description='установить сикей из игры, для подсчета ахелпов в течении месяца.', guild=discord.Object(id=GUILD))
