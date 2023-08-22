@@ -560,6 +560,10 @@ f'''
         access2 = discord.utils.find(lambda r: r.name == 'Старший Модератор', ctx.guild.roles)
         access3 = discord.utils.find(lambda r: r.name == 'Смотритель Сервера', ctx.guild.roles)
         access4 = discord.utils.find(lambda r: r.name == 'Смотритель Серверов', ctx.guild.roles)
+        access5 = discord.utils.find(lambda r: r.name == 'Младший Администратор', ctx.guild.roles)
+        access6 = discord.utils.find(lambda r: r.name == 'Администратор', ctx.guild.roles)
+
+
         if access in rAuth.roles:
             return nextStep()
         elif access2 in rAuth.roles:
@@ -567,6 +571,10 @@ f'''
         elif access3 in rAuth.roles:
             return nextStep()
         elif access4 in rAuth.roles:
+            return nextStep()
+        elif access5 in rAuth.roles:
+            return nextStep()
+        elif access6 in rAuth.roles:
             return nextStep()
         else:
             pass
@@ -766,7 +774,7 @@ async def toStats(ctx):
     await ctx.send(embed=embedAthara)
     await ctx.send(embed=embedElysium)
     await ctx.send(embed=embedMain)
-    await ctx.send(embed=embedAllRole)
+    #await ctx.send(embed=embedAllRole)
     await ctx.send(f'<@{id}>')
 
 
@@ -2098,7 +2106,7 @@ async def profile(ctx, модератор: discord.Member = None):
     try:
         await ctx.response.defer() # ephemeral=True
     except:
-        await errorDeferMessage(ctx=ctx, errorValue='1832')
+        await errorDeferMessage(ctx=ctx, errorValue='1832') 
         return
     
     profile = await get_user_profile(user.id)
@@ -2106,16 +2114,54 @@ async def profile(ctx, модератор: discord.Member = None):
 
     embed = discord.Embed(
         colour=checkRole(ctx=ctx, user=user), 
-        description=f"🤬 {profile['ahelp']} АХелпов за прошлый месяц.", 
-        title=user
+        description=f"# Статистика {user}.", 
+        #title=f"# Статистика {user}.", 
     )
 
 
-    embed.add_field(name="⚠️ Варны", value=f'{profile["warn"]}')
-    embed.add_field(name="⛔ Баны", value=f'{profile["ban"]}')
-    embed.add_field(name="⏰ Жалобы", value=f'{profile["report"]}')
+    def ckeyNullOrNot():
+        try:
+            ckey = profile["ckey"]
+            if ckey == None:
+                ckey = 'Не установлен.'
+        except:
+            ckey = 'Не установлен.'
+        return ckey
 
-    
+
+    profileStat = f'''
+
+\n
+⚠️ Варны: **{profile["warn"]}**
+
+⛔ Баны: **{profile["ban"]}**
+
+⏰ Жалобы: **{profile["report"]}**
+
+🤬 Ахеплы: **{profile["ahelp"]}**
+
+👤 Сикей: **{ckeyNullOrNot()}**
+\n
+
+'''
+
+
+    # embed.add_field(name="⚠️ Варны", value=f'{profile["warn"]}')
+    # embed.add_field(name="⛔ Баны", value=f'{profile["ban"]}')
+    # embed.add_field(name="⏰ Жалобы", value=f'{profile["report"]}')
+    # embed.add_field(name="🤬 Ахеплы", value=f'{profile["ahelp"]}')
+    # try:
+    #     embed.add_field(name="👤 Сикей", value=f'{profile["ckey"]}')
+    # except:
+    #     embed.add_field(name="👤 Сикей", value=f'-')
+
+    #embed.add_field(name="", value='\n')
+
+    embed.add_field(name="", value=f'{profileStat}')
+
+    embed.add_field(name="", value='\n')
+    embed.add_field(name="", value='\n')
+    embed.add_field(name="", value='\n')
     
     try:
         embed.set_thumbnail(url=user.avatar.url)
