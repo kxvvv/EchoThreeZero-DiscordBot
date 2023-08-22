@@ -513,7 +513,7 @@ f'''
     await msg.add_reaction('✅')
     await msg.add_reaction('❌')
     try:
-        thread = await msg.create_thread(name=f'{punish}')
+        thread = await msg.create_thread(name=f'{user}, {punish}')
         if playerEmbed != None:
             await thread.send(embed=playerEmbed)
         else:
