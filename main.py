@@ -1111,13 +1111,15 @@ async def jobka(ctx, игрок: str=None, правило: str=None, причи�
             junior = discord.utils.find(lambda r: r.name == 'Младший Модератор', ctx.guild.roles)
             if junior in ctx.user.roles:
                 try:
-                    playerEmbed = oldPlayer('embed')
+                    playerEmbed = await oldPlayer('embed')
                     checkForJunior = await juniorCheck(ctx=ctx, user=user, rule=rule, reason=reason, msg=msg, punish='джобка', punishTime=punishTime, jobChoose=jobChoose.name, playerEmbed=playerEmbed)
                 except:
                     checkForJunior = await juniorCheck(ctx=ctx, user=user, rule=rule, reason=reason, msg=msg, punish='джобка', punishTime=punishTime, jobChoose=jobChoose.name)
             else:
                 checkForJunior = True
 
+
+            logging.info(checkForJunior)
 
             if checkForJunior == False:
                 await msg.edit(content=f'**❌ Твой запрос не одобрили.**') 
@@ -1126,8 +1128,10 @@ async def jobka(ctx, игрок: str=None, правило: str=None, причи�
             elif checkForJunior == True:
                 pass
 
+
             else:
                 await msg.edit(content=f'**❌ Тех. ошибка - пингуй ксова. `error #1086/1` **')
+                logging.critical(f'{checkForJunior}, 1134')
                 return
 
 
@@ -1419,6 +1423,7 @@ async def perma(ctx, игрок: str=None, правило: str=None, причи�
 
             else:
                 await msg.edit(content=f'**❌ Тех. ошибка - пингуй ксова. `error #1376/1` **')
+                logging.critical(f'{checkForJunior}, 1426')
                 return
 
 
