@@ -1119,7 +1119,7 @@ async def jobka(ctx, игрок: str=None, правило: str=None, причи�
                 checkForJunior = True
 
 
-            logging.info(checkForJunior)
+            #logging.info(checkForJunior)
 
             if checkForJunior == False:
                 await msg.edit(content=f'**❌ Твой запрос не одобрили.**') 
