@@ -872,6 +872,7 @@ async def note(ctx, игрок: str=None, причина: str=None):
 async def errorDeferMessage(ctx, errorValue):
     # errorCh = client.get_channel(ctx.channel.id)
     print(f'erorr {errorValue}')
+    logging.error(f'error - {errorValue}')
     # await errorCh.send(f'<@{ctx.user.id}> **попробуй еще раз, дискорд не захотел принимать твою команду.**')
     
 @client.tree.command(name = "джобка", description='быстрая запись джобки', guild=discord.Object(id=GUILD))
@@ -976,6 +977,7 @@ async def jobka(ctx, игрок: str=None, правило: str=None, причи�
         else:
             row += 1
 
+        logging.info(f'6000, {row}, {banCount}')
         
         worksheet.update(f'B{row}', user)
 
@@ -1022,11 +1024,13 @@ async def jobka(ctx, игрок: str=None, правило: str=None, причи�
                         break
                     needToAdd += 1
             if banCount > needToAdd:
+                logging.info(f'5001, {row}, {banCount}, {needToAdd}')
                 worksheet.update(f'G{row+needToAdd}', str(f'JB: {ChoosenJob} Правило {rule}'))
                 worksheet.insert_note(f'G{row+needToAdd}', f'{reason}')
                 worksheet.format(f'G{row+needToAdd}', {'textFormat': {'strikethrough': False}})
 
             elif banCount < needToAdd:
+                logging.info(f'5002, {row}, {banCount}, {needToAdd}')
                 addField(banCount)
                 worksheet.update(f'F{row+banCount}', str(f'{banCount+1}')) # test
                 worksheet.update(f'G{row+banCount}', str(f'JB: {ChoosenJob} Правило {rule}'))
@@ -1035,16 +1039,19 @@ async def jobka(ctx, игрок: str=None, правило: str=None, причи�
 
             elif banCount == needToAdd:
                 if banCount == 0 and needToAdd == 0:
+                    logging.info(f'5003, {row}, {banCount}, {needToAdd}')
                     worksheet.update(f'F{row+needToAdd}', str(f'1'))
                     worksheet.update(f'G{row+needToAdd}', str(f'JB: {ChoosenJob} Правило {rule}'))
                     worksheet.insert_note(f'G{row+needToAdd}', f'{reason}')
                     worksheet.format(f'G{row+needToAdd}', {'textFormat': {'strikethrough': False}})
                 elif banCount < mainCount:
+                    logging.info(f'5004, {row}, {banCount}, {needToAdd}')
                     worksheet.update(f'F{row+needToAdd}', str(f'{banCount+1}'))
                     worksheet.update(f'G{row+needToAdd}', str(f'JB: {ChoosenJob} Правило {rule}'))
                     worksheet.insert_note(f'G{row+needToAdd}', f'{reason}')
                     worksheet.format(f'G{row+needToAdd}', {'textFormat': {'strikethrough': False}})
                 else:
+                    logging.info(f'5005, {row}, {banCount}')
                     addField(banCount)
                     worksheet.update(f'F{row+banCount}', str(f'{banCount+1}')) # test
                     worksheet.update(f'G{row+needToAdd}', str(f'JB: {ChoosenJob} Правило {rule}'))
@@ -1244,6 +1251,8 @@ async def perma(ctx, игрок: str=None, правило: str=None, причи�
                 }
             })
         
+        logging.info(f'5000, {row}')
+        
         worksheet.update(f'B{row}', user)
         playerFormat()
 
@@ -1314,12 +1323,14 @@ async def perma(ctx, игрок: str=None, правило: str=None, причи�
                         break
                     needToAdd += 1
             if banCount > needToAdd:
+                logging.info(f'4001, {row}, {banCount}')
                 worksheet.update(f'G{row+needToAdd}', str(f'PERMA: Правило {rule}'))
                 worksheet.insert_note(f'G{row+needToAdd}', f'{reason}')
                 worksheet.format(f'G{row+needToAdd}', {'textFormat': {'strikethrough': False}})
                 ruleFormat(needToAdd)
 
             elif banCount < needToAdd:
+                logging.info(f'4002, {row}, {banCount}')
                 addField(banCount)
                 worksheet.update(f'F{row+banCount}', str(f'{banCount+1}')) # test
                 worksheet.update(f'G{row+banCount}', str(f'PERMA: Правило {rule}'))
@@ -1329,18 +1340,21 @@ async def perma(ctx, игрок: str=None, правило: str=None, причи�
 
             elif banCount == needToAdd:
                 if banCount == 0 and needToAdd == 0:
+                    logging.info(f'4003, {row}, {banCount}')
                     worksheet.update(f'F{row+needToAdd}', str(f'1'))
                     worksheet.update(f'G{row+needToAdd}', str(f'PERMA: Правило {rule}'))
                     worksheet.insert_note(f'G{row+needToAdd}', f'{reason}')
                     worksheet.format(f'G{row+needToAdd}', {'textFormat': {'strikethrough': False}})
                     ruleFormat(needToAdd)
                 elif banCount < mainCount:
+                    logging.info(f'4004, {row}, {banCount}')
                     worksheet.update(f'F{row+needToAdd}', str(f'{banCount+1}'))
                     worksheet.update(f'G{row+needToAdd}', str(f'PERMA: Правило {rule}'))
                     worksheet.insert_note(f'G{row+needToAdd}', f'{reason}')
                     worksheet.format(f'G{row+needToAdd}', {'textFormat': {'strikethrough': False}})
                     ruleFormat(needToAdd)
                 else:
+                    logging.info(f'4005, {row}, {banCount}')
                     addField(banCount)
                     worksheet.update(f'F{row+banCount}', str(f'{banCount+1}')) # test
                     worksheet.update(f'G{row+needToAdd}', str(f'PERMA: Правило {rule}'))
@@ -1662,7 +1676,6 @@ async def giveTest(ctx, игрок: str=None, выбор: app_commands.Choice[in
             mainCount = max(warnCount, banCount)
             
             
-            #print(mainCount)
             if mainCount > 1:
                 mainCount -= 1
                 try:
@@ -1689,8 +1702,6 @@ async def sendDatabaseToEcho(ctx):
     minute = dt.now().minute
     if minute in range(1, 9):
         minute = '0' + str(minute)
-
-    #print(f'time now: {hour}:{minute}')
 
     if hour == 23 and newDay == True:
         ctx = client.get_channel(BD_ROOM)
@@ -2300,12 +2311,14 @@ async def second_command(ctx, ник: str=None, наказание: app_commands
 
         worksheet.update(f'B{row}', user)
         if punish.value == 1:
+            logging.info(f'3001, {row}')
             worksheet.update(f'C{row}', '1')
             worksheet.update(f'D{row}', str(f'Правило {rule}'))
             worksheet.insert_note(f'D{row}', f'{reason}')
             worksheet.format(f'D{row}', {'textFormat': {'strikethrough': False}})
 
         if punish.value == 2:
+            logging.info(f'3002, {row}')
             worksheet.update(f'F{row}', '1')
             worksheet.update(f'G{row}', str(f'Правило {rule}'))
             worksheet.insert_note(f'G{row}', f'{reason}')
@@ -2395,11 +2408,13 @@ async def second_command(ctx, ник: str=None, наказание: app_commands
                 warnNullOrNot = 0
                 needToAdd = 0
             if warnCount > needToAdd:
+                logging.info(f'1001, {warnCount}, {needToAdd}')
                 worksheet.update(f'D{row+needToAdd}', str(f'Правило {rule}'))
                 worksheet.insert_note(f'D{row+needToAdd}', f'{reason}')
                 worksheet.format(f'D{row+needToAdd}', {'textFormat': {'strikethrough': False}})
 
             elif warnCount < needToAdd:
+                logging.info(f'1002, {warnCount}, {needToAdd}')
                 addField(warnCount)
                 worksheet.update(f'C{row+warnCount}', str(f'{warnCount+1}')) # testt
                 worksheet.update(f'D{row+warnCount}', str(f'Правило {rule}'))
@@ -2408,16 +2423,19 @@ async def second_command(ctx, ник: str=None, наказание: app_commands
 
             elif warnCount == needToAdd:
                 if warnCount == 0 and needToAdd == 0:
+                    logging.info(f'1003, {warnCount}, {needToAdd}')
                     worksheet.update(f'C{row+needToAdd}', str(f'1'))
                     worksheet.update(f'D{row+needToAdd}', str(f'Правило {rule}'))
                     worksheet.insert_note(f'D{row+needToAdd}', f'{reason}')
                     worksheet.format(f'D{row+needToAdd}', {'textFormat': {'strikethrough': False}})
                 elif warnCount < mainCount:
+                    logging.info(f'1004, {warnCount}, {needToAdd}')
                     worksheet.update(f'C{row+needToAdd}', str(f'{warnCount+1}'))
                     worksheet.update(f'D{row+needToAdd}', str(f'Правило {rule}'))
                     worksheet.insert_note(f'D{row+needToAdd}', f'{reason}')
                     worksheet.format(f'D{row+needToAdd}', {'textFormat': {'strikethrough': False}})
                 else:
+                    logging.info(f'1005, {warnCount}, {needToAdd}')
                     addField(warnCount)
                     worksheet.update(f'C{row+warnCount}', str(f'{warnCount+1}')) # testt
                     worksheet.update(f'D{row+needToAdd}', str(f'Правило {rule}'))
@@ -2425,7 +2443,7 @@ async def second_command(ctx, ник: str=None, наказание: app_commands
                     worksheet.format(f'D{row+needToAdd}', {'textFormat': {'strikethrough': False}})
             
             else:
-                print('это ПИЗДец')
+                logging.error('2445')
 
 
             
@@ -2442,11 +2460,13 @@ async def second_command(ctx, ник: str=None, наказание: app_commands
             except:
                 needToAdd = 0
             if banCount > needToAdd:
+                logging.info(f'2001, {banCount}, {needToAdd}')
                 worksheet.update(f'G{row+needToAdd}', str(f'Правило {rule}'))
                 worksheet.insert_note(f'G{row+needToAdd}', f'{reason}')
                 worksheet.format(f'G{row+needToAdd}', {'textFormat': {'strikethrough': False}})
 
             elif banCount < needToAdd:
+                logging.info(f'2002, {banCount}, {needToAdd}')
                 addField(banCount)
                 worksheet.update(f'F{row+banCount}', str(f'{banCount+1}')) # test
                 worksheet.update(f'G{row+banCount}', str(f'Правило {rule}'))
@@ -2455,16 +2475,19 @@ async def second_command(ctx, ник: str=None, наказание: app_commands
 
             elif banCount == needToAdd:
                 if banCount == 0 and needToAdd == 0:
+                    logging.info(f'2003, {banCount}, {needToAdd}')
                     worksheet.update(f'F{row+needToAdd}', str(f'1'))
                     worksheet.update(f'G{row+needToAdd}', str(f'Правило {rule}'))
                     worksheet.insert_note(f'G{row+needToAdd}', f'{reason}')
                     worksheet.format(f'G{row+needToAdd}', {'textFormat': {'strikethrough': False}})
                 elif banCount < mainCount:
+                    logging.info(f'2004, {banCount}, {needToAdd}')
                     worksheet.update(f'F{row+needToAdd}', str(f'{banCount+1}'))
                     worksheet.update(f'G{row+needToAdd}', str(f'Правило {rule}'))
                     worksheet.insert_note(f'G{row+needToAdd}', f'{reason}')
                     worksheet.format(f'G{row+needToAdd}', {'textFormat': {'strikethrough': False}})
                 else:
+                    logging.info(f'2005, {banCount}, {needToAdd}')
                     addField(banCount)
                     worksheet.update(f'F{row+banCount}', str(f'{banCount+1}')) # test
                     worksheet.update(f'G{row+needToAdd}', str(f'Правило {rule}'))

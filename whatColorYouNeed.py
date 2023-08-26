@@ -17,11 +17,11 @@ async def whatColorYouNeed(row, UserWarnBan='None'):
         pass
     else:
         if UserWarnBan == 'None':
-            print(f"UWB - {UserWarnBan}")
+            #print(f"UWB - {UserWarnBan}")
             rgb = (255, 255, 255)
             return rgb
         else:
-            print(f"UWB2 - {UserWarnBan}")
+            #print(f"UWB2 - {UserWarnBan}")
             rgb = (255, 255, 255)
             return rgb
 

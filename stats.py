@@ -101,21 +101,31 @@ async def stats(ctx, client):
             ban = x['ban']
             warn = x['warn']
             report = x['report']
+            
             try:
                 ahelp = x['ahelp']
             except:
                 ahelp = 0
+
+            try:
+                ckey = x['ckey']
+            except:
+                ckey = '-'
+
+            
             if int(ban) + int(warn) + int(report) != 0:
                 ban = 'Баны: ' +str(ban)
                 warn = 'Варны: ' + str(warn)
                 report = 'Жалобы: ' + str(report)
                 ahelp = 'Ахелпы: ' + str(ahelp)
+                ckey = 'Сикей: ' + str(ckey)
 
                 li = []
                 li.append(ban)
                 li.append(warn)
                 li.append(report)
                 li.append(ahelp)
+                li.append(ckey)
                 text = ''
 
             
@@ -131,12 +141,14 @@ async def stats(ctx, client):
                 warn = 'Варны: 0'
                 report = 'Жалобы: 0'
                 ahelp = 'Ахелпы: 0'
+                ckey = 'Сикей: -'
 
                 li = []
                 li.append(ban)
                 li.append(warn)
                 li.append(report)
                 li.append(ahelp)
+                li.append(ckey)
                 text = ''
 
             
