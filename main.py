@@ -5,6 +5,7 @@ import json
 import random
 import gspread_formatting as gf
 import logging
+import sys
 
 from gspread_formatting import *
 from stats import *
@@ -19,11 +20,11 @@ from config import *
 from discord import app_commands
 
 
-logging.basicConfig(
-    filename='file.log', 
-    filemode='w', 
-    format='%(asctime)s - %(name)s - %(levelname)s - %(funcName)s - %(message)s'
-)
+# logging.basicConfig(
+#     filename='file.log', 
+#     filemode='w', 
+#     format='%(asctime)s - %(name)s - %(levelname)s - %(funcName)s - %(message)s'
+# )
 
 intents = discord.Intents.all()
 intents.members = True
@@ -32,6 +33,24 @@ intents.message_content = True
 client = commands.Bot(command_prefix=PREFIX, intents=intents, help_command=None)
 
 
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+formatter = logging.Formatter('%(asctime)s | %(levelname)s | %(message)s')
+
+stdout_handler = logging.StreamHandler(sys.stdout)
+stdout_handler.setLevel(logging.DEBUG)
+stdout_handler.setFormatter(formatter)
+
+file_handler = logging.FileHandler('loginfo.log')
+file_handler.setLevel(logging.DEBUG)
+file_handler.setFormatter(formatter)
+
+
+logger.addHandler(file_handler)
+logger.addHandler(stdout_handler)
+
+
+logging.info('restart')
 
 # gc = gspread.service_account(filename='secretkey.json')
 # sh = gc.open("копия 2.0")
