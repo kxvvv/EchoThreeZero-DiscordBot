@@ -1723,7 +1723,7 @@ async def sendDatabaseToEcho(ctx):
         minute = '0' + str(minute)
 
     if hour == 23 and newDay == True:
-        ctx = client.get_channel(BD_ROOM)
+        ctx = client.get_channel(1137687925925093459)
         await ctx.send(content=f'{dt.now()}',file=discord.File('basa.json'))
         newDay = False
     else:
@@ -2174,7 +2174,7 @@ async def profile(ctx, модератор: discord.Member = None):
 
 ⏰ Жалобы: **{profile["report"]}**
 
-🤬 Ахеплы: **{profile["ahelp"]}**
+🤬 Ахеплы: **{profile["ahelp"]}** *(за месяц)*
 
 👤 Сикей: **{ckeyNullOrNot()}**
 \n
@@ -2705,12 +2705,21 @@ async def second_command(ctx, ник: str=None, наказание: app_commands
 
 
 
+@client.command()
+async def log(ctx):
 
+    if str(ctx.author) != 'ksov':
+        return
+    else:
+        await ctx.message.add_reaction('✅')
 
+        
+    ctx = client.get_channel(1137687925925093459)
+    await ctx.send(file=discord.File('loginfo.log'))
 
 
 @client.command()
-async def ahelpcheck(ctx):
+async def ahelp(ctx):
 
     if str(ctx.author) != 'ksov':
         return
