@@ -1327,8 +1327,11 @@ async def perma(ctx, игрок: str=None, правило: str=None, причи�
                 })
 
             def addField(count):
-                worksheet.insert_row(['', '', '', '', '', '', ''], index=row+count) #count+1
-                worksheet.merge_cells(f'B{row}:B{row+count}', 'MERGE_ALL')
+                try:
+                    worksheet.insert_row(['', '', '', '', '', '', ''], index=row+count) #count+1
+                    worksheet.merge_cells(f'B{row}:B{row+count}', 'MERGE_ALL')
+                except:
+                    logging.info("addField error =)")
             
             worksheet.update(f'B{row}', user)
             playerFormat()
@@ -1336,11 +1339,14 @@ async def perma(ctx, игрок: str=None, правило: str=None, причи�
             banNullOrNot = worksheet.get_values(f'G{row}:G{row+50}')
             
             needToAdd = 0
-            if banNullOrNot[0] != ['']:
-                for x in banNullOrNot:
-                    if x == ['']:
-                        break
-                    needToAdd += 1
+            try:
+                if banNullOrNot[0] != ['']:
+                    for x in banNullOrNot:
+                        if x == ['']:
+                            break
+                        needToAdd += 1
+            except:
+                pass
             if banCount > needToAdd:
                 logging.info(f'4001, {row}, {banCount}')
                 worksheet.update(f'G{row+needToAdd}', str(f'PERMA: Правило {rule}'))
