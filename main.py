@@ -510,13 +510,13 @@ async def juniorCheck(ctx, user, reason, msg, rule=None, punish=None, punishTime
 f'''
 
 
-**Модератор:** {ctx.user}
+
 **Нарушитель:** {user}
 
 **Причина:** {reason}
 
 
-''', 
+''', #**Модератор:** {ctx.user}
         title='❗Статус: ожидает одобрения.'
     )
     if punish != None:
@@ -611,13 +611,13 @@ f'''
         f'''
 
 
-        **Модератор:** {ctx.user}
         
+        **Нарушитель:** {user}
 
         **Причина:** {reason}
 
 
-        ''', #**Нарушитель:** {user}
+        ''', #**Модератор:** {ctx.user}
                 title='Статус: Отказано.'
             )
             if punish != None:
@@ -639,13 +639,13 @@ f'''
         f'''
 
 
-        **Модератор:** {ctx.user}
+        
         **Нарушитель:** {user}
 
         **Причина:** {reason}
 
 
-        ''', 
+        ''', #**Модератор:** {ctx.user}
                 title='Статус: Одобрено.'
             )
             if punish != None:
