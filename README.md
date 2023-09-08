@@ -1,2 +1,2 @@
 # EchoThreeZero
-щиткод был написан для модераторов Corvax SS14 Community
+щиткод был написан на отъебись для модераторов Corvax SS14 Community
