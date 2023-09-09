@@ -1734,7 +1734,7 @@ async def sendDatabaseToEcho(ctx):
 
 
         ctx = client.get_channel(1139276548650848266)
-        checkAhelps(ctx=ctx)
+        await checkAhelps(ctx=ctx)
         newDay = False
     if hour == 0:
         newDay = True
@@ -2823,7 +2823,7 @@ async def ahelp(ctx):
         return
     else:
         await ctx.message.add_reaction('✅')
-    checkAhelps(ctx=ctx)
+    await checkAhelps(ctx=ctx)
 
 @client.tree.command(name = "созвать", description = "созывает весь твой отдел.", guild=discord.Object(id=GUILD))
 async def call(ctx):
