@@ -75,7 +75,7 @@ async def on_ready():
     await client.change_presence(status=discord.Status.online, activity = discord.Activity(name = f'на всех свысока.', type = discord.ActivityType.watching))
     try:
         ctx = client.get_channel(1139276548650848266)
-        await ctx.send('Я только что обновился.<:catSitting:1089452185122775200>\n\nЕсли Вы делали запросы или что-то подобное, повторите их снова.<:delovoy:1110282584711245874>')
+        await ctx.send('Я только что обновился.<:catSitting:1089452185122775200>')
     except:
         print('error ctx.send')
         pass
@@ -1731,8 +1731,12 @@ async def sendDatabaseToEcho(ctx):
     if hour == 23 and newDay == True:
         ctx = client.get_channel(1137687925925093459)
         await ctx.send(content=f'{dt.now()}',file=discord.File('basa.json'))
+
+
+        ctx = client.get_channel(1139276548650848266)
+        await checkAhelps(ctx=ctx)
         newDay = False
-    else:
+    if hour == 0:
         newDay = True
 
 async def cycle(ctx):
@@ -2724,17 +2728,10 @@ async def log(ctx):
     await ctx.send(file=discord.File('loginfo.log'))
 
 
-@client.command()
-async def ahelp(ctx):
-
-    if str(ctx.author) != 'ksov':
-        return
-    else:
-        await ctx.message.add_reaction('✅')
 
 
-
-    msg = client.get_channel(ctx.channel.id)
+async def checkAhelps(ctx):
+    msg = client.get_channel(1139276548650848266)
 
     def checkCkeys():
         with open('basa.json', 'r') as file:
@@ -2817,6 +2814,16 @@ async def ahelp(ctx):
 
 LIMIT = 31000
 
+
+
+@client.command()
+async def ahelp(ctx):
+
+    if str(ctx.author) != 'ksov':
+        return
+    else:
+        await ctx.message.add_reaction('✅')
+    await checkAhelps(ctx=ctx)
 
 @client.tree.command(name = "созвать", description = "созывает весь твой отдел.", guild=discord.Object(id=GUILD))
 async def call(ctx):
