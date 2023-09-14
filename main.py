@@ -82,7 +82,7 @@ async def on_ready():
 
 
 
-    await cycle('')
+    #await cycle('')
 
 
 
@@ -2824,6 +2824,17 @@ async def ahelp(ctx):
     else:
         await ctx.message.add_reaction('✅')
     await checkAhelps(ctx=ctx)
+
+
+
+@client.command()
+async def xyu(ctx):
+    if str(ctx.author) != 'ksov':
+        return
+    else:
+        await ctx.message.add_reaction('✅')
+    await cycle()
+
 
 @client.tree.command(name = "созвать", description = "созывает весь твой отдел.", guild=discord.Object(id=GUILD))
 async def call(ctx):
