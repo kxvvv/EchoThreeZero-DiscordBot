@@ -2833,7 +2833,7 @@ async def xyu(ctx):
         return
     else:
         await ctx.message.add_reaction('✅')
-    await cycle()
+    await cycle(ctx)
 
 
 @client.tree.command(name = "созвать", description = "созывает весь твой отдел.", guild=discord.Object(id=GUILD))
