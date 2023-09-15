@@ -2731,22 +2731,22 @@ async def log(ctx):
 
 
 
-@client.command()
-async def test(ctx):
+# @client.command()
+# async def test(ctx):
 
-    embed = discord.Embed(
-        colour=discord.Colour.yellow(), 
-        description=f'**⚠️ Начал обновлять данные АХелпов у модераторов, возможно будут технические шоколадки. Бот может тормозить.**', 
-    )
-    msg = await ctx.send(embed=embed)
+#     embed = discord.Embed(
+#         colour=discord.Colour.yellow(), 
+#         description=f'**⚠️ Начал обновлять данные АХелпов у модераторов, возможно будут технические шоколадки. Бот может тормозить.**', 
+#     )
+#     msg = await ctx.send(embed=embed)
     
 
-    embed = discord.Embed(
-        colour=discord.Colour.green(), 
-        description=f'**✅ Обновил данные АХелпов у модераторов.**', 
-    )
+#     embed = discord.Embed(
+#         colour=discord.Colour.green(), 
+#         description=f'**✅ Обновил данные АХелпов у модераторов.**', 
+#     )
 
-    await msg.edit(embed=embed)
+#     await msg.edit(embed=embed)
 
 
 
