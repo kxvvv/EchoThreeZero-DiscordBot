@@ -70,19 +70,20 @@ logging.info('restart')
 
 @client.event
 async def on_ready():
-    print(f"Здарова ёпт✌️, это я - {client.user}")
+    logging.info(f"запустился как {client.user}")
     await client.tree.sync(guild=discord.Object(id=GUILD)) # синхорнизация
     await client.change_presence(status=discord.Status.online, activity = discord.Activity(name = f'на всех свысока.', type = discord.ActivityType.watching))
-    try:
-        ctx = client.get_channel(1139276548650848266)
-        await ctx.send('Я только что обновился.<:catSitting:1089452185122775200>')
-    except:
-        print('error ctx.send')
-        pass
+    # try:
+    #     ctx = client.get_channel(1139276548650848266)
+    #     await ctx.send('Я только что обновился.<:catSitting:1089452185122775200>')
+    # except:
+    #     print('error ctx.send')
+    #     pass
 
 
 
     #await cycle('')
+
 
 
 
@@ -891,7 +892,7 @@ async def note(ctx, игрок: str=None, причина: str=None):
 async def errorDeferMessage(ctx, errorValue):
     # errorCh = client.get_channel(ctx.channel.id)
     print(f'erorr {errorValue}')
-    logging.error(f'error - {errorValue}')
+    logging.warning(f'error - {errorValue}')
     # await errorCh.send(f'<@{ctx.user.id}> **попробуй еще раз, дискорд не захотел принимать твою команду.**')
     
 @client.tree.command(name = "джобка", description='быстрая запись джобки', guild=discord.Object(id=GUILD))
@@ -1741,8 +1742,9 @@ async def sendDatabaseToEcho(ctx):
 
 async def cycle(ctx):
     while True:
-        await asyncio.sleep(600)
         await sendDatabaseToEcho(ctx)
+        logging.info(f"продолжаю цикл - День: {dt.now().day} Время: {dt.now().hour}:{dt.now().minute}")
+        await asyncio.sleep(600)
 
 @client.tree.command(name = "сменить-цвет", description= 'смена цвета в таблице', guild=discord.Object(id=GUILD))
 @app_commands.choices(цвет=[
@@ -2184,7 +2186,7 @@ async def profile(ctx, модератор: discord.Member = None):
 
 ⏰ Жалобы: **{profile["report"]}**
 
-🤬 Ахеплы: **{profile["ahelp"]}** *(за месяц)*
+🤬 Ахелпы: **{profile["ahelp"]}** *(за месяц)*
 
 👤 Сикей: **{ckeyNullOrNot()}**
 \n
@@ -2729,9 +2731,34 @@ async def log(ctx):
 
 
 
+@client.command()
+async def test(ctx):
+
+    embed = discord.Embed(
+        colour=discord.Colour.yellow(), 
+        description=f'**⚠️ Начал обновлять данные АХелпов у модераторов, возможно будут технические шоколадки. Бот может тормозить.**', 
+    )
+    msg = await ctx.send(embed=embed)
+    
+
+    embed = discord.Embed(
+        colour=discord.Colour.green(), 
+        description=f'**✅ Обновил данные АХелпов у модераторов.**', 
+    )
+
+    await msg.edit(embed=embed)
+
+
 
 async def checkAhelps(ctx):
     msg = client.get_channel(1139276548650848266)
+
+    embed = discord.Embed(
+        colour=discord.Colour.yellow(), 
+        description=f'**⚠️ Начал обновлять данные АХелпов у модераторов, возможно будут технические шоколадки. Бот может тормозить.**', 
+    )
+
+    msg = await msg.send(embed=embed)
 
     def checkCkeys():
         with open('basa.json', 'r') as file:
@@ -2809,8 +2836,13 @@ async def checkAhelps(ctx):
 
 
 
+    embed = discord.Embed(
+        colour=discord.Colour.green(), 
+        description=f'**✅ Обновил данные АХелпов у модераторов.**', 
+    )
 
-    await msg.send('**✅ Обновил данные АХелпов у модераторов.**')
+
+    await msg.edit(embed=embed)
 
 LIMIT = 31000
 
