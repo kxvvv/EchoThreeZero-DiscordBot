@@ -1750,7 +1750,7 @@ async def cycle(ctx):
 @app_commands.choices(цвет=[
     discord.app_commands.Choice(name='очистить', value=1),
     discord.app_commands.Choice(name='зелёный', value=2),
-    discord.app_commands.Choice(name='оранжевый', value=3),
+    discord.app_commands.Choice(name='жёлтый', value=3),
     discord.app_commands.Choice(name='красный', value=4),
     discord.app_commands.Choice(name='чёрный', value=5),
 ], 
