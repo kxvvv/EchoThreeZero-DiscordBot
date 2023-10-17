@@ -2868,6 +2868,63 @@ async def xyu(ctx):
     await cycle(ctx)
 
 
+@client.tree.command(name = "топ", description = "оскорби того кто имеет меньший потенциал чем у тебя.", guild=discord.Object(id=GUILD))
+async def top(ctx):
+
+
+
+    with open('basa.json', 'r') as data:
+        data = json.load(data)
+
+    best_ahelp_count = 0
+    best_ahelp_moderator = ""
+
+    best_ban_count = 0
+    best_ban_moderator = ""
+
+    best_report_count = 0
+    best_report_moderator = ""
+
+    best_warn_count = 0
+    best_warn_moderator = ""
+
+
+    for moderator in data:
+        if data[moderator]["report"] == 666:
+            continue
+        if data[moderator]["ahelp"] > best_ahelp_count:
+            best_ahelp_count = data[moderator]["ahelp"]
+            best_ahelp_moderator = moderator
+        if data[moderator]["ban"] > best_ban_count:
+            best_ban_count = data[moderator]["ban"]
+            best_ban_moderator = moderator
+        if data[moderator]["report"] > best_report_count:
+            best_report_count = data[moderator]["report"]
+            best_report_moderator = moderator
+        if data[moderator]["warn"] > best_warn_count:
+            best_warn_count = data[moderator]["warn"]
+            best_warn_moderator = moderator
+
+    text = f"""
+# Легенды модерации:
+\n 
+\n 
+### 👑 Мега АХелпер: <@{best_ahelp_moderator}> с **{best_ahelp_count}** АХелпов. 🤬
+
+### 🥇 Мега БАНер: <@{best_ban_moderator}> с **{best_ban_count}** бананами. ⛔
+
+### 🎉 Мега ВАРНер: <@{best_warn_moderator}> с **{best_warn_count}** варнами. ⚠️
+
+### 😐 Мега РЕПОРТёр: <@{best_report_moderator}> с **{best_report_count}** репортажами. ⏰
+
+"""
+    embed = discord.Embed(
+        colour=discord.Colour.random(),
+        description=text, 
+        #title=f"Лучшие модераторы."
+    )
+    await ctx.response.send_message(embed=embed)
+
 @client.tree.command(name = "созвать", description = "созывает весь твой отдел.", guild=discord.Object(id=GUILD))
 async def call(ctx):
 
