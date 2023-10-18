@@ -12,6 +12,7 @@ from stats import *
 from whatColorYouNeed import *
 from commandChannel import *
 from datetime import datetime as dt
+from searchForSimilar import *
 
 from discord.ext import commands
 from discord.utils import get
@@ -1823,7 +1824,14 @@ async def change_color(ctx, ник: str=None, столбик: app_commands.Choic
         user = f'{user}  '
         await ctx.followup.send(f"✅ Игрок `{user}` найден.")
     else:
-        await ctx.followup.send(f"❌ Игрок `{user}` не найден, проверяйте регистр.")
+        similar_words = TrySearchForSimilar(values_list, user)
+        if similar_words != []:
+            text = ""
+            for word in similar_words:
+                text = text + "\n" + f"`{word[0]}` разница в {word[1]}."
+        else:
+            text = "\n-"
+        await ctx.followup.send(f"❌ Игрок `{user}` не найден, проверяйте регистр.\n\n**Похожие игроки:** {text}")
         return
 
 
@@ -2274,6 +2282,7 @@ async def first_command(ctx, игрок: str = None, скрыто: app_commands.
 
     user.strip()
 
+
     if user in values_list:
         user = f'{user}'
     elif (f'{user} ' in values_list):
@@ -2281,7 +2290,14 @@ async def first_command(ctx, игрок: str = None, скрыто: app_commands.
     elif (f'{user}  ' in values_list):
         user = f'{user}  '
     else:
-        await ctx.followup.send(f"❌ Игрок `{user}` не найден, проверяйте регистр.")
+        similar_words = TrySearchForSimilar(values_list, user)
+        if similar_words != []:
+            text = ""
+            for word in similar_words:
+                text = text + "\n" + f"`{word[0]}` разница в {word[1]}."
+        else:
+            text = "\n-"
+        await ctx.followup.send(f"❌ Игрок `{user}` не найден, проверяйте регистр.\n\n**Похожие игроки:** {text}")
         return
 
     
