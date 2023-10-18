@@ -601,11 +601,8 @@ f'''
             return nextStep()
         else:
             pass
-    try:
-        payload = await client.wait_for('raw_reaction_add', timeout=604800.0, check=check)
-    except asyncio.TimeoutError:
-        await msg.edit(content='❌ **Время на ответ запроса - вышло.**')
-    else:
+    
+    async def answerGiven(msg, embed):
         reaction = str(payload.emoji)
         if reaction == '❌':
             embed = discord.Embed(
@@ -665,6 +662,18 @@ f'''
             return True
         else:
             await msg.edit(content='❌ В запросе отказано. `error #451`')
+    try:
+        payload = await client.wait_for('raw_reaction_add', timeout=36000.0, check=check) # 10h
+    except asyncio.TimeoutError:
+        try:
+            await thread.send(f'<@{ctx.user.id}> позови модератора, на твой запрос долго не отвечают.')
+            payload = await client.wait_for('raw_reaction_add', timeout=604800.0, check=check) # 7 days
+        except asyncio.TimeoutError:
+            await msg.edit(content='❌ **Время на ответ запроса - вышло.**')
+        else:
+            await answerGiven(msg, embed)
+    else:
+        await answerGiven(msg, embed)
     
 
 
