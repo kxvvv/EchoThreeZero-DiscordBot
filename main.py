@@ -2,8 +2,6 @@ import discord
 import gspread
 import asyncio
 import json
-import random
-import gspread_formatting as gf
 import logging
 import sys
 
@@ -13,9 +11,10 @@ from whatColorYouNeed import *
 from commandChannel import *
 from datetime import datetime as dt
 from searchForSimilar import *
+from juniorRequestCyc import *
 
 from discord.ext import commands
-from discord.utils import get
+from discord.ext import tasks
 from config import *
 
 from discord import app_commands
@@ -85,7 +84,15 @@ async def on_ready():
 
     #await cycle('')
 
+    dataBaseCycle.start()
+    juniorRequestsCycle.start()
 
+
+
+@tasks.loop(hours=3)
+async def juniorRequestsCycle():
+    await juniorRequestFunc(client)
+    
 
 
 
@@ -404,6 +411,7 @@ async def perma(ctx):
 `/пдк` - делает запрос на пдк.
 `/мой-сикей` - устанавливает ваш сикей в профиль, он может пригодиться кодеру для подсчетов ахелпов например.
 `/топ` - показывает легендарных модераторов.
+`/запросы` - выводит список актуальных запросов от младших модераторов.
 
 '''
 
@@ -601,11 +609,8 @@ f'''
             return nextStep()
         else:
             pass
-    try:
-        payload = await client.wait_for('raw_reaction_add', timeout=604800.0, check=check)
-    except asyncio.TimeoutError:
-        await msg.edit(content='❌ **Время на ответ запроса - вышло.**')
-    else:
+    
+    async def answerGiven(msg, embed):
         reaction = str(payload.emoji)
         if reaction == '❌':
             embed = discord.Embed(
@@ -665,6 +670,18 @@ f'''
             return True
         else:
             await msg.edit(content='❌ В запросе отказано. `error #451`')
+    try:
+        payload = await client.wait_for('raw_reaction_add', timeout=36000.0, check=check) # 10h
+    except asyncio.TimeoutError:
+        try:
+            await thread.send(f'<@{ctx.user.id}> позови модератора, на твой запрос долго не отвечают.')
+            payload = await client.wait_for('raw_reaction_add', timeout=604800.0, check=check) # 7 days
+        except asyncio.TimeoutError:
+            await msg.edit(content='❌ **Время на ответ запроса - вышло.**')
+        else:
+            await answerGiven(msg, embed)
+    else:
+        await answerGiven(msg, embed)
     
 
 
@@ -1723,30 +1740,14 @@ async def giveTest(ctx, игрок: str=None, выбор: app_commands.Choice[in
 
 
 
-newDay = True
-async def sendDatabaseToEcho(ctx):
-    global newDay
-    hour = dt.now().hour
-    minute = dt.now().minute
-    if minute in range(1, 9):
-        minute = '0' + str(minute)
-
-    if hour == 23 and newDay == True:
-        ctx = client.get_channel(1137687925925093459)
-        await ctx.send(content=f'{dt.now()}',file=discord.File('basa.json'))
+@tasks.loop(hours=24)
+async def dataBaseCycle():
+    ctx = client.get_channel(1137687925925093459)
+    await ctx.send(content=f'{dt.now()}',file=discord.File('basa.json'))
 
 
-        ctx = client.get_channel(1139276548650848266)
-        await checkAhelps(ctx=ctx)
-        newDay = False
-    if hour == 0:
-        newDay = True
-
-async def cycle(ctx):
-    while True:
-        await sendDatabaseToEcho(ctx)
-        logging.info(f"продолжаю цикл - День: {dt.now().day} Время: {dt.now().hour}:{dt.now().minute}")
-        await asyncio.sleep(600)
+    ctx = client.get_channel(1139276548650848266)
+    await checkAhelps(ctx=ctx)
 
 @client.tree.command(name = "сменить-цвет", description= 'смена цвета в таблице', guild=discord.Object(id=GUILD))
 @app_commands.choices(цвет=[
@@ -2748,25 +2749,6 @@ async def log(ctx):
 
 
 
-# @client.command()
-# async def test(ctx):
-
-#     embed = discord.Embed(
-#         colour=discord.Colour.yellow(), 
-#         description=f'**⚠️ Начал обновлять данные АХелпов у модераторов, возможно будут технические шоколадки. Бот может тормозить.**', 
-#     )
-#     msg = await ctx.send(embed=embed)
-    
-
-#     embed = discord.Embed(
-#         colour=discord.Colour.green(), 
-#         description=f'**✅ Обновил данные АХелпов у модераторов.**', 
-#     )
-
-#     await msg.edit(embed=embed)
-
-
-
 async def checkAhelps(ctx):
     msg = client.get_channel(1139276548650848266)
 
@@ -2782,13 +2764,11 @@ async def checkAhelps(ctx):
             file = json.load(file)
 
 
-        #listOfCkeys = []
         list2OfCkeys = {}
 
         for x in file:
             try:
                 if file[x]['ckey'] != None:
-                    #listOfCkeys.append(file[x]['ckey'])
                     list2OfCkeys.setdefault(file[x]['ckey'], x)
             except:
                 pass
@@ -2874,16 +2854,13 @@ async def ahelp(ctx):
         await ctx.message.add_reaction('✅')
     await checkAhelps(ctx=ctx)
 
-
-
-@client.command()
-async def xyu(ctx):
-    if str(ctx.author) != 'ksov':
-        return
+@client.tree.command(name = "запросы", description="выводит список актуальных запросов от младших модераторов.", guild=discord.Object(id=GUILD))
+async def requestCommand(ctx):
+    if ctx == client.get_channel(924285600608182292):
+        await ctx.response.send_message("В работе.", ephemeral=True)
+        await juniorRequestFunc(client)
     else:
-        await ctx.message.add_reaction('✅')
-    await cycle(ctx)
-
+        await ctx.response.send_message("Эту команду можно использовать только тут - <#924285600608182292>", ephemeral=True)
 
 @client.tree.command(name = "топ", description = "оскорби того кто имеет меньший потенциал чем у тебя.", guild=discord.Object(id=GUILD))
 async def top(ctx):
