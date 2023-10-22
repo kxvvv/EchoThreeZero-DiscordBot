@@ -2849,7 +2849,7 @@ async def ahelp(ctx):
 @client.tree.command(name = "запросы", description="выводит список актуальных запросов от младших модераторов.", guild=discord.Object(id=GUILD))
 async def requestCommand(ctx):
     if ctx.channel.id == 924285600608182292:
-        await ctx.response.send_message("В работе.", ephemeral=True)
+        await ctx.response.send_message("🔄 Сейчас загружу запросы...")
         await juniorRequestFunc(client)
     else:
         await ctx.response.send_message("Эту команду можно использовать только тут - <#924285600608182292>", ephemeral=True)
