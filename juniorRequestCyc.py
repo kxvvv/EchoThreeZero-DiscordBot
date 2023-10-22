@@ -24,7 +24,9 @@ async def juniorRequestFunc(client):
     for x in range(1, len(requestDict)+1):
         text += f"Запрос номер `{x}` - <#" + requestDict[f"{x}"] + ">\n"
 
-    print(text)
+    if text == "":
+        print("все запросы одобрены")
+        return
 
     embed = discord.Embed(
         colour=discord.Colour.dark_blue(),
