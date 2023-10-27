@@ -148,7 +148,8 @@ TWORKS = False
 async def technicalWorks(ctx):
     global TWORKS
 
-    await ctx.response.send_message('Ксов объявил технические работы, большинство команд не доступны.', ephemeral=True)
+    if TWORKS:
+        await ctx.response.send_message('Ксов объявил технические работы, большинство команд не доступны.', ephemeral=True)
     return TWORKS
 
 
@@ -734,7 +735,7 @@ async def pdk(ctx, игрок: str=None, правило: str=None, причин�
         return
     
 
-    isTworks = await technicalWorks()
+    isTworks = await technicalWorks(ctx)
     if isTworks:
         return
 
@@ -832,7 +833,7 @@ async def note(ctx, игрок: str=None, причина: str=None):
         
         return
 
-    isTworks = await technicalWorks()
+    isTworks = await technicalWorks(ctx)
     if isTworks:
         return
 
@@ -948,7 +949,7 @@ async def jobka(ctx, игрок: str=None, правило: str=None, причи�
         
         return
 
-    isTworks = await technicalWorks()
+    isTworks = await technicalWorks(ctx)
     if isTworks:
         return
 
@@ -1223,7 +1224,7 @@ async def perma(ctx, игрок: str=None, правило: str=None, причи�
         
         return
 
-    isTworks = await technicalWorks()
+    isTworks = await technicalWorks(ctx)
     if isTworks:
         return
 
@@ -1537,7 +1538,7 @@ async def giveTest(ctx, игрок: str=None, выбор: app_commands.Choice[in
         
         return
 
-    isTworks = await technicalWorks()
+    isTworks = await technicalWorks(ctx)
     if isTworks:
         return
 
@@ -1791,7 +1792,7 @@ async def change_color(ctx, ник: str=None, столбик: app_commands.Choic
         
         return
 
-    isTworks = await technicalWorks()
+    isTworks = await technicalWorks(ctx)
     if isTworks:
         return
 
@@ -2356,7 +2357,7 @@ async def second_command(ctx, ник: str=None, наказание: app_commands
         
         return
 
-    isTworks = await technicalWorks()
+    isTworks = await technicalWorks(ctx)
     if isTworks:
         return
 
