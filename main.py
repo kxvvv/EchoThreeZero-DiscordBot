@@ -2278,7 +2278,7 @@ async def first_command(ctx, игрок: str = None, скрыто: app_commands.
 
     try:
         if hide.value == 2:
-            hide == False
+            hide = False
         else:
             hide = True
     except:
