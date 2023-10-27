@@ -14,8 +14,14 @@ async def juniorRequestFunc(client):
     text = ""
 
     def whenCreated(createdDate):
+        
+        if createdDate.minute <=9:
+            minute = f'0{createdDate.minute}'
+        else:
+            minute = createdDate.minute
+        
         if dt.now().day == createdDate.day:
-            return f'в {createdDate.hour}:{createdDate.minute}.'
+            return f'в {createdDate.hour}:{minute}.'
 
         result = dt.now().day - createdDate.day
 
@@ -28,7 +34,7 @@ async def juniorRequestFunc(client):
 
         
 
-        return f'{result} {dayWord} назад, в {createdDate.hour}:{createdDate.minute}.'
+        return f'{result} {dayWord} назад, в {createdDate.hour}:{minute}.'
          
 
     for x in m:
