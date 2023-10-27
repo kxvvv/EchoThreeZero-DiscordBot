@@ -144,6 +144,14 @@ def joinToSheet():
     worksheet = sh.sheet1
     return gc, sh, worksheet
 
+TWORKS = False
+async def technicalWorks(ctx):
+    global TWORKS
+
+    await ctx.response.send_message('Ксов объявил технические работы, большинство команд не доступны.', ephemeral=True)
+    return TWORKS
+
+
 
 async def getProfileFromSheet(user, warnCheck, banCheck, testCheck, row, col, worksheet, UserWarnBan='User'):
 
@@ -725,6 +733,12 @@ async def pdk(ctx, игрок: str=None, правило: str=None, причин�
     if access == False:
         return
     
+
+    isTworks = await technicalWorks()
+    if isTworks:
+        return
+
+    
     if user == None:
             await ctx.response.send_message('❌ Не указан игрок.')
             return
@@ -816,6 +830,10 @@ async def note(ctx, игрок: str=None, причина: str=None):
     access = await checkForModeratorRole(ctx)
     if access == False:
         
+        return
+
+    isTworks = await technicalWorks()
+    if isTworks:
         return
 
     user = игрок
@@ -928,6 +946,10 @@ async def jobka(ctx, игрок: str=None, правило: str=None, причи�
     access = await checkForModeratorRole(ctx)
     if access == False:
         
+        return
+
+    isTworks = await technicalWorks()
+    if isTworks:
         return
 
     user = игрок
@@ -1199,6 +1221,10 @@ async def perma(ctx, игрок: str=None, правило: str=None, причи�
     access = await checkForModeratorRole(ctx)
     if access == False:
         
+        return
+
+    isTworks = await technicalWorks()
+    if isTworks:
         return
 
     user = игрок
@@ -1511,6 +1537,10 @@ async def giveTest(ctx, игрок: str=None, выбор: app_commands.Choice[in
         
         return
 
+    isTworks = await technicalWorks()
+    if isTworks:
+        return
+
     user = игрок
     choose = выбор
 
@@ -1759,6 +1789,10 @@ async def change_color(ctx, ник: str=None, столбик: app_commands.Choic
     access = await checkForModeratorRole(ctx)
     if access == False:
         
+        return
+
+    isTworks = await technicalWorks()
+    if isTworks:
         return
 
     user = ник
@@ -2322,6 +2356,10 @@ async def second_command(ctx, ник: str=None, наказание: app_commands
         
         return
 
+    isTworks = await technicalWorks()
+    if isTworks:
+        return
+
     user = ник
     punish = наказание
     rule = правило
@@ -2845,6 +2883,43 @@ async def ahelp(ctx):
     else:
         await ctx.message.add_reaction('✅')
     await checkAhelps(ctx=ctx)
+
+
+@client.command()
+async def on(ctx):
+    global TWORKS
+    if str(ctx.author) != 'ksov':
+        return
+    else:
+        await ctx.message.add_reaction('✅')
+
+    embed = discord.Embed(
+        colour=discord.Colour.red(), 
+        description=f'**⚠️ Ксов объявил тех. работы, большинство команд не доступно.**', 
+    )
+    
+
+    await ctx.send(embed=embed)
+    TWORKS = True
+
+@client.command()
+async def off(ctx):
+    global TWORKS
+    if str(ctx.author) != 'ksov':
+        return
+    else:
+        await ctx.message.add_reaction('✅')
+
+    embed = discord.Embed(
+        colour=discord.Colour.green(), 
+        description=f'**✅ Ксов окончил тех. работы, все команды доступны.**', 
+    )
+    
+
+    await ctx.send(embed=embed)
+    TWORKS = False
+
+
 
 @client.tree.command(name = "запросы", description="выводит список актуальных запросов от младших модераторов.", guild=discord.Object(id=GUILD))
 async def requestCommand(ctx):
