@@ -5,13 +5,7 @@ from gspread_formatting import *
 from config import *
 
 
-async def whatColorYouNeed(row, UserWarnBan='None'):
-
-    gc = gspread.service_account(filename='secretkey.json')
-    sh = gc.open(SHEET)
-    worksheet = sh.sheet1
-
-
+def whatColorYouNeed(row, worksheet, UserWarnBan='None'):
 
     if UserWarnBan == 'User':
         pass

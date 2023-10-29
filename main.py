@@ -154,19 +154,13 @@ async def technicalWorks(ctx):
 
 
 
-async def getProfileFromSheet(user, warnCheck, banCheck, testCheck, row, col, worksheet, UserWarnBan='User'):
+def getProfileFromSheet(user, warnCheck, banCheck, testCheck, row, col, worksheet, UserWarnBan='User'):
 
-    async def colorStatus():
-        rgb = await whatColorYouNeed(row=row, UserWarnBan='User')
+    def colorStatus():
+        rgb = whatColorYouNeed(row=row, worksheet=worksheet, UserWarnBan='User')
 
         colour=discord.Colour.from_rgb(rgb[0], rgb[1], rgb[2])
         return colour
-
-
-
-
-
-
 
 
     warnNullOrNot = worksheet.get_values(f'D{row}:D{row+50}')
@@ -216,7 +210,7 @@ async def getProfileFromSheet(user, warnCheck, banCheck, testCheck, row, col, wo
 
 
     embed = discord.Embed(
-        colour=await colorStatus(),
+        colour=colorStatus(),
         description=textForEmbedDesc, 
         #title=f"Информация о"
     )
@@ -847,7 +841,8 @@ async def note(ctx, игрок: str=None, причина: str=None):
         await errorDeferMessage(ctx=ctx, errorValue='619')
         return
 
-    gc, sh, worksheet = joinToSheet()
+    loop = asyncio.get_running_loop()
+    gc, sh, worksheet = await loop.run_in_executor(None, joinToSheet)
 
     values_list = worksheet.col_values(2)
 
@@ -875,7 +870,7 @@ async def note(ctx, игрок: str=None, причина: str=None):
     col = cell.col
 
 
-    embed = await getProfileFromSheet(user, checkForWarn(row, worksheet), checkForBan(row, worksheet), checkForTest(row, sh), row, col, worksheet, UserWarnBan='User')
+    embed = getProfileFromSheet(user, checkForWarn(row, worksheet), checkForBan(row, worksheet), checkForTest(row, sh), row, col, worksheet, UserWarnBan='User')
     await asyncio.sleep(3)
     await ctx.followup.send(embed=embed)
 
@@ -961,7 +956,8 @@ async def jobka(ctx, игрок: str=None, правило: str=None, причи�
     isNeedToBan = бан
 
 
-    gc, sh, worksheet = joinToSheet()
+    loop = asyncio.get_running_loop()
+    gc, sh, worksheet = await loop.run_in_executor(None, joinToSheet)
     values_list = worksheet.col_values(2)
     playerIsNew = False
 
@@ -1056,7 +1052,7 @@ async def jobka(ctx, игрок: str=None, правило: str=None, причи�
 
         if embedOrWrite == 'embed':
             warnCount = checkForWarn(row, worksheet)
-            embed = await getProfileFromSheet(user, warnCount, banCount, checkForTest(row, sh), row, col, worksheet, UserWarnBan='User')
+            embed = getProfileFromSheet(user, warnCount, banCount, checkForTest(row, sh), row, col, worksheet, UserWarnBan='User')
             return embed
 
         if embedOrWrite == 'write':
@@ -1231,7 +1227,8 @@ async def perma(ctx, игрок: str=None, правило: str=None, причи�
     user = игрок
     rule = правило
     reason = причина
-    gc, sh, worksheet = joinToSheet()
+    loop = asyncio.get_running_loop()
+    gc, sh, worksheet = await loop.run_in_executor(None, joinToSheet)
     values_list = worksheet.col_values(2)
     playerIsNew = False
 
@@ -1336,7 +1333,7 @@ async def perma(ctx, игрок: str=None, правило: str=None, причи�
 
         if embedOrWrite == 'embed':
             warnCount = checkForWarn(row, worksheet)
-            embed = await getProfileFromSheet(user, warnCount, banCount, checkForTest(row, sh), row, col, worksheet, UserWarnBan='User')
+            embed = getProfileFromSheet(user, warnCount, banCount, checkForTest(row, sh), row, col, worksheet, UserWarnBan='User')
             playerEmbed = embed
             return embed
 
@@ -1545,7 +1542,8 @@ async def giveTest(ctx, игрок: str=None, выбор: app_commands.Choice[in
     user = игрок
     choose = выбор
 
-    gc, sh, worksheet = joinToSheet()
+    loop = asyncio.get_running_loop()
+    gc, sh, worksheet = await loop.run_in_executor(None, joinToSheet)
 
 
     if user == None:
@@ -1666,7 +1664,7 @@ async def giveTest(ctx, игрок: str=None, выбор: app_commands.Choice[in
         
     banCount = checkForBan(row, worksheet)
     warnCount = checkForWarn(row, worksheet)
-    embed = await getProfileFromSheet(user, warnCount, banCount, checkForTest(row, sh), row, col, worksheet)
+    embed = getProfileFromSheet(user, warnCount, banCount, checkForTest(row, sh), row, col, worksheet)
 
     await asyncio.sleep(3)
     await ctx.followup.send(embed=embed)
@@ -1839,7 +1837,8 @@ async def change_color(ctx, ник: str=None, столбик: app_commands.Choic
         await errorDeferMessage(ctx=ctx, errorValue='1509')
         return
     
-    gc, sh, worksheet = joinToSheet()
+    loop = asyncio.get_running_loop()
+    gc, sh, worksheet = await loop.run_in_executor(None, joinToSheet)
     values_list = worksheet.col_values(2)
 
     if user in values_list:
@@ -2297,15 +2296,17 @@ async def first_command(ctx, игрок: str = None, скрыто: app_commands.
             await errorDeferMessage(ctx=ctx, errorValue='1869')
             return
     
-    gc, sh, worksheet = joinToSheet()
+
+    loop = asyncio.get_running_loop()
+    gc, sh, worksheet = await loop.run_in_executor(None, joinToSheet)
 
 
     if user == None:
         await ctx.followup.send(f"❌ Не введены аргументы.")
         return
 
-    
     values_list = worksheet.col_values(2)
+
 
 
     user.strip()
@@ -2332,13 +2333,13 @@ async def first_command(ctx, игрок: str = None, скрыто: app_commands.
     
 
     
+
     cell = worksheet.find(user)
-    
+
     row = cell.row
     col = cell.col
 
-
-    embed = await getProfileFromSheet(user, checkForWarn(row, worksheet), checkForBan(row, worksheet), checkForTest(row, sh), row, col, worksheet, UserWarnBan='User')
+    embed = getProfileFromSheet(user, checkForWarn(row, worksheet), checkForBan(row, worksheet), checkForTest(row, sh), row, col, worksheet, UserWarnBan='User')
 
     await asyncio.sleep(3)
     await ctx.followup.send(embed=embed)
@@ -2367,7 +2368,8 @@ async def second_command(ctx, ник: str=None, наказание: app_commands
     reason = причина
     punishTime = срок
 
-    gc, sh, worksheet = joinToSheet()
+    loop = asyncio.get_running_loop()
+    gc, sh, worksheet = await loop.run_in_executor(None, joinToSheet)
 
 
     values_list = worksheet.col_values(2)
@@ -2586,7 +2588,7 @@ async def second_command(ctx, ник: str=None, наказание: app_commands
                 infochat = ctx.channel.id # чат
                 infochat = client.get_channel(infochat)
                 msg = await infochat.send(f'🔄 загружаю данные о {user}..')
-                embed = await getProfileFromSheet(user, checkForWarn(row, worksheet), checkForBan(row, worksheet), checkForTest(row, sh), row, col, worksheet, UserWarnBan='User')
+                embed = getProfileFromSheet(user, checkForWarn(row, worksheet), checkForBan(row, worksheet), checkForTest(row, sh), row, col, worksheet, UserWarnBan='User')
                 playerEmbed = embed
                 await asyncio.sleep(3)
                 await ctx.followup.send(embed=embed)
