@@ -39,10 +39,12 @@ async def juniorRequestFunc(client):
 
     for x in m:
         if x.embeds != []:
-
-            if "ожидает одобрения" in x.embeds[0].title:
-                requestCounter+=1
-                requestDict[f"{requestCounter}"] = {'id': f'{x.id}', 'date': f'{whenCreated(x.created_at.astimezone(timezone("Europe/Moscow")))}'}
+            try:
+                if "ожидает одобрения" in x.embeds[0].title:
+                    requestCounter+=1
+                    requestDict[f"{requestCounter}"] = {'id': f'{x.id}', 'date': f'{whenCreated(x.created_at.astimezone(timezone("Europe/Moscow")))}'}
+            except:
+                continue
 
     titleText = f"Господа модераторы и модераторанесы, количество не одобренных запросов в <#997923048403509308> - {requestCounter}\n"
 
