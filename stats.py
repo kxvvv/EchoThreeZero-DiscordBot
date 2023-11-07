@@ -14,6 +14,7 @@ async def stats(ctx, client):
     atharaRole = discord.utils.find(lambda r: r.name == '🌌', ctx.guild.roles)
     novaRole = discord.utils.find(lambda r: r.name == '🪐', ctx.guild.roles)
     mainRole = discord.utils.find(lambda r: r.name == '🚀', ctx.guild.roles)
+    nebulaRole = discord.utils.find(lambda r: r.name == '✨', ctx.guild.roles)
     allRole = discord.utils.find(lambda r: r.name == '🍿', ctx.guild.roles)
 
 
@@ -60,6 +61,11 @@ async def stats(ctx, client):
     )
 
     embedMain = discord.Embed(
+        colour=discord.Colour(0xFF0000),
+        title='Статистика Мейн модераторов'
+    )
+
+    embedNebula = discord.Embed(
         colour=discord.Colour(0xFF0000),
         title='Статистика Мейн модераторов'
     )
@@ -187,10 +193,12 @@ async def stats(ctx, client):
                     embedAllRole.add_field(name=f'{y.name}', value=takeStats(x))
                 elif mainRole in y.roles:
                     embedMain.add_field(name=f'{y.name}', value=takeStats(x))
+                elif nebulaRole in y.roles:
+                    embedMain.add_field(name=f'{y.name}', value=takeStats(x))
 
 
                     
-    return embedEcho, embedSolaris, embedNova, embedAthara, embedElysium, embedAllRole, embedMain
+    return embedEcho, embedSolaris, embedNova, embedAthara, embedElysium, embedAllRole, embedMain, nebulaRole
             
 
 

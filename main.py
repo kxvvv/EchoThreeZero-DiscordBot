@@ -307,6 +307,7 @@ def checkRole(ctx, user):
     atharaRole = discord.utils.find(lambda r: r.name == '🌌', ctx.guild.roles)
     novaRole = discord.utils.find(lambda r: r.name == '🪐', ctx.guild.roles)
     mainRole = discord.utils.find(lambda r: r.name == '🚀', ctx.guild.roles)
+    nebulaRole = discord.utils.find(lambda r: r.name == '✨', ctx.guild.roles)
     allRole = discord.utils.find(lambda r: r.name == '🍿', ctx.guild.roles)
     if echoRole in user.roles:
         return discord.Colour(0x00FFFF)
@@ -320,6 +321,8 @@ def checkRole(ctx, user):
         return discord.Colour(0xFFA500)
     elif mainRole in user.roles:
         return discord.Colour(0xFF0000)
+    elif nebulaRole in user.roles:
+        return discord.Colour(0xFF8C00)
     elif allRole in user.roles:
         return discord.Colour(0xFFFFFF)
     else:
@@ -332,6 +335,7 @@ def checkFooter(ctx, user):
     atharaRole = discord.utils.find(lambda r: r.name == '🌌', ctx.guild.roles)
     novaRole = discord.utils.find(lambda r: r.name == '🪐', ctx.guild.roles)
     mainRole = discord.utils.find(lambda r: r.name == '🚀', ctx.guild.roles)
+    nebulaRole = discord.utils.find(lambda r: r.name == '✨', ctx.guild.roles)
     allRole = discord.utils.find(lambda r: r.name == '🍿', ctx.guild.roles)
 
     if echoRole in user.roles:
@@ -346,6 +350,8 @@ def checkFooter(ctx, user):
         return f'{user.id}, nova🪐'
     elif mainRole in user.roles:
         return f'{user.id}, main🚀'
+    elif nebulaRole in user.roles:
+        return f'{user.id}, nebula✨'
     elif allRole in user.roles:
         return f'{user.id}, all🍿'
     else:
@@ -805,7 +811,7 @@ async def toStats(ctx):
         await ctx.response.send_message('❌ У Вас нет доступа к данной команде.')
         return
 
-    embedEcho, embedSolaris, embedNova, embedAthara, embedElysium, embedAllRole, embedMain = await stats(ctx=ctx, client=client)
+    embedEcho, embedSolaris, embedNova, embedAthara, embedElysium, embedAllRole, embedMain, nebulaRole = await stats(ctx=ctx, client=client)
     await ctx.response.send_message('Отправляю информацию на Эхо.', ephemeral=True)
     id = ctx.user.id
     ctx = client.get_channel(STAT_ROOM)
@@ -815,6 +821,7 @@ async def toStats(ctx):
     await ctx.send(embed=embedAthara)
     await ctx.send(embed=embedElysium)
     await ctx.send(embed=embedMain)
+    await ctx.send(embed=nebulaRole)
     #await ctx.send(embed=embedAllRole)
     await ctx.send(f'<@{id}>')
 
@@ -3008,11 +3015,12 @@ async def call(ctx):
     atharaRole = discord.utils.find(lambda r: r.name == '🌌', ctx.guild.roles)
     novaRole = discord.utils.find(lambda r: r.name == '🪐', ctx.guild.roles)
     mainRole = discord.utils.find(lambda r: r.name == '🚀', ctx.guild.roles)
+    nebulaRole = discord.utils.find(lambda r: r.name == '✨', ctx.guild.roles)
     allRole = discord.utils.find(lambda r: r.name == '🍿', ctx.guild.roles)
 
     
 
-    roles = [echoRole, elysiumRole, solarisRole, atharaRole, novaRole, mainRole, allRole]
+    roles = [echoRole, elysiumRole, solarisRole, atharaRole, novaRole, mainRole, nebulaRole, allRole]
 
     for x in authorRoles:
         if x in roles:
