@@ -83,7 +83,7 @@ async def on_ready():
 
 
     #await cycle('')
-
+    await asyncio.sleep(120)
     dataBaseCycle.start()
     juniorRequestsCycle.start()
 
@@ -785,13 +785,13 @@ async def pdk(ctx, игрок: str=None, правило: str=None, причин�
 
 
 @client.tree.command(name = 'статистика', description='вся статистика пользователей, команда для смотрителей', guild=discord.Object(id=GUILD))
-async def toStats(ctx):
+async def toStats(ctx: discord.Interaction):
 
     # access = await checkForModeratorRole(ctx)
     # if access == False:
 
     #     return
-
+    await ctx.response.defer(ephemeral=True, thinking=True)
     access2 = discord.utils.find(lambda r: r.name == 'Старший Модератор', ctx.guild.roles)
     access3 = discord.utils.find(lambda r: r.name == 'Смотритель Сервера', ctx.guild.roles)
     access4 = discord.utils.find(lambda r: r.name == 'Смотритель Серверов', ctx.guild.roles)
@@ -808,15 +808,16 @@ async def toStats(ctx):
     elif access6 in ctx.user.roles:
         pass
     else:
-        await ctx.response.send_message('❌ У Вас нет доступа к данной команде.')
+        await ctx.followup.send(ephemeral=True, content='❌ У Вас нет доступа к данной команде.')
         return
 
-    embedEcho, embedSolaris, embedNova, embedAthara, embedElysium, embedAllRole, embedMain, nebulaRole = await stats(ctx=ctx, client=client)
-    await ctx.response.send_message('Отправляю информацию на Эхо.', ephemeral=True)
+    embedEcho, embedSolaris, embedNova, embedAthara, embedElysium, embedAllRole, embedMain, embedNebula = await stats(ctx=ctx, client=client)
+    #await ctx.followup.send(content='Отправляю информацию на Эхо.', ephemeral=True)
     id = ctx.user.id
-    ctx = client.get_channel(STAT_ROOM)
-    embeds = [embedEcho, embedSolaris, embedNova, embedAthara, embedElysium, embedMain, nebulaRole, embedAllRole]
-    await ctx.send(embeds=embeds)
+    #ctx = client.get_channel(STAT_ROOM)
+    embeds = [embedMain, embedAthara, embedSolaris, embedNova, embedEcho, embedElysium, embedNebula, embedAllRole]
+    print(embeds)
+    await ctx.followup.send(ephemeral=True, embeds=embeds)
     # await ctx.send(embed=embedEcho)
     # await ctx.send(embed=embedSolaris)
     # await ctx.send(embed=embedNova)

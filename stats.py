@@ -54,13 +54,13 @@ async def stats(ctx, client):
     )
 
     embedNebula = discord.Embed(
-        colour=discord.Colour(0xFF0000),
-        title='Статистика Мейн модераторов'
+        colour=discord.Colour(0xFF8C00),
+        title='Статистика Небула модераторов'
     )
 
     embedAllRole = discord.Embed(
         colour=discord.Colour(0xFFFFFF),
-        title='Статистика Одиночки модератора'
+        title='Статистика модераторов без прикрипленого сервера'
     )
 
 
@@ -166,7 +166,6 @@ async def stats(ctx, client):
             if y.id == id:
                 y: discord.Member
                 for role in y.roles:
-                    role: str = role.lower()
                     if role not in moderator_role_white_list:
                         continue
 
@@ -187,11 +186,11 @@ async def stats(ctx, client):
                 elif mainRole in y.roles:
                     embedMain.add_field(name=f'{y.name}', value=takeStats(x))
                 elif nebulaRole in y.roles:
-                    embedMain.add_field(name=f'{y.name}', value=takeStats(x))
+                    embedNebula.add_field(name=f'{y.name}', value=takeStats(x))
 
 
                     
-    return embedEcho, embedSolaris, embedNova, embedAthara, embedElysium, embedAllRole, embedMain, nebulaRole
+    return embedEcho, embedSolaris, embedNova, embedAthara, embedElysium, embedAllRole, embedMain, embedNebula
             
 
 
