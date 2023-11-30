@@ -85,7 +85,6 @@ async def stats(ctx, client):
     with open("basa.json", "r") as file:
         profile = json.load(file)
 
-    allMembers = client.get_all_members()
 
 
     def takeStats(x, text=None):
