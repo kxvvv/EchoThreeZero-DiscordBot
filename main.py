@@ -815,13 +815,15 @@ async def toStats(ctx):
     await ctx.response.send_message('Отправляю информацию на Эхо.', ephemeral=True)
     id = ctx.user.id
     ctx = client.get_channel(STAT_ROOM)
-    await ctx.send(embed=embedEcho)
-    await ctx.send(embed=embedSolaris)
-    await ctx.send(embed=embedNova)
-    await ctx.send(embed=embedAthara)
-    await ctx.send(embed=embedElysium)
-    await ctx.send(embed=embedMain)
-    await ctx.send(embed=nebulaRole)
+    embeds = [embedEcho, embedSolaris, embedNova, embedAthara, embedElysium, embedMain, nebulaRole, embedAllRole]
+    await ctx.send(embeds=embeds)
+    # await ctx.send(embed=embedEcho)
+    # await ctx.send(embed=embedSolaris)
+    # await ctx.send(embed=embedNova)
+    # await ctx.send(embed=embedAthara)
+    # await ctx.send(embed=embedElysium)
+    # await ctx.send(embed=embedMain)
+    # await ctx.send(embed=nebulaRole)
     #await ctx.send(embed=embedAllRole)
     await ctx.send(f'<@{id}>')
 

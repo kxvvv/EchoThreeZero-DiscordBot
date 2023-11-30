@@ -16,24 +16,12 @@ async def stats(ctx, client):
     mainRole = discord.utils.find(lambda r: r.name == '🚀', ctx.guild.roles)
     nebulaRole = discord.utils.find(lambda r: r.name == '✨', ctx.guild.roles)
     allRole = discord.utils.find(lambda r: r.name == '🍿', ctx.guild.roles)
+    moderator_role_white_list = ['Модератор', 'Младший Модератор', 'Старший Модератор']
 
 
     with open("basa.json", "r") as file:
         profile = json.load(file)
 
-    # for x in profile:
-    #     id = x
-    #     x = profile.get(x)
-    #     ban = x['ban']
-    #     warn = x['warn']
-    #     report = x['report']
-    #     ahelp = x['ahelp']
-
-
-    # embed = discord.Embed(
-    #     colour=discord.Colour(0xB03060),
-    #     title='Статистика неизвестных модераторов'
-    # )
 
     embedEcho = discord.Embed(
         colour=discord.Colour(0x00FFFF),
@@ -168,7 +156,6 @@ async def stats(ctx, client):
 
 
 
-
     for x in profile:
         id = x
         for y in guild.members:
@@ -177,7 +164,13 @@ async def stats(ctx, client):
             except:
                 id = 0
             if y.id == id:
-                name = y.name#ubrat
+                y: discord.Member
+                for role in y.roles:
+                    role: str = role.lower()
+                    if role not in moderator_role_white_list:
+                        continue
+
+                
 
                 if echoRole in y.roles:
                     embedEcho.add_field(name=f'{y.name}', value=takeStats(x))
